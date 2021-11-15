@@ -1,15 +1,29 @@
 import * as React from 'react';
-import {Button} from 'baseui/button';
 import {useStyletron} from 'baseui';
+import HeaderNav from "../components/header";
+import ImageUploader from "../components/image_uploader";
 
 export const sum = (a: number, b: number) => a + b;
 
 const Index: React.FC = () => {
     const [css, theme] = useStyletron();
+    const [errorMessage, setErrorMessage] = React.useState(
+        ""
+    );
+
     return (
         <div>
-            <Button onClick={() => console.log('hey')}>Hello</Button>
-            <p className={css({color: theme.colors.accent600})}>Styled by hook</p>
+            <HeaderNav />
+            <div className={css({
+                margin: "100px"
+            })}>
+                <h3>Upload an image</h3>
+                <ImageUploader
+                    errorMessage={errorMessage}
+                    onDrop={(file: File) => {
+                        console.log(file)
+                    }} />
+            </div>
         </div>
     );
 };
