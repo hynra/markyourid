@@ -9,8 +9,8 @@ import {BlockProps} from "baseui/block";
 import {useEffect} from "react";
 import {Input} from "baseui/input";
 import {ButtonGroup} from "baseui/button-group";
-import {Modal, ModalBody, ModalButton, ModalFooter, ModalHeader} from "baseui/modal";
 import CropWindow from "../components/crop_window";
+import FilterWindow from "../components/filter_window";
 
 export const sum = (a: number, b: number) => a + b;
 
@@ -20,9 +20,10 @@ const Index: React.FC = () => {
     const [imageSrc, setImageSrc] = React.useState<string>("");
     const [imageFile, setImageFile] = React.useState<File>(null);
     const [isCropOpen, setIsCropOpen] = React.useState<boolean>(false);
+    const [isFilterOpen, setIsFilterOpen] = React.useState<boolean>(false);
 
     useEffect(() => {
-        if(imageFile !== null){
+        if (imageFile !== null) {
             let reader = new FileReader();
             reader.readAsDataURL(imageFile);
             reader.onload = () => {
@@ -40,18 +41,18 @@ const Index: React.FC = () => {
     return (
         <div>
             <HeaderNav/>
-            <Modal onClose={() => setIsCropOpen(false)} isOpen={isCropOpen}>
-                <ModalHeader>Hello world</ModalHeader>
-                <ModalBody>
-                    <CropWindow imageSrc={imageSrc} />
-                </ModalBody>
-                <ModalFooter>
-                    <ModalButton kind="tertiary" onClick={() => setIsCropOpen(false)}>
-                        Cancel
-                    </ModalButton>
-                    <ModalButton onClick={() => setIsCropOpen(false)}>Okay</ModalButton>
-                </ModalFooter>
-            </Modal>
+            <CropWindow
+                imageSrc={imageSrc}
+                isOpen={isCropOpen}
+                setIsOpen={setIsCropOpen}
+                onCropped={(newImage => {
+                    setImageSrc(newImage)
+                })}/>
+            <FilterWindow
+                imageSrc={imageSrc}
+                isOpen={isFilterOpen}
+                setIsOpen={setIsFilterOpen}
+                onAdjust={(uri) => setImageSrc(uri)}/>
             <FlexGrid
                 flexGridColumnCount={1}
                 flexGridColumnGap="scale800"
@@ -63,18 +64,16 @@ const Index: React.FC = () => {
                 <FlexGridItem {...itemProps}>
                     {imageSrc !== "" && <Card
                         overrides={{Root: {style: {width: '580px', marginTop: "40px"}}}}
-                        headerImage={
-                            imageSrc
-                        }
                         title="Example card"
                     >
+                        <img src={imageSrc} width="100%"/>
                         <StyledBody>
 
                             <ButtonGroup
                                 overrides={{Root: {style: {alignItems: 'center', justifyContent: 'center',}}}}
-                                >
+                            >
                                 <Button onClick={() => setIsCropOpen(true)}>Crop</Button>
-                                <Button>Two</Button>
+                                <Button onClick={() => setIsFilterOpen(true)}>Adjust</Button>
                                 <Button>Three</Button>
                             </ButtonGroup>
 
@@ -96,7 +95,6 @@ const Index: React.FC = () => {
                     <ImageUploader
                         errorMessage={errorMessage}
                         onDrop={(file: File) => {
-                            console.log(file);
                             setImageFile(file);
                         }}/>
                 </FlexGridItem>

@@ -29,6 +29,7 @@ class MyDocument extends Document<{ stylesheets: Sheet[] }> {
                             key={i}
                         />
                     ))}
+                    <script type="text/javascript" dangerouslySetInnerHTML={{ __html: process.env.camanRaw }}></script>
                 </Head>
                 <body>
                 <Main/>
