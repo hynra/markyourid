@@ -8,7 +8,7 @@ import Plus from 'baseui/icon/plus'
 import CheckIndeterminate from 'baseui/icon/check-indeterminate'
 import {addFilters, FilterMode, saveImageAsUrl} from "../common/filters";
 
-const FilterWindow: React.FC<{
+const AdjustWindow: React.FC<{
     imageSrc: string, isOpen: boolean, setIsOpen: Function, onAdjust: Function
 }> = ({
           imageSrc,
@@ -169,4 +169,4 @@ const FilterWindow: React.FC<{
     )
 }
 
-export default FilterWindow;
+export default AdjustWindow;
