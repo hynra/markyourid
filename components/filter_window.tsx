@@ -5,6 +5,8 @@ import {FlexGrid, FlexGridItem} from "baseui/flex-grid";
 import {Button, KIND, SHAPE} from "baseui/button";
 import {addFilters, FilterMode, saveImageAsUrl} from "../common/filters";
 import {BlockProps} from "baseui/block";
+import {Spinner} from "baseui/spinner";
+import {Layer} from "baseui/layer";
 
 const FilterWindow: React.FC<{
     imageSrc: string, isOpen: boolean, setIsOpen: Function, onFiltered: Function
@@ -17,6 +19,7 @@ const FilterWindow: React.FC<{
 
     const [css, theme] = useStyletron();
     const [selectedFilter, setSelectedFilter] = React.useState<FilterMode>(null);
+    const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
     let img: any = null;
     let canvas;
@@ -32,7 +35,7 @@ const FilterWindow: React.FC<{
         setSelectedFilter(null);
     }
 
-    const applyFilter = (filterToApply: FilterMode) => {
+    const applyFilter = async (filterToApply: FilterMode) => {
         if (filterToApply === selectedFilter)
             return;
         if (canvas) {
@@ -42,8 +45,11 @@ const FilterWindow: React.FC<{
                 //initCanvas();
             })
         }
-        addFilters(filterToApply, img);
+        setIsLoading(true);
+        const filteredImage = await addFilters(filterToApply, img);
+        setIsLoading(false);
         setSelectedFilter(filterToApply)
+        initCanvas(filteredImage)
     }
 
     const itemProps: BlockProps = {
@@ -53,28 +59,31 @@ const FilterWindow: React.FC<{
         justifyContent: 'center',
     };
 
-    const initCanvas = () => {
+    const initCanvas = (imageSource: string) => {
         let context = canvas.getContext("2d");
 
         img = new Image();
 
-        img.src = imageSrc;
+        img.src = imageSource;
 
-        canvas.width = img.width;
-        canvas.height = img.height;
-        context.drawImage(img, 0, 0, img.width, img.height);
+        img.onload = function () {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            context.drawImage(img, 0, 0, img.width, img.height);
+        };
+
     }
 
     const refHandler = (_canvas) => {
         if (!_canvas) return;
         canvas = _canvas;
 
-        initCanvas();
+        initCanvas(imageSrc);
     }
 
 
     return (
-        <Modal onClose={() => setIsOpen(false)} isOpen={isOpen} size='default'>
+        <Modal onClose={() => setIsOpen(false)} isOpen={isOpen} size='default' closeable={false}>
             <ModalHeader>Filters</ModalHeader>
             <ModalBody>
                 <div className={css({
@@ -91,8 +100,19 @@ const FilterWindow: React.FC<{
                         ref={refHandler}
                         id="canvas"
                     />
+                    {
+                        isLoading && <FlexGrid
+                            flexGridColumnCount={[1]}
+                            flexGridColumnGap="scale1000"
+                            flexGridRowGap="scale800"
+                            marginBottom="scale800"
+                        >
+                            <FlexGridItem {...itemProps}><Spinner/></FlexGridItem>
+                            <FlexGridItem {...itemProps}>Memuat filter, tunggu beberapa saat...</FlexGridItem>
+                        </FlexGrid>
+                    }
                 </div>
-                <div>
+                {!isLoading && <div>
                     <FlexGrid
                         flexGridColumnCount={[2, 3, 4]}
                         flexGridColumnGap="scale1000"
@@ -154,16 +174,24 @@ const FilterWindow: React.FC<{
                                                              isSelected={checkSelectedFilter(FilterMode.Hemingway)}
                                                              kind={KIND.secondary}>Hemingway</Button></FlexGridItem>
                     </FlexGrid>
-                </div>
+                </div>}
             </ModalBody>
             <ModalFooter>
-                <ModalButton kind="tertiary" onClick={() => setIsOpen(false)}>
+                <ModalButton
+                    disabled={isLoading}
+                    kind="tertiary" onClick={() => {
+                    setIsOpen(false)
+                    setSelectedFilter(null);
+                }}>
                     Cancel
                 </ModalButton>
-                <ModalButton onClick={() => {
-                    saveImage();
-                    setIsOpen(false);
-                }}>Okay</ModalButton>
+                <ModalButton
+                    onClick={() => {
+                        saveImage();
+                        setIsOpen(false);
+                    }}
+                    disabled={isLoading}
+                >Okay</ModalButton>
             </ModalFooter>
         </Modal>
     )

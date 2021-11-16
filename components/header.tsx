@@ -27,11 +27,6 @@ const HeaderNav: React.FC = () => {
                         </StyledLink>
                     </StyledNavigationItem>
                 </StyledNavigationList>
-                <StyledNavigationList $align={ALIGN.right}>
-                    <StyledNavigationItem>
-                        <div className={css({marginRight: '14px'})}><Button>Get started</Button></div>
-                    </StyledNavigationItem>
-                </StyledNavigationList>
             </HeaderNavigation>
         </div>
     );
