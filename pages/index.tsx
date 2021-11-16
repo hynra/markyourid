@@ -10,7 +10,9 @@ import {useEffect} from "react";
 import {Input} from "baseui/input";
 import {ButtonGroup} from "baseui/button-group";
 import CropWindow from "../components/crop_window";
+import AdjustWindow from "../components/adjust_window";
 import FilterWindow from "../components/filter_window";
+
 
 export const sum = (a: number, b: number) => a + b;
 
@@ -20,7 +22,9 @@ const Index: React.FC = () => {
     const [imageSrc, setImageSrc] = React.useState<string>("");
     const [imageFile, setImageFile] = React.useState<File>(null);
     const [isCropOpen, setIsCropOpen] = React.useState<boolean>(false);
+    const [isAdjustOpen, setIsAdjustOpen] = React.useState<boolean>(false);
     const [isFilterOpen, setIsFilterOpen] = React.useState<boolean>(false);
+
 
     useEffect(() => {
         if (imageFile !== null) {
@@ -48,11 +52,17 @@ const Index: React.FC = () => {
                 onCropped={(newImage => {
                     setImageSrc(newImage)
                 })}/>
+            <AdjustWindow
+                imageSrc={imageSrc}
+                isOpen={isAdjustOpen}
+                setIsOpen={setIsAdjustOpen}
+                onAdjust={(uri) => setImageSrc(uri)}/>
             <FilterWindow
                 imageSrc={imageSrc}
                 isOpen={isFilterOpen}
                 setIsOpen={setIsFilterOpen}
-                onAdjust={(uri) => setImageSrc(uri)}/>
+                onFiltered={(uri) => setImageSrc(uri)}/>
+
             <FlexGrid
                 flexGridColumnCount={1}
                 flexGridColumnGap="scale800"
@@ -73,8 +83,8 @@ const Index: React.FC = () => {
                                 overrides={{Root: {style: {alignItems: 'center', justifyContent: 'center',}}}}
                             >
                                 <Button onClick={() => setIsCropOpen(true)}>Crop</Button>
-                                <Button onClick={() => setIsFilterOpen(true)}>Adjust</Button>
-                                <Button>Three</Button>
+                                <Button onClick={() => setIsAdjustOpen(true)}>Adjust</Button>
+                                <Button onClick={() => setIsFilterOpen(true)}>Filter</Button>
                             </ButtonGroup>
 
                             Proin ut dui sed metus pharetra hend rerit vel non mi. Nulla

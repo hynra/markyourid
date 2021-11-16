@@ -39,6 +39,7 @@ const AdjustWindow: React.FC<{
         const canvas = document.getElementById("canvas");
         const uri = saveImageAsUrl(canvas);
         onAdjust(uri);
+
     }
 
     const refHandler = (canvas) => {
