@@ -12,6 +12,7 @@ import {ButtonGroup} from "baseui/button-group";
 import CropWindow from "../components/crop_window";
 import AdjustWindow from "../components/adjust_window";
 import FilterWindow from "../components/filter_window";
+import WatermarkWindow from "../components/watermark_window";
 
 
 export const sum = (a: number, b: number) => a + b;
@@ -24,6 +25,7 @@ const Index: React.FC = () => {
     const [isCropOpen, setIsCropOpen] = React.useState<boolean>(false);
     const [isAdjustOpen, setIsAdjustOpen] = React.useState<boolean>(false);
     const [isFilterOpen, setIsFilterOpen] = React.useState<boolean>(false);
+    const [isWMOpen, setIsWMOpen] = React.useState<boolean>(false);
 
 
     useEffect(() => {
@@ -62,7 +64,11 @@ const Index: React.FC = () => {
                 isOpen={isFilterOpen}
                 setIsOpen={setIsFilterOpen}
                 onFiltered={(uri) => setImageSrc(uri)}/>
-
+            <WatermarkWindow
+                imageSrc={imageSrc}
+                isOpen={isWMOpen}
+                setIsOpen={setIsWMOpen}
+                onWaterMarked={(img) => setImageSrc(img)}/>
             <FlexGrid
                 flexGridColumnCount={1}
                 flexGridColumnGap="scale800"
@@ -95,7 +101,7 @@ const Index: React.FC = () => {
                             />
                         </StyledBody>
                         <StyledAction>
-                            <Button overrides={{BaseButton: {style: {width: '100%'}}}}>
+                            <Button overrides={{BaseButton: {style: {width: '100%'}}}} onClick={()=> setIsWMOpen(true)}>
                                 Generate
                             </Button>
                         </StyledAction>
