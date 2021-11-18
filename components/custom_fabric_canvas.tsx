@@ -11,20 +11,12 @@ export interface Props {
 /**
  * Fabric canvas as component
  */
-const CustomFabricCanvas = ({ className, onReady, imageSrc, canvasRef }: Props) => {
+const CustomFabricCanvas = ({className, onReady, imageSrc, canvasRef}: Props) => {
     // const canvasEl = useRef(null)
     const canvasElParent = useRef<HTMLDivElement>(null)
     const [canvas, setCanvas] = useState(null);
 
-    function getHeight(length, ratio) {
-        const height = ((length)/(Math.sqrt((Math.pow(ratio, 2)+1))));
-        return Math.round(height);
-    }
 
-    function getWidth(length, ratio) {
-        const width = ((length)/(Math.sqrt((1)/(Math.pow(ratio, 2)+1))));
-        return Math.round(width);
-    }
 
     const refHandler = (_canvas) => {
         if (!_canvas) return;
@@ -38,28 +30,26 @@ const CustomFabricCanvas = ({ className, onReady, imageSrc, canvasRef }: Props) 
         // _canvas.width = img.width;
         _canvas.height = img.height;
         // _canvas.style = null;
-        _canvas.style.width ='100%';
+        _canvas.style.width = '100%';
         _canvas.style.height = null;
-        _canvas.style.position ='relative';
-        _canvas.width  = _canvas.offsetWidth;
-
-        const ratio = img.width / img.height;
-        _canvas.height = getHeight(_canvas.width, ratio);
+        _canvas.style.position = 'relative';
+        _canvas.width = _canvas.offsetWidth;
+        console.log(img.width, img.height)
+        _canvas.height = _canvas.width * (img.height / img.width);
 
         console.log(_canvas)
         // context.drawImage(img, 0, 0, img.width, img.height);
         if (canvas === null) {
-            // console.log(img.width, img.height);
             setCanvas(_canvas);
 
-            console.log(_canvas)
-            console.log(canvasElParent.current)
+
             const fabricCanvas = new fabric.Canvas(_canvas)
             console.log(fabricCanvas)
             const setCurrentDimensions = () => {
-                // fabricCanvas.setHeight(_canvas.clientHeight || 0)
-                // fabricCanvas.setWidth(_canvas.clientWidth || 0)
+                fabricCanvas.setHeight(_canvas.clientHeight || 0)
+                fabricCanvas.setWidth(_canvas.clientWidth || 0)
                 fabricCanvas.setDimensions({ width: _canvas.clientWidth, height: _canvas.clientHeight });
+                fabricCanvas.calcOffset();
                 fabricCanvas.renderAll()
             }
             const resizeCanvas = () => {
@@ -117,9 +107,9 @@ const CustomFabricCanvas = ({ className, onReady, imageSrc, canvasRef }: Props) 
     }, [])
     return (
         <div ref={canvasElParent} className={className}>
-            <canvas ref={refHandler} />
+            <canvas ref={refHandler}/>
         </div>
     )
 }
 
-export {  CustomFabricCanvas }
+export {CustomFabricCanvas}
