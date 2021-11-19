@@ -2,7 +2,7 @@ import React from "react";
 import Cropper from 'react-easy-crop'
 import {useStyletron} from "baseui";
 import {Slider} from "baseui/slider";
-import {Display4, H6} from "baseui/typography";
+import {Display4, H6, Label2} from "baseui/typography";
 import {Modal, ModalBody, ModalButton, ModalFooter, ModalHeader} from "baseui/modal";
 import getCroppedImg from "../common/crop_image";
 
@@ -64,7 +64,7 @@ const CropWindow: React.FC<{ imageSrc: string, isOpen: boolean, setIsOpen: Funct
                                 rotation={rotation}
                             />
                         </div>
-                        <H6 marginBottom="scale500">Atur Zoom</H6>
+                        <Label2>Atur Zoom</Label2>
                         <Slider
                             value={zoomValue}
                             onChange={({value}) => value && setZoomValue(value)}
@@ -72,7 +72,7 @@ const CropWindow: React.FC<{ imageSrc: string, isOpen: boolean, setIsOpen: Funct
                             min={1}
                             max={10}
                         />
-                        <H6 marginBottom="scale500">Atur Rotasi</H6>
+                        <Label2>Atur Rotasi</Label2>
                         <Slider
                             value={rotationValue}
                             onChange={({value}) => value && setRotationValue(value)}

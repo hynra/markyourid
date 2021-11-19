@@ -10,15 +10,18 @@
   "dependencies": {
     "baseui": "^10.5.0",
     "caman": "^4.1.2",
-    "fabric": "^4.6.0",
-    "fabricjs-react": "^1.0.8",
+    "konva": "^8.3.0",
     "next": "^12.0.3",
     "photo-magician": "^0.3.0",
     "react": "17.0.2",
+    "react-color": "^2.19.3",
     "react-dom": "17.0.2",
     "react-easy-crop": "^3.5.3",
+    "react-konva": "^17.0.2-5",
     "styletron-engine-atomic": "^1.4.8",
-    "styletron-react": "^6.0.2"
+    "styletron-react": "^6.0.2",
+    "use-image": "^1.0.8",
+    "watermarkjs": "^2.1.1"
   },
   "devDependencies": {
     "@types/node": "16.11.7",
