@@ -56,7 +56,6 @@ const AdjustWindow: React.FC<{
         context.drawImage(img, 0, 0, img.width, img.height);
         if (currImage === null)
             setCurrImage(img);
-
     }
 
     if (typeof window !== "undefined") {

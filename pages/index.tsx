@@ -18,6 +18,7 @@ import {H6, Label2, Paragraph3} from "baseui/typography";
 import {SIZE, Textarea} from "baseui/textarea";
 import SettingAccordion, {PositionEnum, positionOption} from "../components/setting_accordion";
 import AdvancedAccordion from "../components/advanced_accordion";
+import MainCanvas from "../components/main_canvas";
 
 
 const Index: React.FC = () => {
@@ -144,7 +145,11 @@ const Index: React.FC = () => {
                         overrides={{Root: {style: {width: '580px', marginTop: "40px"}}}}
                         title="Example card"
                     >
-                        <img src={imageSrc} width="100%"/>
+                        {/*<img src={imageSrc} width="100%"/>*/}
+                        {
+                            imageSrc !== "" && <MainCanvas imageSrc={imageSrc} />
+                        }
+
                         <StyledBody>
 
                             <Label2 marginBottom="14px"> Edit Text</Label2>
