@@ -2,15 +2,17 @@ import React from "react";
 import {useStyletron} from "baseui";
 import {Modal, ModalBody, ModalButton, ModalFooter, ModalHeader} from "baseui/modal";
 import dynamic from "next/dynamic";
-const CustomStage = dynamic(() => import('./custom_stage'), { ssr: false });
+
+const CustomStage = dynamic(() => import('./custom_stage'), {ssr: false});
 
 
 const WatermarkWindow: React.FC<{
-    imageSrc: string, isOpen: boolean, setIsOpen: Function, onWaterMarked: Function
+    imageSrc: string, isOpen: boolean, setIsOpen: Function, onWaterMarked: Function, predefinedText: string
 }> = ({
           imageSrc,
           isOpen,
           setIsOpen,
+          predefinedText,
           onWaterMarked
       }) => {
 
@@ -26,7 +28,7 @@ const WatermarkWindow: React.FC<{
                     width: '100%',
                     marginBottom: "14px"
                 })}>
-                    <CustomStage imgSrc={imageSrc}/>
+                    <CustomStage imgSrc={imageSrc} predefinedText={predefinedText}/>
                 </div>
                 <div>
 

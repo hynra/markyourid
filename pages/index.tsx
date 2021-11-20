@@ -14,39 +14,10 @@ import AdjustWindow from "../components/adjust_window";
 import FilterWindow from "../components/filter_window";
 import WatermarkWindow from "../components/watermark_window";
 import getWatermark from "../components/custom_wm";
-import {Accordion, Panel} from "baseui/accordion";
-import {Slider} from "baseui/slider";
 import {H6, Label2, Paragraph3} from "baseui/typography";
-import {SketchPicker, CompactPicker, ChromePicker, TwitterPicker} from 'react-color'
-import {StatefulPopover} from "baseui/popover";
-import {Overflow, Upload} from "baseui/icon";
-import {Select} from "baseui/select";
 import {SIZE, Textarea} from "baseui/textarea";
-import SettingAccordion from "../components/setting_accordion";
-
-const colorSwatches = ['#4D4D4D',
-    '#999999', '#FFFFFF', '#F44E3B', '#FE9200', '#FCDC00', '#DBDF00',
-    '#A4DD00', '#68CCCA', '#73D8FF', '#AEA1FF', '#FDA1FF', '#333333',
-    '#808080', '#cccccc', '#D33115', '#E27300', '#FCC400', '#B0BC00',
-    '#68BC00', '#16A5A5', '#009CE0', '#7B64FF', '#FA28FF', '#000000',
-    '#666666', '#B3B3B3', '#9F0500', '#C45100', '#FB9E00', '#808900',
-    '#194D33', '#0C797D', '#0062B1', '#653294', '#AB149E']
-
-enum PositionEnum {
-    KananBawah,
-    KananAtas,
-    KiriBawah,
-    KiriAtas,
-    Tengah
-}
-
-const positionOption = [
-    {label: "Kanan Bawah", id: PositionEnum.KananBawah},
-    {label: "Kanan Atas", id: PositionEnum.KananAtas},
-    {label: "Kiri Bawah", id: PositionEnum.KiriBawah},
-    {label: "Kiri Atas", id: PositionEnum.KiriAtas},
-    {label: "Tengah", id: PositionEnum.Tengah},
-]
+import SettingAccordion, {PositionEnum, positionOption} from "../components/setting_accordion";
+import AdvancedAccordion from "../components/advanced_accordion";
 
 
 const Index: React.FC = () => {
@@ -63,7 +34,7 @@ const Index: React.FC = () => {
     const [fontSize, setFontSize] = React.useState(48);
     const [wmColor, setWmColor] = React.useState('#fff');
     const [position, setPosition] = React.useState([positionOption[0]]);
-    const [currText, setCurrText] =  React.useState(`${new Date().getDate()}/${new Date().getMonth()+1}/${new Date().getFullYear()}`);
+    const [currText, setCurrText] = React.useState(`${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear()}`);
     const [opacity, setOpacity] = React.useState(0.5);
 
     useEffect(() => {
@@ -157,7 +128,9 @@ const Index: React.FC = () => {
                         setPrevImageSrc(img);
                         applyWaterMark(img).then();
                     } else setImageSrc(img)
-                }}/>
+                }}
+                predefinedText={currText}
+            />
             <FlexGrid
                 flexGridColumnCount={1}
                 flexGridColumnGap="scale800"
@@ -174,14 +147,6 @@ const Index: React.FC = () => {
                         <img src={imageSrc} width="100%"/>
                         <StyledBody>
 
-                            <ButtonGroup
-                                overrides={{Root: {style: {alignItems: 'center', justifyContent: 'center',}}}}
-                            >
-                                <Button onClick={() => setIsCropOpen(true)}>Crop</Button>
-                                <Button onClick={() => setIsAdjustOpen(true)}>Adjust</Button>
-                                <Button onClick={() => setIsFilterOpen(true)}>Filter</Button>
-                            </ButtonGroup>
-
                             <Label2 marginBottom="14px"> Edit Text</Label2>
                             <Textarea
                                 value={currText}
@@ -196,6 +161,12 @@ const Index: React.FC = () => {
                                 onWmColoChanged={setWmColor}
                                 onPositionChanged={setPosition}
                                 onOpacityChanged={setOpacity}
+                            />
+                            <AdvancedAccordion
+                                onOpenCropWindow={setIsCropOpen}
+                                onOpenAdjustWindow={setIsAdjustOpen}
+                                onOpenFilterOption={setIsFilterOpen}
+                                onOpenWmWindow={setIsWMOpen}
                             />
                         </StyledBody>
                         <StyledAction>

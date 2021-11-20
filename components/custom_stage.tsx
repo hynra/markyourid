@@ -6,25 +6,23 @@ import useImage from 'use-image';
 
 
 
-const CustomStage: React.FC<{ imgSrc: string }> = ({imgSrc}) => {
+const CustomStage: React.FC<{ imgSrc: string, predefinedText: string }> = ({imgSrc, predefinedText}) => {
 
     const [image, setImage] = React.useState<any>();
     const [css, theme] = useStyletron();
     const [canvas, setCanvas] = React.useState();
     const [textProps, setTextProps] = React.useState({
-        text: "Try click on rect",
+        text: predefinedText,
         draggable: true,
         fontSize: 36,
-        fontFamily: 'Calibri',
+        fontFamily: 'Josefin Slab',
+        fill: "#fff",
+        stroke: '#000',
+        opacity: 0.5,
         x: 40,
         y: 65,
     });
 
-
-    const LionImage = () => {
-        const [image_] = useImage(imgSrc);
-        return <Image image={image_} />;
-    };
 
     if (!image) {
         const img = new window.Image();
@@ -59,7 +57,7 @@ const CustomStage: React.FC<{ imgSrc: string }> = ({imgSrc}) => {
 
 
     const parentRef = React.useRef(null);
-    const [textSelected, setTextSelected] = React.useState(false);
+    const [textSelected, setTextSelected] = React.useState(true);
 
     return (
         <>
