@@ -22,6 +22,7 @@ import {StatefulPopover} from "baseui/popover";
 import {Overflow, Upload} from "baseui/icon";
 import {Select} from "baseui/select";
 import {SIZE, Textarea} from "baseui/textarea";
+import SettingAccordion from "../components/setting_accordion";
 
 const colorSwatches = ['#4D4D4D',
     '#999999', '#FFFFFF', '#F44E3B', '#FE9200', '#FCDC00', '#DBDF00',
@@ -190,76 +191,12 @@ const Index: React.FC = () => {
                                 placeholder="Controlled Input"
                                 clearOnEscape
                             />
-                            <Accordion>
-                                <Panel title="Sesuaikan">
-                                    <Label2>Atur Ukuran Huruf</Label2>
-                                    <Slider
-                                        value={[fontSize]}
-                                        onChange={({value}) => value && setFontSize(value[0])}
-                                        onFinalChange={({value}) => setFontSize(value[0])}
-                                        min={24}
-                                        max={250}
-                                    />
-                                    <Label2>Atur Opacity</Label2>
-                                    <Slider
-                                        value={[opacity*100]}
-                                        onChange={({value}) => value && setOpacity(value[0]/100)}
-                                        onFinalChange={({value}) => setOpacity(value[0]/100)}
-                                        min={10}
-                                        max={100}
-                                    />
-                                    <StatefulPopover
-                                        content={
-                                            <TwitterPicker
-                                                disableAlpha
-                                                color={wmColor}
-                                                triangle={"hide"}
-                                                onChangeComplete={(color) => {
-                                                    setWmColor(color.hex)
-                                                }}
-                                                colors={colorSwatches}
-                                            />
-                                        }
-                                        accessibilityType={'tooltip'}
-                                    >
-                                        <Button
-                                            overrides={{
-                                                BaseButton: {
-                                                    style: {
-                                                        width: '100%',
-                                                        marginTop: "14px",
-                                                        marginBottom: "14px"
-                                                    }
-                                                }
-                                            }}
-                                            endEnhancer={() => <Overflow size={24}/>}
-                                        >
-                                            Pilih Warna Huruf
-                                        </Button>
-                                    </StatefulPopover>
-                                    <Label2>Pilih letak Watermark</Label2>
-                                    <Select
-                                        overrides={{
-                                            Root: {
-                                                style: {
-                                                    width: '100%',
-                                                    marginTop: "14px",
-                                                    marginBottom: "14px"
-                                                }
-                                            }
-                                        }}
-                                        options={positionOption}
-                                        clearable={false}
-                                        value={position}
-                                        placeholder="Pilih Posisi"
-                                        onChange={params => {
-                                            // @ts-ignore
-                                            setPosition(params.value)
-                                        }}
-                                    />
-
-                                </Panel>
-                            </Accordion>
+                            <SettingAccordion
+                                onFontSizeChanged={setFontSize}
+                                onWmColoChanged={setWmColor}
+                                onPositionChanged={setPosition}
+                                onOpacityChanged={setOpacity}
+                            />
                         </StyledBody>
                         <StyledAction>
                             <Button
