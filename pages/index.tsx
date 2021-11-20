@@ -87,6 +87,7 @@ const Index: React.FC = () => {
     }
 
 
+    // @ts-ignore
     return (
         <div>
             <HeaderNav/>
@@ -147,7 +148,18 @@ const Index: React.FC = () => {
                     >
                         {/*<img src={imageSrc} width="100%"/>*/}
                         {
-                            imageSrc !== "" && <MainCanvas imageSrc={imageSrc} />
+                            imageSrc !== "" && <MainCanvas
+                                imageSrc={imageSrc}
+                                textProps={
+                                    {
+                                        fontSize: fontSize,
+                                        color: wmColor,
+                                        // @ts-ignore
+                                        position: position.id,
+                                        text: currText,
+                                        opacity: opacity
+                                    }
+                                }/>
                         }
 
                         <StyledBody>
@@ -179,7 +191,7 @@ const Index: React.FC = () => {
                                 overrides={{BaseButton: {style: {width: '100%'}}}}
                                 onClick={() => {
                                     // setIsWMOpen(true)
-                                    applyWaterMark().then()
+                                    // applyWaterMark().then()
                                 }}>
                                 Generate
                             </Button>

@@ -1,10 +1,29 @@
 import React from "react";
 import {useStyletron} from "baseui";
+import {PositionEnum} from "./setting_accordion";
 
-const MainCanvas: React.FC<{imageSrc: string}> = ({imageSrc}) => {
+export interface MainCanvasTextProps {
+    fontSize: number;
+    color: string;
+    position: PositionEnum;
+    text: string;
+    opacity: number;
+}
+
+
+
+const MainCanvas: React.FC<{imageSrc: string, textProps: MainCanvasTextProps}> = ({imageSrc, textProps}) => {
 
     const [css, theme] = useStyletron();
     const [canvas, setCanvas] = React.useState();
+
+
+    function toMultiLine(text){
+        let textArr: any[];
+        text = text.replace(/\n\r?/g, '<br/>');
+        textArr = text.split("<br/>");
+        return textArr;
+    }
 
 
     React.useEffect(() => {
@@ -19,11 +38,32 @@ const MainCanvas: React.FC<{imageSrc: string}> = ({imageSrc}) => {
                 // @ts-ignore
                 canvas.height = img.height;
                 context.drawImage(img, 0, 0, img.width, img.height);
-                console.log(canvas)
+
+                context.globalAlpha = textProps.opacity;
+                context.font = `${textProps.fontSize}px Josefin Slab`;
+                context.fillStyle = textProps.color;
+                context.textAlign = "center";
+                context.textBaseline = "Middle";
+
+                const currText = toMultiLine(textProps.text);
+                let lineSpacing = textProps.fontSize;
+                // @ts-ignore
+                let x = canvas.width/2;
+                // @ts-ignore
+                let y = canvas.height/2;
+                // draw each line on canvas.
+                for(let i = 0; i < currText.length; i++){
+                    context.fillText(currText[i], x, y);
+                    y += lineSpacing;
+                }
+
+                // @ts-ignore
+                // context.fillText(textProps.text, canvas.width/2, canvas.height/2);
+                // context.wrapText(textProps.text, canvas.width/2, canvas.height/2, canvas.width, canvas.height);
             };
         }
 
-    },[canvas, imageSrc])
+    },[canvas, imageSrc, textProps])
 
     const refHandler = (currCanvas) => {
         if (!currCanvas) return;
