@@ -29,7 +29,7 @@ const FilterWindow: React.FC<{
     }
 
     const saveImage = () => {
-        const canvas = document.getElementById("canvas");
+        const canvas = document.getElementById("canvasFilter");
         const uri = saveImageAsUrl(canvas);
         onFiltered(uri);
         setSelectedFilter(null);
@@ -40,7 +40,7 @@ const FilterWindow: React.FC<{
             return;
         if (canvas) {
             // @ts-ignore
-            window.Caman("#canvas", img, function () {
+            window.Caman("#canvasFilter", img, function () {
                 this.revert();
                 //initCanvas();
             })
@@ -98,7 +98,7 @@ const FilterWindow: React.FC<{
                             marginBottom: "14px"
                         })}
                         ref={refHandler}
-                        id="canvas"
+                        id="canvasFilter"
                     />
                     {
                         isLoading && <FlexGrid

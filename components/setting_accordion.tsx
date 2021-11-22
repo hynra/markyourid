@@ -33,18 +33,35 @@ export const positionOption = [
     {label: "Tengah", id: PositionEnum.Tengah},
 ]
 
-const SettingAccordion: React.FC<{ onFontSizeChanged: Function, onWmColoChanged: Function, onPositionChanged: Function, onOpacityChanged: Function }> = (
-    {onFontSizeChanged, onWmColoChanged, onPositionChanged, onOpacityChanged}
+const SettingAccordion: React.FC<{
+    onFontSizeChanged: Function, onWmColoChanged: Function, onPositionChanged: Function,
+    onOpacityChanged: Function, imageSrc: string, onHorizontalPosChanged: Function, onVerticalPosChanged: Function
+}> = (
+    {onFontSizeChanged, onWmColoChanged, onPositionChanged, onOpacityChanged, imageSrc, onHorizontalPosChanged, onVerticalPosChanged}
 ) => {
 
     const [fontSize, setFontSize] = React.useState(48);
     const [wmColor, setWmColor] = React.useState('#fff');
-    const [position, setPosition] = React.useState([positionOption[0]]);
     const [opacity, setOpacity] = React.useState(0.5);
+    const [horizontalPosition, setHorizontalPosition] = React.useState(null);
+    const [maxHorizontal, setMaxHorizontal] = React.useState(null);
+    const [verticalPosition, setVerticalPosition] = React.useState(null);
+    const [maxVertical, setMaxVertical] = React.useState(null);
 
     React.useEffect(() => {
-
-    }, [fontSize, wmColor, position, opacity]);
+        const img = new Image();
+        img.src = imageSrc;
+        img.onload = function () {
+            const width = img.width;
+            const height = img.height;
+            setMaxHorizontal(width);
+            setMaxVertical(height);
+            onHorizontalPosChanged(width/2);
+            onVerticalPosChanged(height/2);
+            setHorizontalPosition(width / 2);
+            setVerticalPosition(height/2);
+        }
+    }, [imageSrc]);
 
 
     return (
@@ -60,6 +77,28 @@ const SettingAccordion: React.FC<{ onFontSizeChanged: Function, onWmColoChanged:
                     }}
                     min={24}
                     max={250}
+                />
+                <Label2>Atur Posisi Horizontal</Label2>
+                <Slider
+                    value={[horizontalPosition]}
+                    onChange={({value}) => value && setHorizontalPosition(value[0])}
+                    onFinalChange={({value}) => {
+                        setHorizontalPosition(value[0])
+                        onHorizontalPosChanged(value[0])
+                    }}
+                    min={0}
+                    max={maxHorizontal}
+                />
+                <Label2>Atur Posisi Vertical</Label2>
+                <Slider
+                    value={[verticalPosition]}
+                    onChange={({value}) => value && setVerticalPosition(value[0])}
+                    onFinalChange={({value}) => {
+                        setVerticalPosition(value[0])
+                        onVerticalPosChanged(value[0])
+                    }}
+                    min={0}
+                    max={maxVertical}
                 />
                 <Label2>Atur Opacity</Label2>
                 <Slider
@@ -102,28 +141,6 @@ const SettingAccordion: React.FC<{ onFontSizeChanged: Function, onWmColoChanged:
                         Pilih Warna Huruf
                     </Button>
                 </StatefulPopover>
-                <Label2>Pilih letak Watermark</Label2>
-                <Select
-                    overrides={{
-                        Root: {
-                            style: {
-                                width: '100%',
-                                marginTop: "14px",
-                                marginBottom: "14px"
-                            }
-                        }
-                    }}
-                    options={positionOption}
-                    clearable={false}
-                    value={position}
-                    placeholder="Pilih Posisi"
-                    onChange={params => {
-                        // @ts-ignore
-                        setPosition(params.value)
-                        onPositionChanged(params.value);
-                    }}
-                />
-
             </Panel>
         </Accordion>
     )

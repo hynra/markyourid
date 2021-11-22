@@ -32,11 +32,11 @@ const AdjustWindow: React.FC<{
 
 
     const applyFilter = (selectedFilter: FilterMode) => {
-        addFilters(selectedFilter, img);
+        addFilters(selectedFilter, img).then();
     }
 
     const saveImage = () => {
-        const canvas = document.getElementById("canvas");
+        const canvas = document.getElementById("canvasAdjust");
         const uri = saveImageAsUrl(canvas);
         onAdjust(uri);
 
@@ -78,7 +78,7 @@ const AdjustWindow: React.FC<{
                             marginBottom: "14px"
                         })}
                         ref={refHandler}
-                        id="canvas"
+                        id="canvasAdjust"
                     />
                 </div>
                 <div>

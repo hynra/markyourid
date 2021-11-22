@@ -37,6 +37,8 @@ const Index: React.FC = () => {
     const [position, setPosition] = React.useState([positionOption[0]]);
     const [currText, setCurrText] = React.useState(`${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear()}`);
     const [opacity, setOpacity] = React.useState(0.5);
+    const [horizontalPosition, setHorizontalPosition] = React.useState(undefined);
+    const [verticalPosition, setVerticalPosition] = React.useState(undefined);
 
     useEffect(() => {
         if (imageFile !== null) {
@@ -45,7 +47,7 @@ const Index: React.FC = () => {
             reader.readAsDataURL(imageFile);
             reader.onload = () => {
                 setImageSrc(reader.result as string);
-                setPrevImageSrc("")
+                setPrevImageSrc(reader.result as string)
             }
         }
     }, [imageFile]);
@@ -58,7 +60,7 @@ const Index: React.FC = () => {
 
 
     const applyWaterMark = async (tempImage?: any) => {
-        let imgToApply = (prevImageSrc === '') ? imageSrc : prevImageSrc;
+        /*let imgToApply = (prevImageSrc === '') ? imageSrc : prevImageSrc;
         if (tempImage) imgToApply = tempImage;
         let wmOption;
         switch (position[0].id) {
@@ -83,7 +85,8 @@ const Index: React.FC = () => {
             .image(wmOption);
         if (prevImageSrc === '')
             setPrevImageSrc(imageSrc);
-        setImageSrc(_img.src);
+        setImageSrc(_img.src);*/
+        setImageSrc(tempImage)
     }
 
 
@@ -157,7 +160,9 @@ const Index: React.FC = () => {
                                         // @ts-ignore
                                         position: position.id,
                                         text: currText,
-                                        opacity: opacity
+                                        opacity: opacity,
+                                        horizontal: horizontalPosition,
+                                        vertical: verticalPosition
                                     }
                                 }/>
                         }
@@ -178,6 +183,9 @@ const Index: React.FC = () => {
                                 onWmColoChanged={setWmColor}
                                 onPositionChanged={setPosition}
                                 onOpacityChanged={setOpacity}
+                                imageSrc={imageSrc}
+                                onHorizontalPosChanged={setHorizontalPosition}
+                                onVerticalPosChanged={setVerticalPosition}
                             />
                             <AdvancedAccordion
                                 onOpenCropWindow={setIsCropOpen}

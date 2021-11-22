@@ -5,20 +5,20 @@ import {PositionEnum} from "./setting_accordion";
 export interface MainCanvasTextProps {
     fontSize: number;
     color: string;
-    position: PositionEnum;
     text: string;
     opacity: number;
+    horizontal?: number;
+    vertical?: number;
 }
 
 
-
-const MainCanvas: React.FC<{imageSrc: string, textProps: MainCanvasTextProps}> = ({imageSrc, textProps}) => {
+const MainCanvas: React.FC<{ imageSrc: string, textProps: MainCanvasTextProps }> = ({imageSrc, textProps}) => {
 
     const [css, theme] = useStyletron();
     const [canvas, setCanvas] = React.useState();
 
 
-    function toMultiLine(text){
+    function toMultiLine(text) {
         let textArr: any[];
         text = text.replace(/\n\r?/g, '<br/>');
         textArr = text.split("<br/>");
@@ -27,7 +27,7 @@ const MainCanvas: React.FC<{imageSrc: string, textProps: MainCanvasTextProps}> =
 
 
     React.useEffect(() => {
-        if(canvas){
+        if (canvas) {
             // @ts-ignore
             let context = canvas.getContext("2d");
             const img = new Image();
@@ -47,31 +47,32 @@ const MainCanvas: React.FC<{imageSrc: string, textProps: MainCanvasTextProps}> =
 
                 const currText = toMultiLine(textProps.text);
                 let lineSpacing = textProps.fontSize;
+
+                let metrics = context.measureText(textProps.text);
+
                 // @ts-ignore
-                let x = canvas.width/2;
+                let x = textProps.horizontal || canvas.width/2;
                 // @ts-ignore
-                let y = canvas.height/2;
+                let y = textProps.vertical || canvas.height/2;
                 // draw each line on canvas.
-                for(let i = 0; i < currText.length; i++){
+                for (let i = 0; i < currText.length; i++) {
                     context.fillText(currText[i], x, y);
                     y += lineSpacing;
                 }
 
-                // @ts-ignore
-                // context.fillText(textProps.text, canvas.width/2, canvas.height/2);
-                // context.wrapText(textProps.text, canvas.width/2, canvas.height/2, canvas.width, canvas.height);
+                context.restore();
             };
         }
 
-    },[canvas, imageSrc, textProps])
+    }, [canvas, imageSrc, textProps])
 
     const refHandler = (currCanvas) => {
         if (!currCanvas) return;
-        if(!canvas) setCanvas(currCanvas);
+        if (!canvas) setCanvas(currCanvas);
     }
 
 
-    return(
+    return (
         <>
             <div className={css({
                 position: 'relative',
