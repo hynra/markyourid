@@ -31,18 +31,20 @@ const Index: React.FC = () => {
     const [isAdjustOpen, setIsAdjustOpen] = React.useState<boolean>(false);
     const [isFilterOpen, setIsFilterOpen] = React.useState<boolean>(false);
     const [isWMOpen, setIsWMOpen] = React.useState<boolean>(false);
-    const [watermark, setWatermark] = React.useState<any>();
     const [fontSize, setFontSize] = React.useState(48);
-    const [wmColor, setWmColor] = React.useState('#fff');
+    const [wmColor, setWmColor] = React.useState('#fff')
+    const [rectColor, setRectColor] = React.useState('#000');
+    const [enableRect, setEnableRect] = React.useState(true);
     const [position, setPosition] = React.useState([positionOption[0]]);
-    const [currText, setCurrText] = React.useState(`${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear()}`);
+    const [currText, setCurrText] = React.useState(
+        `Description: Write description\nDate: ${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear()}`
+    );
     const [opacity, setOpacity] = React.useState(0.5);
     const [horizontalPosition, setHorizontalPosition] = React.useState(undefined);
     const [verticalPosition, setVerticalPosition] = React.useState(undefined);
 
     useEffect(() => {
         if (imageFile !== null) {
-            setWatermark(getWatermark);
             let reader = new FileReader();
             reader.readAsDataURL(imageFile);
             reader.onload = () => {
@@ -60,32 +62,6 @@ const Index: React.FC = () => {
 
 
     const applyWaterMark = async (tempImage?: any) => {
-        /*let imgToApply = (prevImageSrc === '') ? imageSrc : prevImageSrc;
-        if (tempImage) imgToApply = tempImage;
-        let wmOption;
-        switch (position[0].id) {
-            case PositionEnum.KananBawah:
-                wmOption = watermark.text.lowerRight(currText, `${fontSize}px Josefin Slab`, wmColor, opacity);
-                break
-            case PositionEnum.KananAtas:
-                const ur = watermark.text.upperRight;
-                wmOption = ur(currText, `${fontSize}px Josefin Slab`, wmColor, opacity, fontSize);
-                break;
-            case PositionEnum.KiriAtas:
-                wmOption = watermark.text.upperLeft(currText, `${fontSize}px Josefin Slab`, wmColor, opacity)
-                break;
-            case PositionEnum.KiriBawah:
-                wmOption = watermark.text.lowerLeft(currText, `${fontSize}px Josefin Slab`, wmColor, opacity)
-                break;
-            case PositionEnum.Tengah:
-                wmOption = watermark.text.center(currText, `${fontSize}px Josefin Slab`, wmColor, opacity)
-                break;
-        }
-        const _img = await watermark([imgToApply])
-            .image(wmOption);
-        if (prevImageSrc === '')
-            setPrevImageSrc(imageSrc);
-        setImageSrc(_img.src);*/
         setImageSrc(tempImage)
     }
 
@@ -141,13 +117,13 @@ const Index: React.FC = () => {
                 flexGridColumnGap="scale800"
                 flexGridRowGap="scale800"
             >
-                <FlexGridItem {...itemProps}>
+                {/*<FlexGridItem {...itemProps}>
                     <h3>Upload an image</h3>
-                </FlexGridItem>
+                </FlexGridItem>*/}
                 <FlexGridItem {...itemProps}>
                     {imageSrc !== "" && <Card
                         overrides={{Root: {style: {width: '580px', marginTop: "40px"}}}}
-                        title="Example card"
+                        title="Add Watermark"
                     >
                         {/*<img src={imageSrc} width="100%"/>*/}
                         {
@@ -162,7 +138,9 @@ const Index: React.FC = () => {
                                         text: currText,
                                         opacity: opacity,
                                         horizontal: horizontalPosition,
-                                        vertical: verticalPosition
+                                        vertical: verticalPosition,
+                                        rectColor: rectColor,
+                                        rectEnable: enableRect
                                     }
                                 }/>
                         }
@@ -186,6 +164,8 @@ const Index: React.FC = () => {
                                 imageSrc={imageSrc}
                                 onHorizontalPosChanged={setHorizontalPosition}
                                 onVerticalPosChanged={setVerticalPosition}
+                                onEnableRectChanged={setEnableRect}
+                                onRectColorChanged={setRectColor}
                             />
                             <AdvancedAccordion
                                 onOpenCropWindow={setIsCropOpen}
@@ -201,17 +181,17 @@ const Index: React.FC = () => {
                                     // setIsWMOpen(true)
                                     // applyWaterMark().then()
                                 }}>
-                                Generate
+                                Export
                             </Button>
                         </StyledAction>
                     </Card>}
                 </FlexGridItem>
                 <FlexGridItem {...itemProps}>
-                    <ImageUploader
+                    {imageFile === null && <ImageUploader
                         errorMessage={errorMessage}
                         onDrop={(file: File) => {
                             setImageFile(file);
-                        }}/>
+                        }}/>}
                 </FlexGridItem>
             </FlexGrid>
         </div>

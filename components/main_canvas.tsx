@@ -9,6 +9,8 @@ export interface MainCanvasTextProps {
     opacity: number;
     horizontal?: number;
     vertical?: number;
+    rectColor: string;
+    rectEnable: boolean;
 }
 
 
@@ -41,14 +43,52 @@ const MainCanvas: React.FC<{ imageSrc: string, textProps: MainCanvasTextProps }>
 
                 context.globalAlpha = textProps.opacity;
                 context.font = `${textProps.fontSize}px Josefin Slab`;
-                context.fillStyle = textProps.color;
-                context.textAlign = "center";
-                context.textBaseline = "Middle";
+                context.textAlign = "left";
+                context.textBaseline = "top";
 
-                const currText = toMultiLine(textProps.text);
+                const currText: string[] = toMultiLine(textProps.text);
+                let metrics = context.measureText(textProps.text);
+
+                let rectWidth = 0;
+                let rectHeight = 0;
+
+                if(textProps.rectEnable) {
+
+                    for (let i = 0; i < currText.length; i++) {
+                        const textMetricWidth = context.measureText(currText[i]).width;
+                        if (textMetricWidth > rectWidth) {
+                            rectWidth = textMetricWidth;
+                        }
+                        rectHeight += textProps.fontSize * 1.286;
+                    }
+
+                    rectWidth += textProps.fontSize;
+
+
+                    context.fillStyle = textProps.rectColor;
+
+                    context.fillRect(
+                        // @ts-ignore
+                        textProps.horizontal - textProps.fontSize / 2 || canvas.width / 2,
+                        // @ts-ignore
+                        textProps.vertical - textProps.fontSize || canvas.height / 2,
+                        // metrics.width + 20,
+                        rectWidth,
+                        // textProps.fontSize *  1.286
+                        rectHeight
+                    );
+                }
+
+                context.font = `${textProps.fontSize}px Josefin Slab`;
+                context.fillStyle = textProps.color;
+                context.textAlign = "left";
+                context.textBaseline = "middle";
+
+
                 let lineSpacing = textProps.fontSize;
 
-                let metrics = context.measureText(textProps.text);
+
+
 
                 // @ts-ignore
                 let x = textProps.horizontal || canvas.width/2;

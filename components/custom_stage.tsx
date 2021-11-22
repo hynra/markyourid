@@ -1,12 +1,16 @@
 import React from "react";
-import {Stage, Layer, Rect, Image} from 'react-konva';
+import {Image, Layer, Stage} from 'react-konva';
 import {useStyletron} from "baseui";
 import ConvaCustomText from "./conva_custom_text";
-import useImage from 'use-image';
 
 
-
-const CustomStage: React.FC<{ imgSrc: string, predefinedText: string }> = ({imgSrc, predefinedText}) => {
+const CustomStage: React.FC<{ imgSrc: string, predefinedText: string, getImage: Function }> = (
+    {
+        imgSrc,
+        predefinedText,
+        getImage
+    }
+) => {
 
     const [image, setImage] = React.useState<any>();
     const [css, theme] = useStyletron();
@@ -22,6 +26,17 @@ const CustomStage: React.FC<{ imgSrc: string, predefinedText: string }> = ({imgS
         x: 40,
         y: 65,
     });
+
+
+    const stageRef = React.useRef(null);
+
+    React.useEffect(() => {
+        getImage(() => handleExport);
+    }, [])
+
+    const handleExport = (): string => {
+        return stageRef.current.toDataURL({pixelRatio: 2});
+    };
 
 
     if (!image) {
@@ -59,6 +74,15 @@ const CustomStage: React.FC<{ imgSrc: string, predefinedText: string }> = ({imgS
     const parentRef = React.useRef(null);
     const [textSelected, setTextSelected] = React.useState(true);
 
+    function downloadURI(uri, name) {
+        let link = document.createElement('a');
+        link.download = name;
+        link.href = uri;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
     return (
         <>
             {image && <div ref={parentRef} id="stage-parent" className={css({
@@ -75,16 +99,19 @@ const CustomStage: React.FC<{ imgSrc: string, predefinedText: string }> = ({imgS
                         zIndex: -1
                     })}
                     ref={refHandler}
-                    id="canvas"
+                    id="canvas2"
                 />
                 {canvas &&
                 <Stage
+                    ref={stageRef}
                     // @ts-ignore
                     width={canvas.offsetWidth}
                     // @ts-ignore
                     height={canvas.offsetHeight}
                     onMouseDown={checkDeselect}
                     onTouchStart={checkDeselect}
+                    // scaleX={canvas.offsetWidth / canvas.width}
+                    // scaleY={canvas.offsetHeight / canvas.height}
                 >
                     <Layer>
                         <Image
@@ -93,7 +120,7 @@ const CustomStage: React.FC<{ imgSrc: string, predefinedText: string }> = ({imgS
                             // @ts-ignore
                             height={canvas.offsetHeight}
                             image={image}
-                            onClick={()=> setTextSelected(false)}
+                            onClick={() => setTextSelected(false)}
                             onTap={() => setTextSelected(false)}
                             ref={node => {
 

@@ -10,16 +10,16 @@ const AdvancedAccordion: React.FC<{onOpenCropWindow: Function, onOpenAdjustWindo
 ) => {
     return(
         <Accordion>
-            <Panel title="Advanced">
+            <Panel title="Tools">
                 <ButtonGroup
-                    overrides={{Root: {style: {alignItems: 'center', justifyContent: 'center', marginBottom: "14px"}}}}
+                    overrides={{Root: {style: {alignItems: 'center', justifyContent: 'center', marginBottom: "1px"}}}}
                 >
                     <Button startEnhancer={() => <ChevronRight  size={24} /> } kind={KIND.primary} onClick={() => onOpenCropWindow(true)}>Crop</Button>
                     <Button startEnhancer={() => <ChevronRight  size={24} /> } kind={KIND.primary} onClick={() => onOpenAdjustWindow(true)}>Adjust</Button>
                     <Button startEnhancer={() => <ChevronRight  size={24} /> } kind={KIND.primary} onClick={() => onOpenFilterOption(true)}>Filter</Button>
                 </ButtonGroup>
 
-                <Button
+                {/*<Button
                     overrides={{
                         BaseButton: {
                             style: {
@@ -32,7 +32,7 @@ const AdvancedAccordion: React.FC<{onOpenCropWindow: Function, onOpenAdjustWindo
                     kind={KIND.secondary}
                     startEnhancer={() => <ChevronRight  size={24} /> }
                     onClick={() => onOpenWmWindow(true)}
-                >Manual</Button>
+                >Manual</Button>*/}
 
             </Panel>
         </Accordion>

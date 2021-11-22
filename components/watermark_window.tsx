@@ -17,7 +17,14 @@ const WatermarkWindow: React.FC<{
       }) => {
 
     const [css, theme] = useStyletron();
+    const [getImage, setGetImage] = React.useState<Function>(null);
 
+
+    function handleExport() {
+        const url = getImage();
+        onWaterMarked(url);
+
+    }
 
     return (
         <Modal onClose={() => setIsOpen(false)} isOpen={isOpen} size='default'>
@@ -28,7 +35,13 @@ const WatermarkWindow: React.FC<{
                     width: '100%',
                     marginBottom: "14px"
                 })}>
-                    <CustomStage imgSrc={imageSrc} predefinedText={predefinedText}/>
+                    <CustomStage
+                        imgSrc={imageSrc}
+                        predefinedText={predefinedText}
+                        getImage={(newImage) => {
+                            setGetImage(newImage)
+                        }}
+                    />
                 </div>
                 <div>
 
@@ -39,6 +52,7 @@ const WatermarkWindow: React.FC<{
                     Cancel
                 </ModalButton>
                 <ModalButton onClick={() => {
+                    handleExport();
                     setIsOpen(false);
                 }}>Okay</ModalButton>
             </ModalFooter>

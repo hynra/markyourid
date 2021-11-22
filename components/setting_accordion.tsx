@@ -7,6 +7,7 @@ import {Button} from "baseui/button";
 import {Overflow} from "baseui/icon";
 import {Select} from "baseui/select";
 import {TwitterPicker} from 'react-color'
+import {Checkbox, LABEL_PLACEMENT, STYLE_TYPE} from "baseui/checkbox";
 
 
 export const colorSwatches = ['#4D4D4D',
@@ -35,9 +36,19 @@ export const positionOption = [
 
 const SettingAccordion: React.FC<{
     onFontSizeChanged: Function, onWmColoChanged: Function, onPositionChanged: Function,
-    onOpacityChanged: Function, imageSrc: string, onHorizontalPosChanged: Function, onVerticalPosChanged: Function
-}> = (
-    {onFontSizeChanged, onWmColoChanged, onPositionChanged, onOpacityChanged, imageSrc, onHorizontalPosChanged, onVerticalPosChanged}
+    onOpacityChanged: Function, imageSrc: string, onHorizontalPosChanged: Function, onVerticalPosChanged: Function,
+    onRectColorChanged: Function, onEnableRectChanged
+}> = ({
+          onFontSizeChanged,
+          onWmColoChanged,
+          onPositionChanged,
+          onOpacityChanged,
+          imageSrc,
+          onHorizontalPosChanged,
+          onVerticalPosChanged,
+          onEnableRectChanged,
+          onRectColorChanged
+      }
 ) => {
 
     const [fontSize, setFontSize] = React.useState(48);
@@ -47,6 +58,8 @@ const SettingAccordion: React.FC<{
     const [maxHorizontal, setMaxHorizontal] = React.useState(null);
     const [verticalPosition, setVerticalPosition] = React.useState(null);
     const [maxVertical, setMaxVertical] = React.useState(null);
+    const [reactColor, setRectColor] = React.useState('#000');
+    const [enableRect, setEnableRect] = React.useState(true);
 
     React.useEffect(() => {
         const img = new Image();
@@ -56,18 +69,18 @@ const SettingAccordion: React.FC<{
             const height = img.height;
             setMaxHorizontal(width);
             setMaxVertical(height);
-            onHorizontalPosChanged(width/2);
-            onVerticalPosChanged(height/2);
+            onHorizontalPosChanged(width / 2);
+            onVerticalPosChanged(height / 2);
             setHorizontalPosition(width / 2);
-            setVerticalPosition(height/2);
+            setVerticalPosition(height / 2);
         }
     }, [imageSrc]);
 
 
     return (
         <Accordion>
-            <Panel title="Sesuaikan">
-                <Label2>Atur Ukuran Huruf</Label2>
+            <Panel title="Customize">
+                <Label2>Font Size</Label2>
                 <Slider
                     value={[fontSize]}
                     onChange={({value}) => value && setFontSize(value[0])}
@@ -75,10 +88,10 @@ const SettingAccordion: React.FC<{
                         setFontSize(value[0])
                         onFontSizeChanged(value[0])
                     }}
-                    min={24}
-                    max={250}
+                    min={14}
+                    max={450}
                 />
-                <Label2>Atur Posisi Horizontal</Label2>
+                <Label2>Horizontal Position</Label2>
                 <Slider
                     value={[horizontalPosition]}
                     onChange={({value}) => value && setHorizontalPosition(value[0])}
@@ -89,7 +102,7 @@ const SettingAccordion: React.FC<{
                     min={0}
                     max={maxHorizontal}
                 />
-                <Label2>Atur Posisi Vertical</Label2>
+                <Label2>Vertical Position</Label2>
                 <Slider
                     value={[verticalPosition]}
                     onChange={({value}) => value && setVerticalPosition(value[0])}
@@ -100,7 +113,7 @@ const SettingAccordion: React.FC<{
                     min={0}
                     max={maxVertical}
                 />
-                <Label2>Atur Opacity</Label2>
+                <Label2>Opacity</Label2>
                 <Slider
                     value={[opacity * 100]}
                     onChange={({value}) => value && setOpacity(value[0] / 100)}
@@ -132,15 +145,72 @@ const SettingAccordion: React.FC<{
                                 style: {
                                     width: '100%',
                                     marginTop: "14px",
-                                    marginBottom: "14px"
+                                    marginBottom: "18px"
                                 }
                             }
                         }}
                         endEnhancer={() => <Overflow size={24}/>}
                     >
-                        Pilih Warna Huruf
+                        Select text color
                     </Button>
                 </StatefulPopover>
+                <Checkbox
+                    checked={enableRect}
+                    checkmarkType={STYLE_TYPE.toggle_round}
+                    onChange={e =>{
+                        // @ts-ignore
+                        setEnableRect(e.target.checked)
+                        // @ts-ignore
+                        onEnableRectChanged(e.target.checked)
+                    }}
+                    labelPlacement={LABEL_PLACEMENT.left}
+                    overrides={{
+                        Root: {
+                            style: {
+                                width: '100%',
+                                marginTop: "14px",
+                                marginBottom: "18px",
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }
+                        }
+                    }}
+                >
+                    With Text Background
+                </Checkbox>
+                {
+                    enableRect &&
+                    <StatefulPopover
+                        content={
+                            <TwitterPicker
+                                disableAlpha
+                                color={reactColor}
+                                triangle={"hide"}
+                                onChangeComplete={(color) => {
+                                    setRectColor(color.hex);
+                                    onRectColorChanged(color.hex);
+                                }}
+                                colors={colorSwatches}
+                            />
+                        }
+                        accessibilityType={'tooltip'}
+                    >
+                        <Button
+                            overrides={{
+                                BaseButton: {
+                                    style: {
+                                        width: '100%',
+                                        marginTop: "14px",
+                                        marginBottom: "18px"
+                                    }
+                                }
+                            }}
+                            endEnhancer={() => <Overflow size={24}/>}
+                        >
+                            Select background text color
+                        </Button>
+                    </StatefulPopover>
+                }
             </Panel>
         </Accordion>
     )

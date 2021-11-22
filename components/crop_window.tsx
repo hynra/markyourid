@@ -44,7 +44,7 @@ const CropWindow: React.FC<{ imageSrc: string, isOpen: boolean, setIsOpen: Funct
         return (
 
             <Modal onClose={() => setIsOpen(false)} isOpen={isOpen}>
-                <ModalHeader>Crop Foto E-KTP</ModalHeader>
+                <ModalHeader>Crop image to common identity card aspect ratio</ModalHeader>
                 <ModalBody>
                     <div>
                         <div className={css({
@@ -64,7 +64,7 @@ const CropWindow: React.FC<{ imageSrc: string, isOpen: boolean, setIsOpen: Funct
                                 rotation={rotation}
                             />
                         </div>
-                        <Label2>Atur Zoom</Label2>
+                        <Label2>Set Zoom</Label2>
                         <Slider
                             value={zoomValue}
                             onChange={({value}) => value && setZoomValue(value)}
@@ -72,7 +72,7 @@ const CropWindow: React.FC<{ imageSrc: string, isOpen: boolean, setIsOpen: Funct
                             min={1}
                             max={10}
                         />
-                        <Label2>Atur Rotasi</Label2>
+                        <Label2>Set Rotation</Label2>
                         <Slider
                             value={rotationValue}
                             onChange={({value}) => value && setRotationValue(value)}
