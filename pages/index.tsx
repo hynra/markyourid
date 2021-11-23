@@ -47,7 +47,6 @@ const Index: React.FC = () => {
     const [verticalPosition, setVerticalPosition] = React.useState(undefined);
 
 
-
     useEffect(() => {
         if (imageFile !== null) {
             let reader = new FileReader();
@@ -126,6 +125,7 @@ const Index: React.FC = () => {
                 imageSrc={imageSrc}
                 isOpen={isExportOpen}
                 setIsOpen={setIsExportOpen}
+                desc={currText}
             />
             <FlexGrid
                 flexGridColumnCount={1}
@@ -158,8 +158,8 @@ const Index: React.FC = () => {
                                         rectEnable: enableRect
                                     }
                                 } onImageResized={(uri) => {
-                                    setImageSrc(uri);
-                                    setPrevImageSrc(uri);
+                                setImageSrc(uri);
+                                setPrevImageSrc(uri);
                             }}/>
                         }
 
