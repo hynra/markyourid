@@ -19,6 +19,7 @@ import {SIZE, Textarea} from "baseui/textarea";
 import SettingAccordion, {PositionEnum, positionOption} from "../components/setting_accordion";
 import AdvancedAccordion from "../components/advanced_accordion";
 import MainCanvas from "../components/main_canvas";
+import CanvasResizer from "../components/canvas_resizer";
 
 
 const Index: React.FC = () => {
@@ -43,13 +44,19 @@ const Index: React.FC = () => {
     const [horizontalPosition, setHorizontalPosition] = React.useState(undefined);
     const [verticalPosition, setVerticalPosition] = React.useState(undefined);
 
+
+
     useEffect(() => {
         if (imageFile !== null) {
             let reader = new FileReader();
             reader.readAsDataURL(imageFile);
             reader.onload = () => {
-                setImageSrc(reader.result as string);
-                setPrevImageSrc(reader.result as string)
+                const img = new Image();
+                img.src = reader.result as string;
+                img.onload = () => {
+                    setImageSrc(reader.result as string);
+                    setPrevImageSrc(reader.result as string);
+                }
             }
         }
     }, [imageFile]);
@@ -70,6 +77,7 @@ const Index: React.FC = () => {
     return (
         <div>
             <HeaderNav/>
+
             <CropWindow
                 imageSrc={(prevImageSrc !== '') ? prevImageSrc : imageSrc}
                 isOpen={isCropOpen}
@@ -142,7 +150,10 @@ const Index: React.FC = () => {
                                         rectColor: rectColor,
                                         rectEnable: enableRect
                                     }
-                                }/>
+                                } onImageResized={(uri) => {
+                                    setImageSrc(uri);
+                                    setPrevImageSrc(uri);
+                            }}/>
                         }
 
                         <StyledBody>
@@ -194,6 +205,7 @@ const Index: React.FC = () => {
                         }}/>}
                 </FlexGridItem>
             </FlexGrid>
+
         </div>
     );
 };
