@@ -9,14 +9,15 @@ import {StatefulPopover} from "baseui/popover";
 import {Checkbox, LABEL_PLACEMENT, STYLE_TYPE} from "baseui/checkbox";
 import {Panel} from "baseui/accordion";
 import {downloadCanvasToImage, saveImageAsUrl} from "../common/filters";
-import {saveWm} from "../common/wm_model";
+import WmModel, {saveWm} from "../common/wm_model";
 
-const ExportWindow: React.FC<{ imageSrc: string, desc: string, isOpen: boolean, setIsOpen: Function }> = (
+const ExportWindow: React.FC<{ imageSrc: string, desc: string, isOpen: boolean, setIsOpen: Function, onImageSaved: Function }> = (
     {
         imageSrc,
         isOpen,
         setIsOpen,
-        desc
+        desc,
+        onImageSaved
     }
 ) => {
 
@@ -27,12 +28,14 @@ const ExportWindow: React.FC<{ imageSrc: string, desc: string, isOpen: boolean, 
     const downloadToLocal = () => {
         const url = saveImageAsUrl(document.getElementById('canvas'))
         downloadCanvasToImage(url);
-        saveWm({
+        const wmToSave: WmModel = {
             createdAt: new Date(),
             id: new Date().getTime().toString(),
             image: url,
             text: desc
-        });
+        }
+        saveWm(wmToSave);
+        onImageSaved(wmToSave);
 
     }
 
