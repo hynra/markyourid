@@ -20,6 +20,7 @@ import SettingAccordion, {PositionEnum, positionOption} from "../components/sett
 import AdvancedAccordion from "../components/advanced_accordion";
 import MainCanvas from "../components/main_canvas";
 import CanvasResizer from "../components/canvas_resizer";
+import ExportWindow from "../components/export_window";
 
 
 const Index: React.FC = () => {
@@ -32,6 +33,7 @@ const Index: React.FC = () => {
     const [isAdjustOpen, setIsAdjustOpen] = React.useState<boolean>(false);
     const [isFilterOpen, setIsFilterOpen] = React.useState<boolean>(false);
     const [isWMOpen, setIsWMOpen] = React.useState<boolean>(false);
+    const [isExportOpen, setIsExportOpen] = React.useState<boolean>(false);
     const [fontSize, setFontSize] = React.useState(48);
     const [wmColor, setWmColor] = React.useState('#fff')
     const [rectColor, setRectColor] = React.useState('#000');
@@ -120,6 +122,11 @@ const Index: React.FC = () => {
                 }}
                 predefinedText={currText}
             />
+            <ExportWindow
+                imageSrc={imageSrc}
+                isOpen={isExportOpen}
+                setIsOpen={setIsExportOpen}
+            />
             <FlexGrid
                 flexGridColumnCount={1}
                 flexGridColumnGap="scale800"
@@ -189,8 +196,7 @@ const Index: React.FC = () => {
                             <Button
                                 overrides={{BaseButton: {style: {width: '100%'}}}}
                                 onClick={() => {
-                                    // setIsWMOpen(true)
-                                    // applyWaterMark().then()
+                                    setIsExportOpen(true)
                                 }}>
                                 Export
                             </Button>
