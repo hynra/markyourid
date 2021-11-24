@@ -25,6 +25,8 @@ export const deleteWm = (wm: WmModel) => {
             return _wm;
         }
     })
+
+    console.log('delete  ', wms)
     set<WmModel[]>('wms',wms);
 }
 
