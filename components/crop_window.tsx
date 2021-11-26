@@ -5,9 +5,10 @@ import {Slider} from "baseui/slider";
 import {Display4, H6, Label2} from "baseui/typography";
 import {Modal, ModalBody, ModalButton, ModalFooter, ModalHeader} from "baseui/modal";
 import getCroppedImg from "../common/crop_image";
+import ImageUploader from "./image_uploader";
 
-const CropWindow: React.FC<{ imageSrc: string, isOpen: boolean, setIsOpen: Function, onCropped: Function }> =
-    ({imageSrc, isOpen, setIsOpen, onCropped}) => {
+const CropWindow: React.FC<{ imageSrc?: string, isOpen: boolean, setIsOpen: Function, onCropped: Function, ratio?: number }> =
+    ({imageSrc = null, isOpen, setIsOpen, onCropped, ratio = 19 / 12}) => {
 
         const [crop, setCrop] = React.useState({x: 0, y: 0});
         const [zoom, setZoom] = React.useState(1);
@@ -15,12 +16,9 @@ const CropWindow: React.FC<{ imageSrc: string, isOpen: boolean, setIsOpen: Funct
         const [css, theme] = useStyletron();
         const [zoomValue, setZoomValue] = React.useState([1]);
         const [rotationValue, setRotationValue] = React.useState([0]);
-        const [croppedAreaPixels, setCroppedAreaPixels] = React.useState<any>(null)
+        const [croppedAreaPixels, setCroppedAreaPixels] = React.useState<any>(null);
+        const [currentImageSrc, setCurrentImageSrc] = React.useState(null);
 
-
-        if (typeof window !== "undefined") {
-
-        }
 
         const onCropComplete = React.useCallback((croppedArea, croppedAreaPixels) => {
             setCroppedAreaPixels(croppedAreaPixels);
@@ -30,7 +28,7 @@ const CropWindow: React.FC<{ imageSrc: string, isOpen: boolean, setIsOpen: Funct
         const saveCroppedImage = React.useCallback(async () => {
             try {
                 const croppedImage = await getCroppedImg(
-                    imageSrc,
+                    (imageSrc !== null) ? imageSrc : currentImageSrc,
                     croppedAreaPixels,
                     rotation
                 )
@@ -46,7 +44,7 @@ const CropWindow: React.FC<{ imageSrc: string, isOpen: boolean, setIsOpen: Funct
             <Modal onClose={() => setIsOpen(false)} isOpen={isOpen}>
                 <ModalHeader>Crop image to common identity card aspect ratio</ModalHeader>
                 <ModalBody>
-                    <div>
+                    {(imageSrc !== null || currentImageSrc !== null)  && <div>
                         <div className={css({
                             position: 'relative',
                             width: '100%',
@@ -54,10 +52,10 @@ const CropWindow: React.FC<{ imageSrc: string, isOpen: boolean, setIsOpen: Funct
                             marginBottom: "14px"
                         })}>
                             <Cropper
-                                image={imageSrc}
+                                image={(imageSrc !== null) ? imageSrc : currentImageSrc}
                                 crop={crop}
                                 zoom={zoom}
-                                aspect={19 / 12}
+                                aspect={ratio}
                                 onCropChange={setCrop}
                                 onCropComplete={onCropComplete}
                                 onZoomChange={setZoom}
@@ -80,7 +78,22 @@ const CropWindow: React.FC<{ imageSrc: string, isOpen: boolean, setIsOpen: Funct
                             min={0}
                             max={360}
                         />
-                    </div>
+                    </div>}
+                    {
+                        !imageSrc && <ImageUploader
+                            errorMessage={null}
+                            onDrop={(file: File) => {
+                                let reader = new FileReader();
+                                reader.readAsDataURL(file);
+                                reader.onload = () => {
+                                    const img = new Image();
+                                    img.src = reader.result as string;
+                                    img.onload = () => {
+                                        setCurrentImageSrc(reader.result as string);
+                                    }
+                                }
+                            }}/>
+                    }
                 </ModalBody>
                 <ModalFooter>
                     <ModalButton kind="tertiary" onClick={() => setIsOpen(false)}>

@@ -9,6 +9,7 @@ import AvatarPopUp from "./avatar_popup";
 import {Accordion, Panel} from "baseui/accordion";
 import {ButtonGroup} from "baseui/button-group";
 import InitialPopUp from "./initials_popup";
+import CropWindow from "./crop_window";
 
 export enum AvatarMethod {
     Generation,
@@ -34,6 +35,7 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string }> = (
     const [selfImage, setSelfImage] = React.useState<any>(null);
     const [avatarPopUpOpened, setAvatarPopUpOpened] = React.useState<boolean>(false);
     const [initialsPopUpOpened, setInitialsPopUpOpened] = React.useState<boolean>(false);
+    const [uploadPopUpOpened, setUploadPopUpOpened] = React.useState<boolean>(false);
     const [selectedAvatar, setSelectedAvatar] = React.useState<CurrentAvatar>(null);
 
     const refHandler = (currCanvas) => {
@@ -122,6 +124,16 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string }> = (
                     })
                 }}
             />
+            <CropWindow
+                isOpen={uploadPopUpOpened}
+                setIsOpen={setUploadPopUpOpened}
+                ratio={1}
+                onCropped={(newImage => {
+                    setSelectedAvatar({
+                        Method: AvatarMethod.Upload,
+                        url: newImage
+                    })
+                })} />
             <div className={css({
                 position: 'relative',
                 width: '100%',
@@ -176,7 +188,7 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string }> = (
                                 >
                                     <Button onClick={() => setAvatarPopUpOpened(true)}>Avatar Generation</Button>
                                     <Button onClick={() => setInitialsPopUpOpened(true)}>Initials</Button>
-                                    <Button>Upload Avatar</Button>
+                                    <Button onClick={() => setUploadPopUpOpened(true)}>Upload Avatar</Button>
                                 </ButtonGroup>
                             </Panel>
 
