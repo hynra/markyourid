@@ -4,6 +4,8 @@ import WmModel, {deleteWm, getWms} from "../common/wm_model";
 import {Card, StyledAction, StyledBody, StyledThumbnail} from "baseui/card";
 import {Button, SHAPE} from "baseui/button";
 import {Label2} from "baseui/typography";
+import {ButtonGroup} from "baseui/button-group";
+import Router from "next/router";
 // import ls from "local-storage";
 
 const SavedWm: React.FC<{ triggerReload: Function }> = ({triggerReload}) => {
@@ -12,7 +14,8 @@ const SavedWm: React.FC<{ triggerReload: Function }> = ({triggerReload}) => {
     const [results, setResults] = React.useState<WmModel[]>([]);
 
     React.useEffect(() => {
-        triggerReload(() => triggerToReload);
+        if (triggerReload !== null)
+            triggerReload(() => triggerToReload);
         if (results.length === 0) {
             const tmpWms: WmModel[] = getWms();
             if (tmpWms !== null) {
@@ -34,6 +37,10 @@ const SavedWm: React.FC<{ triggerReload: Function }> = ({triggerReload}) => {
         if (tmpWms !== null) {
             setResults(tmpWms);
         }
+    }
+
+    const uploadAsNFT = (wmiD: string) => {
+        Router.push(`to-nft/${wmiD}`).then();
     }
 
     return (
@@ -67,9 +74,14 @@ const SavedWm: React.FC<{ triggerReload: Function }> = ({triggerReload}) => {
                                     }
                                 </StyledBody>
                                 <StyledAction>
-                                    <Button shape={SHAPE.pill} onClick={() => removeWm(result)}>
-                                        Remove
-                                    </Button>
+                                    <ButtonGroup>
+                                        <Button shape={SHAPE.pill} onClick={() => removeWm(result)}>
+                                            Remove
+                                        </Button>
+                                        {!result.nft && <Button shape={SHAPE.pill} onClick={() => uploadAsNFT(result.id)}>
+                                            Mint as NFT
+                                        </Button>}
+                                    </ButtonGroup>
                                 </StyledAction>
                             </Card>
                         </div>

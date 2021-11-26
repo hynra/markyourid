@@ -272,7 +272,7 @@ export const addFilters = (filter: FilterMode, img: any): Promise<any> => {
     })
 }
 
-export const saveImageAsUrl = (canvas: any): any => {
+export const saveImageAsUrl = (canvas: any, format = "image/jpeg"): any => {
     return canvas.toDataURL("image/jpeg", 0.8);
 }
 

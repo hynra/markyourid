@@ -23,6 +23,7 @@ const ExportWindow: React.FC<{ imageSrc: string, desc: string, isOpen: boolean, 
 
     const [enableSave, setEnableSave] = React.useState<boolean>(true);
     const [downloaded, setDownloaded] = React.useState<boolean>(false);
+    const [exportedWm, setExportedWm] = React.useState<string>();
 
 
     const downloadToLocal = () => {
@@ -34,8 +35,12 @@ const ExportWindow: React.FC<{ imageSrc: string, desc: string, isOpen: boolean, 
             image: url,
             text: desc
         }
+        setExportedWm(wmToSave.id)
         saveWm(wmToSave);
         onImageSaved(wmToSave);
+    }
+
+    const toNft = () => {
 
     }
 
@@ -85,7 +90,7 @@ const ExportWindow: React.FC<{ imageSrc: string, desc: string, isOpen: boolean, 
                         Download Image
                     </Button>
                     {
-                        downloaded &&
+                        downloaded && enableSave &&
                         <Button
                             overrides={{
                                 BaseButton: {
