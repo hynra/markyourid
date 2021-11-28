@@ -16,7 +16,7 @@ const CommonImagePopUp: React.FC<{isOpen: boolean, setIsOpen: Function, imageSrc
 
     return(<>
         <Modal onClose={() => setIsOpen(false)} isOpen={isOpen}>
-            <ModalHeader>Export Image</ModalHeader>
+            <ModalHeader>Image</ModalHeader>
             <ModalBody>
 
                 <div className={css({

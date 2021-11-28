@@ -38,15 +38,38 @@ const ToNFTId: React.FC = () => {
     const [currText, setCurrText] = React.useState(
         `Description: Write description\nDate: ${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear()}`
     );
+    const [account, setAccount] = React.useState<any>(null);
+
 
     const initRarepress = async (): Promise<any> => {
         try {
             const rarepress = new Rareterm();
-            await rarepress.init({host: "https://eth.rarenet.app/v1"});
+            const acc = await rarepress.init({host: "https://eth.rarenet.app/v1"});
+            setAccount(acc);
             return rarepress;
         } catch (e) {
-            console.error("errx", e)
             throw  e;
+        }
+    }
+
+    const uploadNft = async (image: string) => {
+        try {
+            const cid = await rarepressObject.fs.add(image);
+            let token = await rarepressObject.token.create({
+                type: "ERC721",
+                metadata: {
+                    name: "No Name",
+                    description: "Generated for securing ID Card submission, curated by" + account +". "+ currentWm.text,
+                    image: "/ipfs/" + cid,
+                    attributes: [
+                        { trait_type: "powered by", value: "https://markyour.id" },
+                        { trait_type: "curator", value: account },
+                        { trait_type: "date", value: new Date().toUTCString() },
+                    ]
+                },
+            })
+        }catch (e) {
+            console.log(e);
         }
     }
 

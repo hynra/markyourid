@@ -13,9 +13,10 @@ import CropWindow from "./crop_window";
 import {Checkbox, LABEL_PLACEMENT, STYLE_TYPE} from "baseui/checkbox";
 import {ModalBody} from "baseui/modal";
 import WmModel from "../common/wm_model";
-import {ChevronRight} from "baseui/icon";
+import {ChevronRight, Upload} from "baseui/icon";
 import CommonImagePopUp from "./common_image_popup";
 import {downloadCanvasToImage, saveImageAsUrl} from "../common/filters";
+import CommonPopUp from "./common_popup";
 
 export enum AvatarMethod {
     Generation,
@@ -51,6 +52,8 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currMode
     const [mainBackground, setMainBackground] = React.useState(NON_EKTP_IMAGE);
     const [isEktp, setIsEktp] = React.useState(false);
     const [origImgWindowOpened, setOrigImgWindowOpened] = React.useState(false);
+    const [commonWindowOpened, setCommonWindowOpened] = React.useState(false);
+    const [title, setTitle] = React.useState(`Identity Card submission for <service-name>`);
 
     const refHandler = (currCanvas) => {
         if (!currCanvas) return;
@@ -66,6 +69,10 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currMode
 
     const saveAvatarToLocal = () => {
         downloadCanvasToImage(selectedAvatar.url);
+    }
+
+    const submitNft = () => {
+
     }
 
 
@@ -120,6 +127,7 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currMode
     }, [canvas, currText, additionalText, selfImage, selectedAvatar, currentText, mainBackground])
 
 
+
     return (
         <>
             <AvatarPopUp
@@ -158,6 +166,12 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currMode
                     setIsOpen={setOrigImgWindowOpened}
                     imageSrc={currModel.image}
                 />
+                <CommonPopUp
+                    isOpen={commonWindowOpened}
+                    setIsOpen={setCommonWindowOpened}
+                    text="The image will be uploaded (Lazy Minting) to the Rarible platform at no cost, are you sure want to continue?"
+                    onAccepted={submitNft}
+                />
             <div className={css({
                 position: 'relative',
                 width: '100%',
@@ -175,8 +189,15 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currMode
                             ref={refHandler}
                             id="to-nft-canvas"
                         />
+                        <Label2 marginBottom="scale100">NFT title</Label2>
+                        <Paragraph2 marginTop="scale100">It will be used to name your NFT on the marketplace</Paragraph2>
+                        <Input
+                            value={title}
+                            // @ts-ignore
+                            onChange={e => setTitle(e.target.value)}
+                        />
 
-                        <Label2 marginBottom="scale100">Main Text</Label2>
+                        <Label2 marginBottom="scale100" marginTop="scale500">Main Text</Label2>
                         <Paragraph2 marginTop="scale100">Please keep the Main Text similar to the original
                             text</Paragraph2>
 
@@ -293,8 +314,22 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currMode
 
                                 </ButtonGroup>
                             </Panel>
-
                         </Accordion>
+                        <Button
+                            overrides={{
+                                BaseButton: {
+                                    style: {
+                                        width: '100%',
+                                        marginTop: "14px",
+                                        marginBottom: "18px"
+                                    }
+                                }
+                            }}
+                            endEnhancer={() => <Upload size={24}/>}
+                            onClick={() => setCommonWindowOpened(true)}
+                        >
+                            Submit NFT Version
+                        </Button>
                     </>
                 }
             </div>

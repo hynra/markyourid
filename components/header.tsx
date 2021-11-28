@@ -3,6 +3,7 @@ import {StyledLink} from "baseui/link";
 import {Button} from "baseui/button";
 import * as React from "react";
 import {useStyletron} from "baseui";
+import {Label2} from "baseui/typography";
 
 const HeaderNav: React.FC = () => {
 
@@ -12,10 +13,10 @@ const HeaderNav: React.FC = () => {
         <div>
             <HeaderNavigation>
                 <StyledNavigationList $align={ALIGN.left}>
-                    <StyledNavigationItem>Uber</StyledNavigationItem>
+                    <StyledNavigationItem><Label2>MarkYourID</Label2></StyledNavigationItem>
                 </StyledNavigationList>
                 <StyledNavigationList $align={ALIGN.center} />
-                <StyledNavigationList $align={ALIGN.right}>
+                {/*<StyledNavigationList $align={ALIGN.right}>
                     <StyledNavigationItem>
                         <StyledLink href="#basic-link1">
                             Tab Link One
@@ -26,7 +27,7 @@ const HeaderNav: React.FC = () => {
                             Tab Link Two
                         </StyledLink>
                     </StyledNavigationItem>
-                </StyledNavigationList>
+                </StyledNavigationList>*/}
             </HeaderNavigation>
         </div>
     );
