@@ -7,8 +7,15 @@ import {Modal, ModalBody, ModalButton, ModalFooter, ModalHeader} from "baseui/mo
 import getCroppedImg from "../common/crop_image";
 import ImageUploader from "./image_uploader";
 
-const CropWindow: React.FC<{ imageSrc?: string, isOpen: boolean, setIsOpen: Function, onCropped: Function, ratio?: number }> =
-    ({imageSrc = null, isOpen, setIsOpen, onCropped, ratio = 19 / 12}) => {
+const CropWindow: React.FC<{ imageSrc?: string, isOpen: boolean, setIsOpen: Function, onCropped: Function, ratio?: number, title?: string }> =
+    ({
+         imageSrc = null,
+         isOpen,
+         setIsOpen,
+         onCropped,
+         ratio = 19 / 12,
+         title = "Crop image to common identity card aspect ratio",
+     }) => {
 
         const [crop, setCrop] = React.useState({x: 0, y: 0});
         const [zoom, setZoom] = React.useState(1);
@@ -42,9 +49,9 @@ const CropWindow: React.FC<{ imageSrc?: string, isOpen: boolean, setIsOpen: Func
         return (
 
             <Modal onClose={() => setIsOpen(false)} isOpen={isOpen}>
-                <ModalHeader>Crop image to common identity card aspect ratio</ModalHeader>
+                <ModalHeader>{title}</ModalHeader>
                 <ModalBody>
-                    {(imageSrc !== null || currentImageSrc !== null)  && <div>
+                    {(imageSrc !== null || currentImageSrc !== null) && <div>
                         <div className={css({
                             position: 'relative',
                             width: '100%',

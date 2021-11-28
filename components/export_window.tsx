@@ -10,6 +10,7 @@ import {Checkbox, LABEL_PLACEMENT, STYLE_TYPE} from "baseui/checkbox";
 import {Panel} from "baseui/accordion";
 import {downloadCanvasToImage, saveImageAsUrl} from "../common/filters";
 import WmModel, {saveWm} from "../common/wm_model";
+import Router from "next/router";
 
 const ExportWindow: React.FC<{ imageSrc: string, desc: string, isOpen: boolean, setIsOpen: Function, onImageSaved: Function }> = (
     {
@@ -41,7 +42,7 @@ const ExportWindow: React.FC<{ imageSrc: string, desc: string, isOpen: boolean, 
     }
 
     const toNft = () => {
-
+        Router.push(`to-nft/${exportedWm}`).then();
     }
 
     return (
@@ -101,9 +102,7 @@ const ExportWindow: React.FC<{ imageSrc: string, desc: string, isOpen: boolean, 
                                     }
                                 }
                             }}
-                            onClick={() => {
-
-                            }}
+                            onClick={toNft}
                             endEnhancer={() => <Upload size={24}/>}
                         >
                             Create NFT Version

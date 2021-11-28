@@ -40,7 +40,7 @@ const MainEditor: React.FC<{onImageSavedToLocal: Function}> = ({onImageSavedToLo
     const [enableRect, setEnableRect] = React.useState(true);
     const [position, setPosition] = React.useState([positionOption[0]]);
     const [currText, setCurrText] = React.useState(
-        `Description: Write description\nDate: ${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear()}`
+        `Desc: Write description\nDate: ${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear()}`
     );
     const [opacity, setOpacity] = React.useState(0.5);
     const [horizontalPosition, setHorizontalPosition] = React.useState(undefined);

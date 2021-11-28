@@ -39,7 +39,7 @@ const InitialPopUp: React.FC<{ isOpen: boolean, setIsOpen: Function, onInitialSe
 
     const onPreviousAvatar = () => {
         let tempSeed: string = ""
-        if(seed.length <= 1){
+        if (seed.length <= 1) {
             tempSeed = "";
         } else {
             tempSeed = seed.substring(0, seed.length - 1);
@@ -124,7 +124,20 @@ const InitialPopUp: React.FC<{ isOpen: boolean, setIsOpen: Function, onInitialSe
                                 placeholder="Set Your Initials"
                                 clearOnEscape
                             />
-                            <Button onClick={generateInitialsImage}>Generate</Button>
+                            <Button
+                                onClick={generateInitialsImage}
+                                overrides={{
+                                    BaseButton: {
+                                        style: {
+                                            width: '100%',
+                                            marginTop: "14px",
+                                            marginBottom: "18px"
+                                        }
+                                    }
+                                }}
+                            >
+                                Generate
+                            </Button>
 
                         </div>
                     </div>

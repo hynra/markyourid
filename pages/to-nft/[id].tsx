@@ -134,6 +134,7 @@ const ToNFTId: React.FC = () => {
                     {MetamaskState.AVAILABLE && accountAddress && <ToNftCanvas
                         accountAddress={accountAddress}
                         currText={currText}
+                        currModel={currentWm}
                     />}
 
                 </div>

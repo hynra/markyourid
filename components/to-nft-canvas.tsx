@@ -1,15 +1,21 @@
 import React from "react";
 import {useStyletron} from "baseui";
-import {Label2} from "baseui/typography";
+import {Label1, Label2, Paragraph2, Paragraph4} from "baseui/typography";
 import {SIZE, Textarea} from "baseui/textarea";
 import {StyledBody} from "baseui/card";
 import {Input} from "baseui/input";
-import {Button} from "baseui/button";
+import {Button, KIND} from "baseui/button";
 import AvatarPopUp from "./avatar_popup";
 import {Accordion, Panel} from "baseui/accordion";
 import {ButtonGroup} from "baseui/button-group";
 import InitialPopUp from "./initials_popup";
 import CropWindow from "./crop_window";
+import {Checkbox, LABEL_PLACEMENT, STYLE_TYPE} from "baseui/checkbox";
+import {ModalBody} from "baseui/modal";
+import WmModel from "../common/wm_model";
+import {ChevronRight} from "baseui/icon";
+import CommonImagePopUp from "./common_image_popup";
+import {downloadCanvasToImage, saveImageAsUrl} from "../common/filters";
 
 export enum AvatarMethod {
     Generation,
@@ -22,10 +28,14 @@ interface CurrentAvatar {
     Method: AvatarMethod,
 }
 
-const ToNftCanvas: React.FC<{ accountAddress: string, currText: string }> = (
+const NON_EKTP_IMAGE = "/mock0.png";
+const EKTP_IMAGE = "/mock1.png";
+
+const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currModel?: WmModel }> = (
     {
         accountAddress,
-        currText
+        currText,
+        currModel
     }
 ) => {
 
@@ -37,6 +47,10 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string }> = (
     const [initialsPopUpOpened, setInitialsPopUpOpened] = React.useState<boolean>(false);
     const [uploadPopUpOpened, setUploadPopUpOpened] = React.useState<boolean>(false);
     const [selectedAvatar, setSelectedAvatar] = React.useState<CurrentAvatar>(null);
+    const [currentText, setCurrentText] = React.useState(currText);
+    const [mainBackground, setMainBackground] = React.useState(NON_EKTP_IMAGE);
+    const [isEktp, setIsEktp] = React.useState(false);
+    const [origImgWindowOpened, setOrigImgWindowOpened] = React.useState(false);
 
     const refHandler = (currCanvas) => {
         if (!currCanvas) return;
@@ -50,11 +64,15 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string }> = (
         return textArr;
     }
 
+    const saveAvatarToLocal = () => {
+        downloadCanvasToImage(selectedAvatar.url);
+    }
+
 
     React.useEffect(() => {
         if (canvas) {
             const img = new Image();
-            img.src = '/mock0.png';
+            img.src = mainBackground;
             img.onload = function () {
                 // @ts-ignore
                 let context = canvas.getContext("2d");
@@ -73,7 +91,7 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string }> = (
                 context.fillText(accountAddress, (canvas.width / 2) - (textWidth / 2), 80);
 
 
-                const texts: string[] = toMultiLine(currText + '\n' + additionalText);
+                const texts: string[] = toMultiLine(currentText + '\n' + additionalText);
                 let lineSpacing = 25;
                 let x = 50;
                 let y = 185;
@@ -99,7 +117,7 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string }> = (
 
         }
 
-    }, [canvas, currText, additionalText, selfImage, selectedAvatar])
+    }, [canvas, currText, additionalText, selfImage, selectedAvatar, currentText, mainBackground])
 
 
     return (
@@ -127,13 +145,19 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string }> = (
             <CropWindow
                 isOpen={uploadPopUpOpened}
                 setIsOpen={setUploadPopUpOpened}
+                title="Upload & crop your avatar"
                 ratio={1}
                 onCropped={(newImage => {
                     setSelectedAvatar({
                         Method: AvatarMethod.Upload,
                         url: newImage
                     })
-                })} />
+                })}/>
+                <CommonImagePopUp
+                    isOpen={origImgWindowOpened}
+                    setIsOpen={setOrigImgWindowOpened}
+                    imageSrc={currModel.image}
+                />
             <div className={css({
                 position: 'relative',
                 width: '100%',
@@ -141,6 +165,7 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string }> = (
             })}>
                 {
                     <>
+                        <Label1 marginBottom="scale800">Create NFT Version</Label1>
                         <canvas
                             className={css({
                                 position: 'relative',
@@ -150,17 +175,43 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string }> = (
                             ref={refHandler}
                             id="to-nft-canvas"
                         />
-                        <Label2 marginBottom="14px">Main Text</Label2>
+
+                        <Label2 marginBottom="scale100">Main Text</Label2>
+                        <Paragraph2 marginTop="scale100">Please keep the Main Text similar to the original
+                            text</Paragraph2>
+
                         <Textarea
-                            value={currText}
+                            value={currentText}
                             size={SIZE.compact}
-                            disabled
+                            // disabled
                             // @ts-ignore
-                            onChange={e => setCurrText(e.target.value)}
+                            onChange={e => setCurrentText(e.target.value)}
+                            onKeyPress={(e) => {
+                                const re = /[ \\n]+/g;
+                                if (!re.test(e.key)) {
+                                    e.preventDefault();
+                                }
+                            }}
+                            onKeyDown={(evt => {
+                                const t = evt.target;
+                                if (evt.keyCode === 8) {
+                                    // @ts-ignore
+                                    const deletedChar = t.value[t.selectionStart - 1];
+                                    if (deletedChar !== "\n" && deletedChar !== " ") {
+                                        evt.preventDefault()
+                                    }
+                                } else if (evt.keyCode === 46) {
+                                    // @ts-ignore
+                                    const deletedChar = t.value[t.selectionStart];
+                                    if (deletedChar !== "\n" && deletedChar !== " ") {
+                                        evt.preventDefault()
+                                    }
+                                }
+                            })}
                             placeholder="Controlled Input"
                             clearOnEscape
                         />
-                        <Label2 marginBottom="14px">Additional Text</Label2>
+                        <Label2 marginBottom="14px" marginTop="14px">Additional Text</Label2>
                         <Input
                             value={additionalText}
                             // @ts-ignore
@@ -189,6 +240,57 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string }> = (
                                     <Button onClick={() => setAvatarPopUpOpened(true)}>Avatar Generation</Button>
                                     <Button onClick={() => setInitialsPopUpOpened(true)}>Initials</Button>
                                     <Button onClick={() => setUploadPopUpOpened(true)}>Upload Avatar</Button>
+                                </ButtonGroup>
+                            </Panel>
+                            <Panel title="Misc.">
+                                <Checkbox
+                                    checked={isEktp}
+                                    checkmarkType={STYLE_TYPE.toggle_round}
+                                    onChange={e => {
+                                        // @ts-ignore
+                                        const isEnable = e.target.checked;
+                                        setIsEktp(isEnable)
+                                        if (isEnable === true) {
+                                            setMainBackground(EKTP_IMAGE);
+                                        } else setMainBackground(NON_EKTP_IMAGE);
+                                    }}
+                                    labelPlacement={LABEL_PLACEMENT.left}
+                                    overrides={{
+                                        Root: {
+                                            style: {
+                                                width: '100%',
+                                                marginTop: "2px",
+                                                marginBottom: "2px",
+                                                alignItems: 'center',
+                                                justifyContent: 'center'
+                                            }
+                                        }
+                                    }}
+                                >
+                                    Is E-KTP (Indonesia E-ID Card)?
+                                </Checkbox>
+                                <ButtonGroup
+                                    overrides={{Root: {style: {alignItems: 'center', justifyContent: 'center', marginTop: "14px"}}}}
+                                >
+                                    <Button
+                                        startEnhancer={() => <ChevronRight  size={24} /> }
+                                        kind={KIND.primary}
+                                        onClick={() => setOrigImgWindowOpened(true)}
+                                    >
+                                        View Original Image
+                                    </Button>
+                                    {
+                                        selectedAvatar &&
+                                        <Button
+                                            startEnhancer={() => <ChevronRight size={24}/>}
+                                            kind={KIND.primary}
+                                            onClick={saveAvatarToLocal}
+                                        >
+                                            Download
+                                            Avatar Image
+                                        </Button>
+                                    }
+
                                 </ButtonGroup>
                             </Panel>
 
