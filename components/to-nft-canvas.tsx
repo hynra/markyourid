@@ -32,11 +32,12 @@ interface CurrentAvatar {
 const NON_EKTP_IMAGE = "/mock0.png";
 const EKTP_IMAGE = "/mock1.png";
 
-const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currModel?: WmModel }> = (
+const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currModel?: WmModel, onPublish: Function }> = (
     {
         accountAddress,
         currText,
-        currModel
+        currModel,
+        onPublish
     }
 ) => {
 
@@ -72,7 +73,8 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currMode
     }
 
     const submitNft = () => {
-
+        const url = saveImageAsUrl(canvas);
+        onPublish(title, url, additionalText);
     }
 
 
@@ -87,6 +89,7 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currMode
                 canvas.width = img.width;
                 // @ts-ignore
                 canvas.height = img.height;
+                context.fillStyle = "white";
                 context.drawImage(img, 0, 0, img.width, img.height);
 
 
