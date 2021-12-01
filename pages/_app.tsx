@@ -3,6 +3,7 @@ import App from 'next/app';
 import {Provider as StyletronProvider} from 'styletron-react';
 import {LightTheme, BaseProvider} from 'baseui';
 import {styletron} from '../styletron';
+import {SnackbarProvider,} from 'baseui/snackbar';
 
 export default class MyApp extends App {
     render() {
@@ -10,7 +11,9 @@ export default class MyApp extends App {
         return (
             <StyletronProvider value={styletron}>
                 <BaseProvider theme={LightTheme}>
-                    <Component {...pageProps} />
+                    <SnackbarProvider>
+                        <Component {...pageProps} />
+                    </SnackbarProvider>
                 </BaseProvider>
             </StyletronProvider>
         );

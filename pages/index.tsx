@@ -9,6 +9,7 @@ import {Block, BlockProps} from 'baseui/block';
 import {Card, StyledBody} from 'baseui/card';
 import {FlexGrid, FlexGridItem} from "baseui/flex-grid";
 import SavedWm from "../components/saved_wm";
+import {useRouter} from "next/router";
 
 const itemProps: BlockProps = {
     display: 'flex',
@@ -18,12 +19,16 @@ const itemProps: BlockProps = {
 
 const Index: React.FC = () => {
     const [css, theme] = useStyletron();
-    const [wms, setWms] = React.useState<WmModel[]>([]);
-    const [activeKey, setActiveKey] = React.useState<React.Key>(0);
+    const router = useRouter();
+    const { tab } = router.query;
+    const selectedTab = (tab === "1") ? 1 : 0;
+    const [activeKey, setActiveKey] = React.useState<React.Key>(selectedTab);
     const [triggerReloadResults, setTriggerReloadResults] = React.useState<Function>(null)
 
+    React.useEffect(() => {
+        setActiveKey(selectedTab);
+    }, [tab])
 
-    // @ts-ignore
     return (
         <div>
             <HeaderNav/>

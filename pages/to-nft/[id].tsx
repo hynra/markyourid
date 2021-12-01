@@ -6,12 +6,17 @@ import {useStyletron} from "baseui";
 import * as Rareterm from "rareterm";
 // @ts-ignore
 import detectEthereumProvider from '@metamask/detect-provider'
-import {Modal, ModalBody, ModalButton, ModalFooter, ModalHeader} from "baseui/modal";
 import Router, {useRouter} from 'next/router'
 import {Spinner} from "baseui/spinner";
 import ToNftCanvas from "../../components/to-nft-canvas";
 import WmModel, {BlockChainType, getWmById, saveWm} from "../../common/wm_model";
 import {uploadBase64Image} from "../../common/helper";
+import {Check, Delete} from "baseui/icon";
+import {
+    useSnackbar,
+    DURATION,
+} from 'baseui/snackbar';
+import CommonPopUp from "../../components/common_popup";
 
 
 const itemProps: BlockProps = {
@@ -32,11 +37,13 @@ const ToNFTId: React.FC = () => {
     const router = useRouter();
     const {id: wmId} = router.query;
 
+    const {enqueue, dequeue} = useSnackbar();
+
     const [css, theme] = useStyletron();
     const [rarepressObject, setRarepressObject] = React.useState<any>(null);
     const [metamaskNotFound, setMetamaskNotFound] = React.useState<MetamaskState>(MetamaskState.LOADING);
     const [accountAddress, setAccountAddress] = React.useState<string>();
-    const [currentWm, setCurrentWm] = React.useState<WmModel>(null);
+    const [currentWm, setCurrentWm] = React.useState<WmModel>(() => getWmById(wmId));
     const [currText, setCurrText] = React.useState(
         `Description: Write description\nDate: ${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear()}`
     );
@@ -58,10 +65,17 @@ const ToNFTId: React.FC = () => {
     }
 
     const uploadNft = async (image: string, title: string, additionalText: string) => {
+
+        enqueue(
+            {
+                message: 'Upload your NFT to Rarible, please wait...',
+                progress: true,
+            },
+            DURATION.infinite,
+        );
+
         try {
             setLoading(true);
-
-
             const imageUrl = await uploadBase64Image(image);
             const cid = await rarepressObject.fs.add(imageUrl);
             let token = await rarepressObject.token.create({
@@ -82,17 +96,49 @@ const ToNFTId: React.FC = () => {
             await rarepressObject.fs.push(cid)
             await rarepressObject.fs.push(token.tokenURI)
             let sent = await rarepressObject.token.send(token)
-            setFinalToken(sent.id);
-            setFinalUrl("https://rarible.com/token/" + sent.id);
 
+            dequeue();
+            enqueue({
+                message: 'NFT Uploaded',
+                startEnhancer: ({size}) => <Check size={size}/>,
+            });
             setLoading(false);
+
+            setFinalStatus(sent.id);
+
         } catch (e) {
             console.log(e);
+            dequeue();
             setLoading(false);
+            enqueue({
+                message: 'Oops! Something went wrong, try again later.',
+                startEnhancer: ({size}) => <Delete size={size}/>,
+            });
         }
     }
 
+    const setFinalStatus = (token: string) => {
+        const raribleUrl = "https://rarible.com/token/" + token
+        setFinalToken(token);
+        setFinalUrl(raribleUrl);
+        const tmpWm = {
+            ...currentWm,
+            nft: token,
+            nftUrl: raribleUrl,
+            blockChain: BlockChainType.Ethereum
+        };
+        saveWm(tmpWm);
+        setCurrentWm(tmpWm);
+        Router.push('/?tab=1').then();
+
+    }
+
     React.useEffect(() => {
+
+        if (!wmId) {
+            return;
+        }
+
         if (rarepressObject === null) {
             detectEthereumProvider().then((provider) => {
                 if (!provider) {
@@ -121,40 +167,24 @@ const ToNFTId: React.FC = () => {
             }
         }
 
-        if(finalToken && finalUrl && currentWm?.nft === null){
-            const tmpWm = currentWm;
-            tmpWm.nft = finalToken;
-            tmpWm.nftUrl = finalUrl;
-            tmpWm.blockChain = BlockChainType.Ethereum;
-            saveWm(tmpWm);
-            setCurrentWm(tmpWm);
-        }
 
-        if(currentWm?.nft){
-            Router.push('/').then();
-        }
-
-    }, [finalToken, finalUrl, currentWm])
+    }, [finalToken, finalUrl, currentWm, wmId])
 
     return (<>
+
         <HeaderNav/>
 
-        <Modal onClose={() => {
 
-        }}
-               isOpen={metamaskNotFound === MetamaskState.NOTFOUND}
-               closeable={false}
-        >
-            <ModalHeader>Metamask Not Found</ModalHeader>
-            <ModalBody>
-                Please install Metamask in your browser to access this page
-            </ModalBody>
-            <ModalFooter>
-                <ModalButton onClick={() => {
-                    Router.push('/').then();
-                }}>Okay</ModalButton>
-            </ModalFooter>
-        </Modal>
+        <CommonPopUp
+            isOpen={metamaskNotFound === MetamaskState.NOTFOUND}
+            setIsOpen={null}
+            text="Please install Metamask in your browser to access this page"
+            onAccepted={() => {
+                Router.push('/').then();
+            }}
+            isClosable={false}
+            modalInfo="Metamask Not Found"
+        />
 
         <FlexGrid
             flexGridColumnCount={[1]}
@@ -187,7 +217,7 @@ const ToNFTId: React.FC = () => {
                         />
                     }
 
-                    {MetamaskState.AVAILABLE && accountAddress && !isLoading &&
+                    {MetamaskState.AVAILABLE && accountAddress && !isLoading && currentWm &&
                     <ToNftCanvas
                         accountAddress={accountAddress}
                         currText={currText}

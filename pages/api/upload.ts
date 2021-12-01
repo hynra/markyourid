@@ -22,7 +22,6 @@ handler.post<NextApiRequest, NextApiResponse>(async (req, res) => {
                     key: "f6f0d3c28a69038767718245c855f0aa",
                 })
                 const resp = await imgbb.upload(cleanImage)
-                console.log(resp)
                 if(resp.status === false){
                     res.status(503).send({status: 501, message: "Server temporary busy or down, please try again later"})
                 } else {
