@@ -6,7 +6,6 @@ import {Button, SHAPE} from "baseui/button";
 import {Label2} from "baseui/typography";
 import {ButtonGroup} from "baseui/button-group";
 import Router from "next/router";
-// import ls from "local-storage";
 
 const SavedWm: React.FC<{ triggerReload: Function }> = ({triggerReload}) => {
 
@@ -17,7 +16,7 @@ const SavedWm: React.FC<{ triggerReload: Function }> = ({triggerReload}) => {
         if (triggerReload !== null)
             triggerReload(() => triggerToReload);
 
-        if (results=== null) {
+        if (results === null) {
             const tmpWms: WmModel[] = getWms();
             if (tmpWms !== null) {
                 setResults(tmpWms);
@@ -79,9 +78,14 @@ const SavedWm: React.FC<{ triggerReload: Function }> = ({triggerReload}) => {
                                         <Button shape={SHAPE.pill} onClick={() => removeWm(result)}>
                                             Remove
                                         </Button>
-                                        {!result.nft && <Button shape={SHAPE.pill} onClick={() => uploadAsNFT(result.id)}>
-                                            Mint as NFT
-                                        </Button>}
+                                        {!result.nft ?
+                                            <Button shape={SHAPE.pill} onClick={() => uploadAsNFT(result.id)}>
+                                                Create NFT Version
+                                            </Button> :
+                                            <Button shape={SHAPE.pill}>
+                                                <a rel="noopener noreferrer" href={result.nftUrl} target="_blank">View NFT</a>
+                                            </Button>
+                                        }
                                     </ButtonGroup>
                                 </StyledAction>
                             </Card>

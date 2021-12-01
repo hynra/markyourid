@@ -1,8 +1,7 @@
 import ls, {get, set} from "local-storage";
+import {BlockChainType} from "./common_enum";
 
-export enum BlockChainType {
-    Ethereum= "ETH"
-}
+
 
 export default interface WmModel {
     image: string;
@@ -38,6 +37,11 @@ export const getWmById = (wmId: string | string[]): WmModel => {
     } else {
         return null;
     }
+}
+
+export const updateWm = (wm: WmModel) => {
+    deleteWm(wm);
+    saveWm(wm);
 }
 
 export const deleteWm = (wm: WmModel) => {

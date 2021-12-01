@@ -9,14 +9,12 @@ import detectEthereumProvider from '@metamask/detect-provider'
 import Router, {useRouter} from 'next/router'
 import {Spinner} from "baseui/spinner";
 import ToNftCanvas from "../../components/to-nft-canvas";
-import WmModel, {BlockChainType, getWmById, saveWm} from "../../common/wm_model";
+import WmModel, {getWmById, updateWm} from "../../common/wm_model";
 import {uploadBase64Image} from "../../common/helper";
 import {Check, Delete} from "baseui/icon";
-import {
-    useSnackbar,
-    DURATION,
-} from 'baseui/snackbar';
+import {DURATION, useSnackbar,} from 'baseui/snackbar';
 import CommonPopUp from "../../components/common_popup";
+import {BlockChainType, MetamaskState} from "../../common/common_enum";
 
 
 const itemProps: BlockProps = {
@@ -26,11 +24,7 @@ const itemProps: BlockProps = {
     marginTop: '40px'
 };
 
-enum MetamaskState {
-    LOADING,
-    AVAILABLE,
-    NOTFOUND
-}
+
 
 const ToNFTId: React.FC = () => {
 
@@ -51,6 +45,7 @@ const ToNFTId: React.FC = () => {
     const [isLoading, setLoading] = React.useState(false);
     const [finalToken, setFinalToken] = React.useState(null);
     const [finalUrl, setFinalUrl] = React.useState(null);
+    const [currentBlockChain, setCurrentBlockChain] = React.useState<BlockChainType>(BlockChainType.Ethereum);
 
 
     const initRarepress = async (): Promise<any> => {
@@ -125,11 +120,11 @@ const ToNFTId: React.FC = () => {
             ...currentWm,
             nft: token,
             nftUrl: raribleUrl,
-            blockChain: BlockChainType.Ethereum
+            blockChain: currentBlockChain
         };
-        saveWm(tmpWm);
+        updateWm(tmpWm);
         setCurrentWm(tmpWm);
-        Router.push('/?tab=1').then();
+        Router.push('/contextual?tab=1').then();
 
     }
 
@@ -160,7 +155,7 @@ const ToNFTId: React.FC = () => {
         if (currentWm === null) {
             const tmpWm: WmModel = getWmById(wmId);
             if (tmpWm === null) {
-                Router.push('/').then();
+                Router.push('/contextual').then();
             } else {
                 setCurrentWm(tmpWm);
                 setCurrText(tmpWm.text);
@@ -180,7 +175,7 @@ const ToNFTId: React.FC = () => {
             setIsOpen={null}
             text="Please install Metamask in your browser to access this page"
             onAccepted={() => {
-                Router.push('/').then();
+                Router.push('/contextual').then();
             }}
             isClosable={false}
             modalInfo="Metamask Not Found"

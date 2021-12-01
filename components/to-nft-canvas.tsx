@@ -17,12 +17,9 @@ import {ChevronRight, Upload} from "baseui/icon";
 import CommonImagePopUp from "./common_image_popup";
 import {downloadCanvasToImage, saveImageAsUrl} from "../common/filters";
 import CommonPopUp from "./common_popup";
+import {AvatarMethod, BlockChainType} from "../common/common_enum";
 
-export enum AvatarMethod {
-    Generation,
-    Initials,
-    Upload
-}
+
 
 interface CurrentAvatar {
     url: string,
@@ -32,12 +29,13 @@ interface CurrentAvatar {
 const NON_EKTP_IMAGE = "/mock0.png";
 const EKTP_IMAGE = "/mock1.png";
 
-const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currModel?: WmModel, onPublish: Function }> = (
+const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currModel?: WmModel, onPublish: Function, blockChainType?: BlockChainType }> = (
     {
         accountAddress,
         currText,
         currModel,
-        onPublish
+        onPublish,
+        blockChainType = BlockChainType.Ethereum
     }
 ) => {
 
@@ -97,9 +95,9 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currMode
                 context.font = `bold 25px monospace`;
                 context.textAlign = "left";
                 context.textBaseline = "middle";
-                const textWidth = context.measureText(accountAddress).width;
+                const textWidth = context.measureText(`${blockChainType}:${accountAddress}`).width;
                 // @ts-ignore
-                context.fillText(accountAddress, (canvas.width / 2) - (textWidth / 2), 80);
+                context.fillText(`${blockChainType}:${accountAddress}`, (canvas.width / 2) - (textWidth / 2), 80);
 
 
                 const texts: string[] = toMultiLine(currentText + '\n' + additionalText);
