@@ -1,5 +1,9 @@
 import ls, {get, set} from "local-storage";
 
+export enum BlockChainType {
+    Ethereum= "ETH"
+}
+
 export default interface WmModel {
     image: string;
     createdAt: Date;
@@ -7,6 +11,7 @@ export default interface WmModel {
     id: string;
     nft?: string
     nftUrl?: string;
+    blockChain?: BlockChainType
 }
 
 export const saveWm = (wm: WmModel) => {

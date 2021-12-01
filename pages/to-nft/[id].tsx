@@ -4,15 +4,14 @@ import {BlockProps} from "baseui/block";
 import {FlexGrid, FlexGridItem} from "baseui/flex-grid";
 import {useStyletron} from "baseui";
 import * as Rareterm from "rareterm";
+// @ts-ignore
 import detectEthereumProvider from '@metamask/detect-provider'
 import {Modal, ModalBody, ModalButton, ModalFooter, ModalHeader} from "baseui/modal";
 import Router, {useRouter} from 'next/router'
 import {Spinner} from "baseui/spinner";
 import ToNftCanvas from "../../components/to-nft-canvas";
-import WmModel, {getWmById} from "../../common/wm_model";
+import WmModel, {BlockChainType, getWmById, saveWm} from "../../common/wm_model";
 import {uploadBase64Image} from "../../common/helper";
-import {useSnackbar, DURATION, SnackbarProvider} from "baseui/snackbar";
-import {Delete} from "baseui/icon";
 
 
 const itemProps: BlockProps = {
@@ -43,7 +42,6 @@ const ToNFTId: React.FC = () => {
     );
     const [account, setAccount] = React.useState<any>(null);
     const [isLoading, setLoading] = React.useState(false);
-    const {enqueue, dequeue} = useSnackbar();
     const [finalToken, setFinalToken] = React.useState(null);
     const [finalUrl, setFinalUrl] = React.useState(null);
 
@@ -62,23 +60,15 @@ const ToNFTId: React.FC = () => {
     const uploadNft = async (image: string, title: string, additionalText: string) => {
         try {
             setLoading(true);
-            enqueue(
-                {
-                    message: 'Uploading your NFT to Rarible',
-                    progress: true,
-                },
-                DURATION.infinite,
-            );
 
 
             const imageUrl = await uploadBase64Image(image);
-            console.log(imageUrl);
             const cid = await rarepressObject.fs.add(imageUrl);
             let token = await rarepressObject.token.create({
                 type: "ERC721",
                 metadata: {
                     name: title,
-                    description: "Generated for securing ID Card submission, curated by " + account + ". \n" + currentWm.text+" \n"+additionalText,
+                    description: "Generated for securing ID Card submission, curated by " + account + ". \n" + currentWm.text + " \n" + additionalText,
                     image: "/ipfs/" + cid,
                     attributes: [
                         {trait_type: "powered by", value: "https://markyour.id"},
@@ -92,25 +82,13 @@ const ToNFTId: React.FC = () => {
             await rarepressObject.fs.push(cid)
             await rarepressObject.fs.push(token.tokenURI)
             let sent = await rarepressObject.token.send(token)
-            console.log(cid);
-            console.log(sent, token);
-            console.log("https://rarible.com/token/" + sent.id);
             setFinalToken(sent.id);
             setFinalUrl("https://rarible.com/token/" + sent.id);
+
             setLoading(false);
-            dequeue();
-            enqueue({
-                message: 'Success Upload your NFT',
-                startEnhancer: ({size}) => <Delete size={size} />,
-            })
         } catch (e) {
             console.log(e);
             setLoading(false);
-            dequeue();
-            enqueue({
-                message: 'Oops, something went wrong. Try again later.',
-                startEnhancer: ({size}) => <Delete size={size} />,
-            })
         }
     }
 
@@ -142,92 +120,104 @@ const ToNFTId: React.FC = () => {
                 setCurrText(tmpWm.text);
             }
         }
-    }, [])
+
+        if(finalToken && finalUrl && currentWm?.nft === null){
+            const tmpWm = currentWm;
+            tmpWm.nft = finalToken;
+            tmpWm.nftUrl = finalUrl;
+            tmpWm.blockChain = BlockChainType.Ethereum;
+            saveWm(tmpWm);
+            setCurrentWm(tmpWm);
+        }
+
+        if(currentWm?.nft){
+            Router.push('/').then();
+        }
+
+    }, [finalToken, finalUrl, currentWm])
 
     return (<>
-        <SnackbarProvider>
-            <HeaderNav/>
+        <HeaderNav/>
 
-            <Modal onClose={() => {
+        <Modal onClose={() => {
 
-            }}
-                   isOpen={metamaskNotFound === MetamaskState.NOTFOUND}
-                   closeable={false}
-            >
-                <ModalHeader>Metamask Not Found</ModalHeader>
-                <ModalBody>
-                    Please install Metamask in your browser to access this page
-                </ModalBody>
-                <ModalFooter>
-                    <ModalButton onClick={() => {
-                        Router.push('/').then();
-                    }}>Okay</ModalButton>
-                </ModalFooter>
-            </Modal>
+        }}
+               isOpen={metamaskNotFound === MetamaskState.NOTFOUND}
+               closeable={false}
+        >
+            <ModalHeader>Metamask Not Found</ModalHeader>
+            <ModalBody>
+                Please install Metamask in your browser to access this page
+            </ModalBody>
+            <ModalFooter>
+                <ModalButton onClick={() => {
+                    Router.push('/').then();
+                }}>Okay</ModalButton>
+            </ModalFooter>
+        </Modal>
 
-            <FlexGrid
-                flexGridColumnCount={[1]}
-                flexGridColumnGap="scale800"
-                flexGridRowGap="scale800"
-            >
-                <FlexGridItem {...itemProps} width="100%">
-                    <div
-                        className={css({
-                            width: '580px',
-                            margin: 'auto',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        })}
-                    >
-                        {
-                            metamaskNotFound === MetamaskState.LOADING &&
-                            <Spinner
-                                size={96}
-                                overrides={{
-                                    Svg: {
-                                        props: {
-                                            'data-label': 'data-label',
-                                        },
-                                        style: ({$theme}) => ({
-                                            width: '100%'
-                                        }),
+        <FlexGrid
+            flexGridColumnCount={[1]}
+            flexGridColumnGap="scale800"
+            flexGridRowGap="scale800"
+        >
+            <FlexGridItem {...itemProps} width="100%">
+                <div
+                    className={css({
+                        width: '580px',
+                        margin: 'auto',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    })}
+                >
+                    {
+                        metamaskNotFound === MetamaskState.LOADING &&
+                        <Spinner
+                            size={96}
+                            overrides={{
+                                Svg: {
+                                    props: {
+                                        'data-label': 'data-label',
                                     },
-                                }}
-                            />
-                        }
-
-                        {MetamaskState.AVAILABLE && accountAddress && !isLoading &&
-                        <ToNftCanvas
-                            accountAddress={accountAddress}
-                            currText={currText}
-                            currModel={currentWm}
-                            onPublish={(title, image, additionalText) => {
-                                uploadNft(image, title, additionalText).then()
+                                    style: ({$theme}) => ({
+                                        width: '100%'
+                                    }),
+                                },
                             }}
-                        />}
+                        />
+                    }
 
-                        {
-                            isLoading &&
-                            <Spinner
-                                size={96}
-                                overrides={{
-                                    Svg: {
-                                        props: {
-                                            'data-label': 'data-label',
-                                        },
-                                        style: ({$theme}) => ({
-                                            width: '100%'
-                                        }),
+                    {MetamaskState.AVAILABLE && accountAddress && !isLoading &&
+                    <ToNftCanvas
+                        accountAddress={accountAddress}
+                        currText={currText}
+                        currModel={currentWm}
+                        onPublish={(title, image, additionalText) => {
+                            uploadNft(image, title, additionalText).then()
+                        }}
+                    />}
+
+                    {
+                        isLoading &&
+                        <Spinner
+                            size={96}
+                            overrides={{
+                                Svg: {
+                                    props: {
+                                        'data-label': 'data-label',
                                     },
-                                }}
-                            />
-                        }
+                                    style: ({$theme}) => ({
+                                        width: '100%'
+                                    }),
+                                },
+                            }}
+                        />
+                    }
 
-                    </div>
+                </div>
 
-                </FlexGridItem>
-            </FlexGrid>
-        </SnackbarProvider>
+            </FlexGridItem>
+        </FlexGrid>
     </>);
 }
 

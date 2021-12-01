@@ -93,6 +93,7 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currMode
                 context.drawImage(img, 0, 0, img.width, img.height);
 
 
+                context.fillStyle = "black";
                 context.font = `bold 25px monospace`;
                 context.textAlign = "left";
                 context.textBaseline = "middle";

@@ -11,12 +11,13 @@ import Router from "next/router";
 const SavedWm: React.FC<{ triggerReload: Function }> = ({triggerReload}) => {
 
     const [css, theme] = useStyletron();
-    const [results, setResults] = React.useState<WmModel[]>([]);
+    const [results, setResults] = React.useState<WmModel[]>(null);
 
     React.useEffect(() => {
         if (triggerReload !== null)
             triggerReload(() => triggerToReload);
-        if (results.length === 0) {
+
+        if (results=== null) {
             const tmpWms: WmModel[] = getWms();
             if (tmpWms !== null) {
                 setResults(tmpWms);
@@ -46,7 +47,7 @@ const SavedWm: React.FC<{ triggerReload: Function }> = ({triggerReload}) => {
     return (
         <div className={css({marginTop: "40px"})}>
             {
-                results.map((result: WmModel, index: number) => {
+                results && results.map((result: WmModel, index: number) => {
                     let mappedText: string[] = result.text.split('\n');
                     mappedText = mappedText.map((s) => s.replace('\n', ''));
                     return (
