@@ -4,6 +4,8 @@ import {Provider as StyletronProvider} from 'styletron-react';
 import {LightTheme, BaseProvider} from 'baseui';
 import {styletron} from '../styletron';
 import {SnackbarProvider,} from 'baseui/snackbar';
+import { MetaMaskProvider } from "metamask-react";
+
 
 export default class MyApp extends App {
     render() {
@@ -11,9 +13,11 @@ export default class MyApp extends App {
         return (
             <StyletronProvider value={styletron}>
                 <BaseProvider theme={LightTheme}>
-                    <SnackbarProvider>
-                        <Component {...pageProps} />
-                    </SnackbarProvider>
+                    <MetaMaskProvider>
+                        <SnackbarProvider>
+                            <Component {...pageProps} />
+                        </SnackbarProvider>
+                    </MetaMaskProvider>
                 </BaseProvider>
             </StyletronProvider>
         );

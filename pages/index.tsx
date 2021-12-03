@@ -1,19 +1,26 @@
 import * as React from 'react';
 import HeaderNav from "../components/header";
-import {Block, BlockProps} from 'baseui/block';
-
-const itemProps: BlockProps = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-};
+import Layout from "../components/layout";
+import {useMetaMask} from "metamask-react";
+import {MetamaskConnectionState} from "../common/common_enum";
+import WalletStatus from "../components/wallet_status";
 
 const Index: React.FC = () => {
+
+
+    const {status, connect, account} = useMetaMask();
 
 
     return (
         <div>
             <HeaderNav/>
+            <Layout>
+                <WalletStatus
+                    walletStatus={status as MetamaskConnectionState}
+                    onClickConnect={connect}
+                    account={account}
+                />
+            </Layout>
         </div>
     );
 };

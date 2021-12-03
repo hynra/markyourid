@@ -1,6 +1,5 @@
 import React from "react";
 import HeaderNav from "../../components/header";
-import {BlockProps} from "baseui/block";
 import {useStyletron} from "baseui";
 import * as Rareterm from "rareterm";
 // @ts-ignore
@@ -15,14 +14,6 @@ import {DURATION, useSnackbar,} from 'baseui/snackbar';
 import CommonPopUp from "../../components/common_popup";
 import {BlockChainType, MetamaskState} from "../../common/common_enum";
 import Layout from "../../components/layout";
-
-
-const itemProps: BlockProps = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: '40px'
-};
 
 
 const ToNFTId: React.FC = () => {
