@@ -1,7 +1,6 @@
 import React from "react";
 import HeaderNav from "../../components/header";
 import {BlockProps} from "baseui/block";
-import {FlexGrid, FlexGridItem} from "baseui/flex-grid";
 import {useStyletron} from "baseui";
 import * as Rareterm from "rareterm";
 // @ts-ignore
@@ -15,6 +14,7 @@ import {Check, Delete} from "baseui/icon";
 import {DURATION, useSnackbar,} from 'baseui/snackbar';
 import CommonPopUp from "../../components/common_popup";
 import {BlockChainType, MetamaskState} from "../../common/common_enum";
+import Layout from "../../components/layout";
 
 
 const itemProps: BlockProps = {
@@ -23,7 +23,6 @@ const itemProps: BlockProps = {
     justifyContent: 'center',
     marginTop: '40px'
 };
-
 
 
 const ToNFTId: React.FC = () => {
@@ -169,80 +168,64 @@ const ToNFTId: React.FC = () => {
 
         <HeaderNav/>
 
+        <Layout>
 
-        <CommonPopUp
-            isOpen={metamaskNotFound === MetamaskState.NOTFOUND}
-            setIsOpen={null}
-            text="Please install Metamask in your browser to access this page"
-            onAccepted={() => {
-                Router.push('/contextual').then();
-            }}
-            isClosable={false}
-            modalInfo="Metamask Not Found"
-        />
+            <CommonPopUp
+                isOpen={metamaskNotFound === MetamaskState.NOTFOUND}
+                setIsOpen={null}
+                text="Please install Metamask in your browser to access this page"
+                onAccepted={() => {
+                    Router.push('/contextual').then();
+                }}
+                isClosable={false}
+                modalInfo="Metamask Not Found"
+            />
 
-        <FlexGrid
-            flexGridColumnCount={[1]}
-            flexGridColumnGap="scale800"
-            flexGridRowGap="scale800"
-        >
-            <FlexGridItem {...itemProps} width="100%">
-                <div
-                    className={css({
-                        width: '580px',
-                        margin: 'auto',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    })}
-                >
-                    {
-                        metamaskNotFound === MetamaskState.LOADING &&
-                        <Spinner
-                            size={96}
-                            overrides={{
-                                Svg: {
-                                    props: {
-                                        'data-label': 'data-label',
-                                    },
-                                    style: ({$theme}) => ({
-                                        width: '100%'
-                                    }),
-                                },
-                            }}
-                        />
-                    }
 
-                    {MetamaskState.AVAILABLE && accountAddress && !isLoading && currentWm &&
-                    <ToNftCanvas
-                        accountAddress={accountAddress}
-                        currText={currText}
-                        currModel={currentWm}
-                        onPublish={(title, image, additionalText) => {
-                            uploadNft(image, title, additionalText).then()
-                        }}
-                    />}
+            {
+                metamaskNotFound === MetamaskState.LOADING &&
+                <Spinner
+                    size={96}
+                    overrides={{
+                        Svg: {
+                            props: {
+                                'data-label': 'data-label',
+                            },
+                            style: ({$theme}) => ({
+                                width: '100%'
+                            }),
+                        },
+                    }}
+                />
+            }
 
-                    {
-                        isLoading &&
-                        <Spinner
-                            size={96}
-                            overrides={{
-                                Svg: {
-                                    props: {
-                                        'data-label': 'data-label',
-                                    },
-                                    style: ({$theme}) => ({
-                                        width: '100%'
-                                    }),
-                                },
-                            }}
-                        />
-                    }
+            {MetamaskState.AVAILABLE && accountAddress && !isLoading && currentWm &&
+            <ToNftCanvas
+                accountAddress={accountAddress}
+                currText={currText}
+                currModel={currentWm}
+                onPublish={(title, image, additionalText) => {
+                    uploadNft(image, title, additionalText).then()
+                }}
+            />}
 
-                </div>
-
-            </FlexGridItem>
-        </FlexGrid>
+            {
+                isLoading &&
+                <Spinner
+                    size={96}
+                    overrides={{
+                        Svg: {
+                            props: {
+                                'data-label': 'data-label',
+                            },
+                            style: ({$theme}) => ({
+                                width: '100%'
+                            }),
+                        },
+                    }}
+                />
+            }
+        </Layout>
     </>);
 }
 
