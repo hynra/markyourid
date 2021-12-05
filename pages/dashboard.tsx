@@ -8,12 +8,10 @@ import {MetamaskConnectionState} from "../common/common_enum";
 import PreLoad from "../components/preload";
 import {DURATION, useSnackbar} from "baseui/snackbar";
 import {Button} from "baseui/button";
-import { toUnionAddress } from "@rarible/types"
-import Web3 from "web3"
-// import { createRaribleSdk, RaribleSdk } from "@rarible/protocol-ethereum-sdk"
-import { createRaribleSdk } from "@rarible/sdk"
-import { Web3Ethereum } from "@rarible/web3-ethereum"
-import { EthereumWallet } from "@rarible/sdk-wallet"
+
+import { useSdk } from "../sdk/use-sdk"
+import { IRaribleSdk } from "@rarible/sdk/build/domain"
+
 
 const Dashboard: React.FC = () => {
 
@@ -21,10 +19,12 @@ const Dashboard: React.FC = () => {
     const router = useRouter();
     const rarepress = useEthereumProvider();
 
-    const [provider, setProvider] = React.useState<any>()
-    const [sdk, setSdk] = React.useState<any>()
+    const { sdk, connect, wallet } = useSdk("prod");
+
+    console.log(sdk)
 
     const {status, account} = useMetaMask();
+
 
 
     React.useEffect(() => {
@@ -44,21 +44,7 @@ const Dashboard: React.FC = () => {
     function handleInit() {
         const { ethereum } = window as any
         if (ethereum && ethereum.isMetaMask) {
-            console.log('Ethereum successfully detected!')
-            setProvider(ethereum)
 
-            const web = new Web3(ethereum)
-
-            const web3Ethereum = new Web3Ethereum({ web3: web, from: account})
-
-            const address = toUnionAddress(`ETHEREUM:${account}`);
-
-            const ethereumWallet = new EthereumWallet(web3Ethereum, address)
-
-            const raribleSdk = createRaribleSdk(ethereumWallet, 'prod');
-
-            setSdk(raribleSdk)
-            // set current account if already connected
         } else {
             console.log('Please install MetaMask!')
         }
