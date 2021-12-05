@@ -4,6 +4,7 @@ import Layout from "../components/layout";
 import {useMetaMask} from "metamask-react";
 import {MetamaskConnectionState} from "../common/common_enum";
 import WalletStatus from "../components/wallet_status";
+import {Router} from "next/router";
 
 const Index: React.FC = () => {
 
