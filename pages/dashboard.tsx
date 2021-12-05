@@ -9,8 +9,22 @@ import PreLoad from "../components/preload";
 import {DURATION, useSnackbar} from "baseui/snackbar";
 import {Button} from "baseui/button";
 
-import { useSdk } from "../sdk/use-sdk"
-import { IRaribleSdk } from "@rarible/sdk/build/domain"
+import {useSdk} from "../sdk/use-sdk"
+import {IRaribleSdk} from "@rarible/sdk/build/domain"
+import {Item, Items} from "@rarible/api-client";
+import {fetchUserItems} from "../sdk/query";
+import {Card, StyledAction, StyledBody} from "baseui/card";
+import {BlockProps} from "baseui/block";
+import {FlexGrid, FlexGridItem} from "baseui/flex-grid";
+import {Label1, Label3, Paragraph1} from "baseui/typography";
+import {ButtonGroup} from "baseui/button-group";
+import {useStyletron} from "baseui";
+
+const itemProps: BlockProps = {
+    alignItems: 'center',
+    justifyContent: 'center',
+    // display: 'flex',
+};
 
 
 const Dashboard: React.FC = () => {
@@ -18,37 +32,22 @@ const Dashboard: React.FC = () => {
     const {enqueue, dequeue} = useSnackbar();
     const router = useRouter();
     const rarepress = useEthereumProvider();
-
-    const { sdk, connect, wallet } = useSdk("prod");
-
-    console.log(sdk)
-
+    const {sdk, connect, wallet} = useSdk("prod");
     const {status, account} = useMetaMask();
+    // const [items, setItems] = React.useState<Items>(null);
+    const [nftItems, setNftItems] = React.useState<Item[]>(null);
+    const [continuation, setContinuation] = React.useState(null);
+    const [css, theme] = useStyletron();
 
 
 
     React.useEffect(() => {
-        if ((window as any).ethereum) {
-            handleInit();
 
-        } else {
-            window.addEventListener('ethereum#initialized', handleInit, {
-                once: true,
-            })
-            setTimeout(handleInit, 3000) // 3 seconds
+        if (nftItems === null && account) {
+            fetchItem().then();
         }
 
-    }, [])
-
-
-    function handleInit() {
-        const { ethereum } = window as any
-        if (ethereum && ethereum.isMetaMask) {
-
-        } else {
-            console.log('Please install MetaMask!')
-        }
-    }
+    }, [account])
 
 
     if (status === MetamaskConnectionState.NotConnected || status === MetamaskConnectionState.Unavailable) {
@@ -57,19 +56,22 @@ const Dashboard: React.FC = () => {
         return <PreLoad/>
     }
 
-    const fetchToken = async () => {
+    const fetchItem = async () => {
         try {
-            let tokens = await rarepress.token.query({
-                "select": ["tokenId"],
-                "from": "creators",
-                "where": ["address",  "0xf6793da657495ffeff9ee6350824910abc21356c"],
-                "limit": 10,
-                "order": ["created_at", "desc"]
-            });
-            console.log(tokens);
-        }catch (e) {
-            console.log(e);
+            const its = await fetchUserItems(sdk, wallet.address, continuation);
+            setContinuation(undefined)
+            if (nftItems === null) {
+                setNftItems(its.items);
+            } else {
+                let tmpIts = [...nftItems, ...its.items]
+                setNftItems(tmpIts);
+            }
+            if (its?.continuation) setContinuation(its.continuation);
+        } catch (e) {
+            // todo: Show error
+            throw e;
         }
+
     }
 
 
@@ -77,8 +79,70 @@ const Dashboard: React.FC = () => {
         <div>
             <HeaderNav/>
             <Layout>
-                <Button onClick={fetchToken}>Load</Button>
+                <Label1 marginBottom="scale500">My NFTs</Label1>
+                <FlexGrid
+                    flexGridColumnCount={[1, 1, 2, 2]}
+                    flexGridColumnGap="scale800"
+                    flexGridRowGap="scale800"
+                >
+                    {
+                        nftItems &&
+                        nftItems.map((it, index) => {
+                            const split: string[] = it.meta.content[0].url.split('/');
+                            const img = `https://eth.rarenet.app/ipfs/${split[split.length - 1]}`
+
+                            return (
+                                <FlexGridItem {...itemProps} key={index}>
+                                    <Card
+                                        headerImage={
+                                            img
+                                        }
+                                        overrides={
+                                            {
+                                                Root: {
+                                                    style:
+                                                        {width: '100%', marginBottom: '14px'}
+                                                }
+                                            }
+                                        }
+                                    >
+                                        <StyledBody>
+                                            <Label3>{it.meta.name}</Label3>
+                                        </StyledBody>
+                                        <StyledAction>
+                                            <ButtonGroup overrides={{
+                                                Root: {
+                                                    style: {
+                                                        width: "100%",
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                    }
+                                                }
+                                            }}>
+                                                <Button>View</Button>
+                                                <Button>View on Rarible</Button>
+                                            </ButtonGroup>
+                                        </StyledAction>
+                                    </Card>
+                                </FlexGridItem>
+                            );
+                        })
+                    }
+                </FlexGrid>
+                {
+                    continuation &&
+                    <FlexGrid
+                        flexGridColumnCount={[1]}
+                        flexGridColumnGap="scale800"
+                        flexGridRowGap="scale800"
+                    >
+                        <FlexGridItem {...itemProps} width="100%">
+                            <Button onClick={fetchItem}>Load More</Button>
+                        </FlexGridItem>
+                    </FlexGrid>
+                }
             </Layout>
+
         </div>
     )
 }

@@ -5,6 +5,7 @@ import {useStyletron} from "baseui";
 
 export interface LayoutProps {
     children: React.ReactNode;
+    width?: string
 }
 
 const itemProps: BlockProps = {
@@ -20,14 +21,14 @@ const Layout: React.FC<LayoutProps> = (props: LayoutProps) => {
 
     return(
         <FlexGrid
-            flexGridColumnCount={[1]}
+            flexGridColumnCount={1}
             flexGridColumnGap="scale800"
             flexGridRowGap="scale800"
         >
-            <FlexGridItem {...itemProps} width="100%">
+            <FlexGridItem {...itemProps} width={props.width}>
                 <div
                     className={css({
-                        width: '580px',
+                        width: props.width,
                         margin: 'auto',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -38,6 +39,10 @@ const Layout: React.FC<LayoutProps> = (props: LayoutProps) => {
             </FlexGridItem>
         </FlexGrid>
     );
+}
+
+Layout.defaultProps = {
+    width: '580px'
 }
 
 export default Layout;
