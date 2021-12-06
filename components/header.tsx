@@ -1,13 +1,14 @@
 import {ALIGN, HeaderNavigation, StyledNavigationItem, StyledNavigationList} from "baseui/header-navigation";
 import {StyledLink} from "baseui/link";
-import {Button} from "baseui/button";
+import {Button, KIND, SHAPE, SIZE} from "baseui/button";
 import * as React from "react";
 import {useStyletron} from "baseui";
 import {Label2} from "baseui/typography";
+import {Menu} from "baseui/icon";
 
-const HeaderNav: React.FC = () => {
+const HeaderNav: React.FC<{toggleSidebar?: Function}> = ({toggleSidebar}) => {
 
-    const [css] = useStyletron();
+    const [css, theme] = useStyletron();
 
     return (
         <div>
@@ -28,6 +29,28 @@ const HeaderNav: React.FC = () => {
                         </StyledLink>
                     </StyledNavigationItem>
                 </StyledNavigationList>*/}
+                <StyledNavigationList $align={ALIGN.right}>
+                    <StyledNavigationItem>
+                        <Button
+                            onClick={() => toggleSidebar()}
+                            size={SIZE.compact}
+                            kind={KIND.tertiary}
+                            shape={SHAPE.square}
+                            overrides={{
+                                BaseButton: {
+                                    style: {
+                                        display: 'flex',
+                                        [theme.mediaQuery.medium]: {
+                                            display: 'none',
+                                        },
+                                    },
+                                },
+                            }}
+                        >
+                            <Menu size={24} color={theme.colors.contentPrimary} />
+                        </Button>
+                    </StyledNavigationItem>
+                </StyledNavigationList>
             </HeaderNavigation>
         </div>
     );

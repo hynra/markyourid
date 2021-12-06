@@ -19,6 +19,7 @@ import {FlexGrid, FlexGridItem} from "baseui/flex-grid";
 import {Label1, Label3, Paragraph1} from "baseui/typography";
 import {ButtonGroup} from "baseui/button-group";
 import {useStyletron} from "baseui";
+import MainLayout from "../components/main_layout";
 
 const itemProps: BlockProps = {
     alignItems: 'center',
@@ -40,14 +41,16 @@ const Dashboard: React.FC = () => {
     const [css, theme] = useStyletron();
 
 
-
     React.useEffect(() => {
+
+        if (!wallet)
+            return
 
         if (nftItems === null && account) {
             fetchItem().then();
         }
 
-    }, [account])
+    }, [account, wallet])
 
 
     if (status === MetamaskConnectionState.NotConnected || status === MetamaskConnectionState.Unavailable) {
@@ -76,74 +79,70 @@ const Dashboard: React.FC = () => {
 
 
     return (
-        <div>
-            <HeaderNav/>
-            <Layout>
-                <Label1 marginBottom="scale500">My NFTs</Label1>
+        <MainLayout path='/dashboard'>
+            <Label1 marginBottom="scale500">My NFTs</Label1>
+            <FlexGrid
+                flexGridColumnCount={[1, 1, 2, 2]}
+                flexGridColumnGap="scale800"
+                flexGridRowGap="scale800"
+            >
+                {
+                    nftItems &&
+                    nftItems.map((it, index) => {
+                        const split: string[] = it.meta.content[0].url.split('/');
+                        const img = `https://eth.rarenet.app/ipfs/${split[split.length - 1]}`
+
+                        return (
+                            <FlexGridItem {...itemProps} key={index}>
+                                <Card
+                                    headerImage={
+                                        img
+                                    }
+                                    overrides={
+                                        {
+                                            Root: {
+                                                style:
+                                                    {width: '100%', marginBottom: '14px'}
+                                            }
+                                        }
+                                    }
+                                >
+                                    <StyledBody>
+                                        <Label3>{it.meta.name}</Label3>
+                                    </StyledBody>
+                                    <StyledAction>
+                                        <ButtonGroup overrides={{
+                                            Root: {
+                                                style: {
+                                                    width: "100%",
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                }
+                                            }
+                                        }}>
+                                            <Button>View NFT</Button>
+
+                                        </ButtonGroup>
+                                    </StyledAction>
+                                </Card>
+                            </FlexGridItem>
+                        );
+                    })
+                }
+            </FlexGrid>
+            {
+                continuation &&
                 <FlexGrid
-                    flexGridColumnCount={[1, 1, 2, 2]}
+                    flexGridColumnCount={[1]}
                     flexGridColumnGap="scale800"
                     flexGridRowGap="scale800"
                 >
-                    {
-                        nftItems &&
-                        nftItems.map((it, index) => {
-                            const split: string[] = it.meta.content[0].url.split('/');
-                            const img = `https://eth.rarenet.app/ipfs/${split[split.length - 1]}`
-
-                            return (
-                                <FlexGridItem {...itemProps} key={index}>
-                                    <Card
-                                        headerImage={
-                                            img
-                                        }
-                                        overrides={
-                                            {
-                                                Root: {
-                                                    style:
-                                                        {width: '100%', marginBottom: '14px'}
-                                                }
-                                            }
-                                        }
-                                    >
-                                        <StyledBody>
-                                            <Label3>{it.meta.name}</Label3>
-                                        </StyledBody>
-                                        <StyledAction>
-                                            <ButtonGroup overrides={{
-                                                Root: {
-                                                    style: {
-                                                        width: "100%",
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                    }
-                                                }
-                                            }}>
-                                                <Button>View</Button>
-                                                <Button>View on Rarible</Button>
-                                            </ButtonGroup>
-                                        </StyledAction>
-                                    </Card>
-                                </FlexGridItem>
-                            );
-                        })
-                    }
+                    <FlexGridItem {...itemProps} width="100%">
+                        <Button onClick={fetchItem}>Load More</Button>
+                    </FlexGridItem>
                 </FlexGrid>
-                {
-                    continuation &&
-                    <FlexGrid
-                        flexGridColumnCount={[1]}
-                        flexGridColumnGap="scale800"
-                        flexGridRowGap="scale800"
-                    >
-                        <FlexGridItem {...itemProps} width="100%">
-                            <Button onClick={fetchItem}>Load More</Button>
-                        </FlexGridItem>
-                    </FlexGrid>
-                }
-            </Layout>
-
-        </div>
+            }
+        </MainLayout>
     )
 }
 
