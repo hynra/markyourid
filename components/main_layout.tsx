@@ -119,6 +119,7 @@ const MainLayout: React.FC<MainLayoutProps> = (props) => {
                 toggleSidebar={() => {
                     setSidebarOpen(!sidebarOpen)
                 }}
+                isOpen={sidebarOpen}
             />
             <Block {...blockProps}>
                 <Block

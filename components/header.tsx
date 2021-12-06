@@ -4,9 +4,9 @@ import {Button, KIND, SHAPE, SIZE} from "baseui/button";
 import * as React from "react";
 import {useStyletron} from "baseui";
 import {Label2} from "baseui/typography";
-import {Menu} from "baseui/icon";
+import {Delete, Menu} from "baseui/icon";
 
-const HeaderNav: React.FC<{toggleSidebar?: Function}> = ({toggleSidebar}) => {
+const HeaderNav: React.FC<{ toggleSidebar?: Function, isOpen?: boolean }> = ({toggleSidebar, isOpen = false}) => {
 
     const [css, theme] = useStyletron();
 
@@ -16,19 +16,7 @@ const HeaderNav: React.FC<{toggleSidebar?: Function}> = ({toggleSidebar}) => {
                 <StyledNavigationList $align={ALIGN.left}>
                     <StyledNavigationItem><Label2>MarkYourID</Label2></StyledNavigationItem>
                 </StyledNavigationList>
-                <StyledNavigationList $align={ALIGN.center} />
-                {/*<StyledNavigationList $align={ALIGN.right}>
-                    <StyledNavigationItem>
-                        <StyledLink href="#basic-link1">
-                            Tab Link One
-                        </StyledLink>
-                    </StyledNavigationItem>
-                    <StyledNavigationItem>
-                        <StyledLink href="#basic-link2">
-                            Tab Link Two
-                        </StyledLink>
-                    </StyledNavigationItem>
-                </StyledNavigationList>*/}
+                <StyledNavigationList $align={ALIGN.center}/>
                 <StyledNavigationList $align={ALIGN.right}>
                     <StyledNavigationItem>
                         <Button
@@ -47,7 +35,12 @@ const HeaderNav: React.FC<{toggleSidebar?: Function}> = ({toggleSidebar}) => {
                                 },
                             }}
                         >
-                            <Menu size={24} color={theme.colors.contentPrimary} />
+                            {
+                                isOpen ?
+                                    <Delete size={24} color={theme.colors.contentPrimary}/> :
+                                    <Menu size={24} color={theme.colors.contentPrimary}/>
+                            }
+
                         </Button>
                     </StyledNavigationItem>
                 </StyledNavigationList>

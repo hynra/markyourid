@@ -35,7 +35,6 @@ const Dashboard: React.FC = () => {
     const rarepress = useEthereumProvider();
     const {sdk, connect, wallet} = useSdk("prod");
     const {status, account} = useMetaMask();
-    // const [items, setItems] = React.useState<Items>(null);
     const [nftItems, setNftItems] = React.useState<Item[]>(null);
     const [continuation, setContinuation] = React.useState(null);
     const [css, theme] = useStyletron();
