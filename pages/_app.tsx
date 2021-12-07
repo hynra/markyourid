@@ -6,7 +6,17 @@ import {styletron} from '../styletron';
 import {SnackbarProvider,} from 'baseui/snackbar';
 import {MetaMaskProvider} from "metamask-react";
 import Head from 'next/head';
+import "nprogress/nprogress.css";
+import dynamic from "next/dynamic";
 
+
+
+const TopProgressBar = dynamic(
+    () => {
+        return import("../components/top_progress_bar");
+    },
+    { ssr: false },
+);
 
 export default class MyApp extends App {
     render() {
@@ -21,6 +31,7 @@ export default class MyApp extends App {
                     <BaseProvider theme={LightTheme}>
                         <MetaMaskProvider>
                             <SnackbarProvider>
+                                <TopProgressBar />
                                 <Component {...pageProps} />
                             </SnackbarProvider>
                         </MetaMaskProvider>

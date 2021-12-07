@@ -20,6 +20,7 @@ import {Label1, Label3, Paragraph1} from "baseui/typography";
 import {ButtonGroup} from "baseui/button-group";
 import {useStyletron} from "baseui";
 import MainLayout from "../components/main_layout";
+import {Checkbox, LABEL_PLACEMENT, STYLE_TYPE} from "baseui/checkbox";
 
 const itemProps: BlockProps = {
     alignItems: 'center',
@@ -37,7 +38,7 @@ const Dashboard: React.FC = () => {
     const {status, account} = useMetaMask();
     const [nftItems, setNftItems] = React.useState<Item[]>(null);
     const [continuation, setContinuation] = React.useState(null);
-    const [css, theme] = useStyletron();
+    const [showAll, setShowAll] = React.useState<boolean>(false);
 
 
     React.useEffect(() => {
@@ -78,8 +79,30 @@ const Dashboard: React.FC = () => {
 
 
     return (
-        <MainLayout path='/dashboard'>
-            <Label1 marginBottom="scale500">My NFTs</Label1>
+        <MainLayout path='/dashboard' address={wallet?.address}>
+            <FlexGrid
+                flexGridColumnCount={2}
+                marginBottom="scale700"
+            >
+                <FlexGridItem>
+                    <Label1>Generated NFTs</Label1>
+                </FlexGridItem>
+                <FlexGridItem
+                    alignItems='end'
+                    justifyContent='end'
+                    display="flex"
+                >
+                    <Checkbox
+                        checked={showAll}
+                        checkmarkType={STYLE_TYPE.toggle_round}
+                        // @ts-ignore
+                        onChange={e => setShowAll(e.target.checked)}
+                        labelPlacement={LABEL_PLACEMENT.right}
+                    >
+                        Show All
+                    </Checkbox>
+                </FlexGridItem>
+            </FlexGrid>
             <FlexGrid
                 flexGridColumnCount={[1, 1, 2, 2]}
                 flexGridColumnGap="scale800"
@@ -89,7 +112,18 @@ const Dashboard: React.FC = () => {
                     nftItems &&
                     nftItems.map((it, index) => {
                         const split: string[] = it.meta.content[0].url.split('/');
-                        const img = `https://eth.rarenet.app/ipfs/${split[split.length - 1]}`
+                        const img = `https://eth.rarenet.app/ipfs/${split[split.length - 1]}`;
+
+                        let isGenerated = false;
+                        it.meta.attributes.map((attr) => {
+                            if(attr.key === "powered by" && attr.value === "https://markyour.id"){
+                                isGenerated = true;
+                            }
+                        });
+
+                        if(!isGenerated && !showAll){
+                            return null;
+                        }
 
                         return (
                             <FlexGridItem {...itemProps} key={index}>

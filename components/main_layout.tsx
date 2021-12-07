@@ -1,15 +1,20 @@
 import React from "react";
 import {Block, BlockProps} from "baseui/block";
-import {createThemedStyled, withStyle} from "baseui";
+import {createThemedStyled, useStyletron, withStyle} from "baseui";
 import type {BreakpointsT, ThemeT} from 'baseui/styles/types';
 import {Navigation, StyledNavItem, StyledNavLink} from 'baseui/side-navigation';
 import HeaderNav from "../components/header";
 import Link from 'next/link';
 import routes from "../common/routes";
+import {Avatar} from "baseui/avatar";
+import {expandBorderStyles} from "baseui/styles";
+import {FlexGrid, FlexGridItem} from "baseui/flex-grid";
+import {Label2} from "baseui/typography";
 
 export interface MainLayoutProps {
     children: React.ReactNode;
-    path: string
+    path: string;
+    address?: string
 }
 
 
@@ -19,6 +24,13 @@ const blockProps: BlockProps = {
     maxWidth: '100vw',
     minHeight: '100vh',
     overflow: 'hidden',
+};
+
+
+const itemProps: BlockProps = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
 };
 
 const themedStyled = createThemedStyled<ThemeT>();
@@ -112,6 +124,8 @@ const Sidebar: React.FC<{activeItem: string}> = ({activeItem}) => {
 const MainLayout: React.FC<MainLayoutProps> = (props) => {
 
     const [sidebarOpen, setSidebarOpen] = React.useState<boolean>(false);
+    const [css] = useStyletron();
+
 
     return (
         <div>
@@ -134,6 +148,50 @@ const MainLayout: React.FC<MainLayoutProps> = (props) => {
                         aria-label="primary"
                         $isOpen={sidebarOpen}
                     >
+
+                        {props.address && <FlexGrid
+                            flexGridColumnCount={1}
+                            flexGridColumnGap="scale800"
+                            flexGridRowGap="scale800"
+                        >
+                            <FlexGridItem {...itemProps} >
+                                <div
+                                    className={css({
+                                        margin: 'auto',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    })}
+                                >
+                                    <Avatar
+                                        name={`user`}
+                                        size="64px"
+                                        src={`https://avatars.dicebear.com/api/gridy/${props.address.toUpperCase().replace("ETHEREUM:", "")}.svg`}
+                                        overrides={{
+                                            Root: {
+                                                style: ({$theme}) => ({
+                                                    ...expandBorderStyles($theme.borders.border600),
+                                                    padding: '8px',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                }),
+                                            },
+                                        }}
+                                    />
+                                </div>
+                            </FlexGridItem>
+                            <FlexGridItem {...itemProps}>
+                                <Label2
+                                    overflow="hidden"
+                                    // @ts-ignore
+                                    textOverflow="ellipsis"
+                                    marginBottom="14px"
+                                >
+                                    {props.address.toUpperCase().replace("ETHEREUM:", "")}
+                                </Label2>
+                            </FlexGridItem>
+                        </FlexGrid>}
+
+
                         <Sidebar activeItem={props.path}/>
                     </SidebarWrapper>
                     <ContentWrapper
