@@ -17,7 +17,7 @@ const routes = [
             },
             {
                 title: 'View on Rarible',
-                itemId: '/create',
+                itemId: '/rari',
             },
         ],
     },

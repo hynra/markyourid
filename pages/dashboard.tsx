@@ -21,6 +21,7 @@ import {ButtonGroup} from "baseui/button-group";
 import {useStyletron} from "baseui";
 import MainLayout from "../components/main_layout";
 import {Checkbox, LABEL_PLACEMENT, STYLE_TYPE} from "baseui/checkbox";
+import {Delete} from "baseui/icon";
 
 const itemProps: BlockProps = {
     alignItems: 'center',
@@ -35,8 +36,7 @@ const Dashboard: React.FC = () => {
     const PRIMARY_TITLE = 'Generated NFTs'
     const SECONDARY_TITLE = 'My NFTs'
     const router = useRouter();
-    const rarepress = useEthereumProvider();
-    const {sdk, connect, wallet} = useSdk("prod");
+    const {sdk, wallet} = useSdk("prod");
     const {status, account} = useMetaMask();
     const [nftItems, setNftItems] = React.useState<Item[]>(null);
     const [continuation, setContinuation] = React.useState(null);
@@ -77,7 +77,10 @@ const Dashboard: React.FC = () => {
             }
             if (its?.continuation) setContinuation(its.continuation);
         } catch (e) {
-            // todo: Show error
+            enqueue({
+                message: 'Oops! Something went wrong, try again later.',
+                startEnhancer: ({size}) => <Delete size={size}/>,
+            });
             throw e;
         }
 

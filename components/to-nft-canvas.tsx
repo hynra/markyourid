@@ -20,7 +20,6 @@ import CommonPopUp from "./common_popup";
 import {AvatarMethod, BlockChainType} from "../common/common_enum";
 
 
-
 interface CurrentAvatar {
     url: string,
     Method: AvatarMethod,
@@ -129,7 +128,6 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currMode
     }, [canvas, currText, additionalText, selfImage, selectedAvatar, currentText, mainBackground])
 
 
-
     return (
         <>
             <AvatarPopUp
@@ -163,17 +161,17 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currMode
                         url: newImage
                     })
                 })}/>
-                <CommonImagePopUp
-                    isOpen={origImgWindowOpened}
-                    setIsOpen={setOrigImgWindowOpened}
-                    imageSrc={currModel.image}
-                />
-                <CommonPopUp
-                    isOpen={commonWindowOpened}
-                    setIsOpen={setCommonWindowOpened}
-                    text="The image will be uploaded (Lazy Minting) to the Rarible platform at no cost, are you sure want to continue?"
-                    onAccepted={submitNft}
-                />
+            {currModel && <CommonImagePopUp
+                isOpen={origImgWindowOpened}
+                setIsOpen={setOrigImgWindowOpened}
+                imageSrc={currModel.image}
+            />}
+            <CommonPopUp
+                isOpen={commonWindowOpened}
+                setIsOpen={setCommonWindowOpened}
+                text="The image will be uploaded (Lazy Minting) to the Rarible platform at no cost, are you sure want to continue?"
+                onAccepted={submitNft}
+            />
             <div className={css({
                 position: 'relative',
                 width: '100%',
@@ -192,7 +190,8 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currMode
                             id="to-nft-canvas"
                         />
                         <Label2 marginBottom="scale100">NFT title</Label2>
-                        <Paragraph2 marginTop="scale100">It will be used to name your NFT on the marketplace</Paragraph2>
+                        <Paragraph2 marginTop="scale100">It will be used to name your NFT on the
+                            marketplace</Paragraph2>
                         <Input
                             value={title}
                             // @ts-ignore
@@ -293,10 +292,18 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currMode
                                     Is E-KTP (Indonesia E-ID Card)?
                                 </Checkbox>
                                 <ButtonGroup
-                                    overrides={{Root: {style: {alignItems: 'center', justifyContent: 'center', marginTop: "14px"}}}}
+                                    overrides={{
+                                        Root: {
+                                            style: {
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                marginTop: "14px"
+                                            }
+                                        }
+                                    }}
                                 >
                                     <Button
-                                        startEnhancer={() => <ChevronRight  size={24} /> }
+                                        startEnhancer={() => <ChevronRight size={24}/>}
                                         kind={KIND.primary}
                                         onClick={() => setOrigImgWindowOpened(true)}
                                     >

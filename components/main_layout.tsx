@@ -44,7 +44,7 @@ const SidebarWrapper = themedStyled<{$isOpen: boolean}>('nav', ({$theme, $isOpen
     marginRight: $theme.sizing.scale800,
     [$theme.mediaQuery.medium]: {
         display: 'block',
-        maxWidth: '16em',
+        maxWidth: '15em',
     },
 }));
 
@@ -58,10 +58,10 @@ const ContentWrapper = themedStyled<{$isSidebarOpen: boolean,}>('main', ({$theme
     paddingRight: $theme.sizing.scale800,
     width: '100%',
     outline: 'none',
-    maxWidth: '40em',
+    maxWidth: '60em',
     [$theme.mediaQuery.medium]: {
         display: 'block',
-        maxWidth: '40em',
+        maxWidth: '60em',
     },
 }));
 
