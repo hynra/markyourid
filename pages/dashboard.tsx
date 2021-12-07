@@ -32,6 +32,8 @@ const itemProps: BlockProps = {
 const Dashboard: React.FC = () => {
 
     const {enqueue, dequeue} = useSnackbar();
+    const PRIMARY_TITLE = 'Generated NFTs'
+    const SECONDARY_TITLE = 'My NFTs'
     const router = useRouter();
     const rarepress = useEthereumProvider();
     const {sdk, connect, wallet} = useSdk("prod");
@@ -39,6 +41,7 @@ const Dashboard: React.FC = () => {
     const [nftItems, setNftItems] = React.useState<Item[]>(null);
     const [continuation, setContinuation] = React.useState(null);
     const [showAll, setShowAll] = React.useState<boolean>(false);
+    const [title, setTitle] = React.useState<string>(PRIMARY_TITLE)
 
 
     React.useEffect(() => {
@@ -50,7 +53,10 @@ const Dashboard: React.FC = () => {
             fetchItem().then();
         }
 
-    }, [account, wallet])
+        if(showAll) setTitle(SECONDARY_TITLE)
+        else setTitle(PRIMARY_TITLE);
+
+    }, [account, wallet, showAll])
 
 
     if (status === MetamaskConnectionState.NotConnected || status === MetamaskConnectionState.Unavailable) {
@@ -85,7 +91,7 @@ const Dashboard: React.FC = () => {
                 marginBottom="scale700"
             >
                 <FlexGridItem>
-                    <Label1>Generated NFTs</Label1>
+                    <Label1>{title}</Label1>
                 </FlexGridItem>
                 <FlexGridItem
                     alignItems='end'
