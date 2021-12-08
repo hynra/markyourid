@@ -65,6 +65,8 @@ const Dashboard: React.FC = () => {
         return <PreLoad/>
     }
 
+    console.log(nftItems)
+
     const fetchItem = async () => {
         try {
             const its = await fetchUserItems(sdk, wallet.address, continuation);

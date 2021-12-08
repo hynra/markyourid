@@ -11,26 +11,34 @@ import {NftMetadata} from "../common/nft_metadata";
 import {Delete} from "baseui/icon";
 import {useSnackbar} from "baseui/snackbar";
 import {toUnionAddress} from "@rarible/types";
-import {MintRequest} from "@rarible/sdk/build/nft/mint/mint-request.type";
 import BigNumber from "bignumber.js";
+import {useEthereumProvider} from "../common/blockchain-provider";
+import {Maybe} from "../common/maybe";
+import {MintRequest} from "@rarible/sdk/build/types/nft/mint/mint-request.type";
 
 
 
 const Create: React.FC = () => {
 
-    const {sdk, wallet} = useSdk("prod");
+    const {sdk, wallet} = useSdk("staging");
     const {status, account} = useMetaMask();
     const router = useRouter();
-    const [collectionId, setCollectionId] = React.useState('ETHEREUM:0xF6793dA657495ffeFF9Ee6350824910Abc21356C');
+    const [collectionId, setCollectionId] = React.useState('ETHEREUM:0x6ede7f3c26975aad32a475e1021d8f6f39c89d82');
+    const [address, setAddress] = React.useState<Maybe<string>>(undefined)
     const [lazy, setLazy] = React.useState<boolean>(true);
     const [supply, setSupply] = React.useState<string>("1");
     const [loading, setLoading] = React.useState<boolean>(false);
     const {enqueue, dequeue} = useSnackbar();
+    const rarepress = useEthereumProvider();
 
 
     React.useEffect(() => {
         if (!wallet)
             return;
+
+        wallet?.ethereum.getFrom()
+            .then((address) => setAddress(address))
+            .catch(() => setAddress(undefined))
 
     }, [wallet, account]);
 
@@ -41,18 +49,21 @@ const Create: React.FC = () => {
             console.log(metadataResp);
             setLoading(false);*/
             const cid = "ipfs://bafyreid427bp5kfh2vgywst6nr6kixose4kqhfg2v3xnftqjfho7ncdkju/metadata.json";
-            const collId = toUnionAddress("ETHEREUM:0xF6793dA657495ffeFF9Ee6350824910Abc21356C");
+            const collId = toUnionAddress(collectionId);
             const collection = await sdk.apis.collection.getCollectionById({ collection: collId });
-            const {submit} = await sdk.nft.mint({ collection });
-            setLoading(false);
+            console.log(collection)
+            const {submit, supportsLazyMint} = await sdk.nft.mint({ collection });
+
+            console.log("support ", supportsLazyMint)
             const mintReq: MintRequest = {
-                lazyMint: true,
+
+                lazyMint: supportsLazyMint,
                 supply: 1,
                 uri: cid
 
             }
-            const response = await submit(mintReq);
-            console.log(response)
+            await submit(mintReq);
+            setLoading(false);
 
         }catch (e) {
             console.log(e)
@@ -74,7 +85,7 @@ const Create: React.FC = () => {
 
 
     return(
-        <MainLayout path='/create' address={wallet?.address}>
+        <MainLayout path='/create' address={address}>
             {loading ? <PreLoad /> : <ToNftCanvas
                 accountAddress={account}
                 onPublish={(metadata: NftMetadata) => {
