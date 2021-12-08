@@ -12,7 +12,7 @@
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@metamask/detect-provider": "^1.2.0",
     "@mui/material": "^5.2.2",
-    "@rarible/sdk": "0.7.15",
+    "@rarible/sdk": "0.3.0",
     "@web3-react/core": "^6.1.9",
     "@web3-react/injected-connector": "^6.0.7",
     "FormData": "^0.10.1",

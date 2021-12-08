@@ -1,4 +1,4 @@
-import { EthereumWallet } from "@rarible/sdk-wallet"
+import { BlockchainWallet, EthereumWallet } from "@rarible/sdk-wallet"
 import { Maybe } from "../common/maybe"
 import { useEffect, useMemo } from "react"
 import { useInjectedProvider } from "./use-injected-provider"
@@ -9,7 +9,7 @@ import { createRaribleSdk } from "@rarible/sdk"
 import { IRaribleSdk } from "@rarible/sdk/build/domain"
 
 type UseSdkResult = {
-    wallet: Maybe<EthereumWallet>
+    wallet: Maybe<BlockchainWallet>
     sdk: Maybe<IRaribleSdk>
     connect: () => void
 }
@@ -22,8 +22,7 @@ export function useSdk(env: string): UseSdkResult {
     const wallet = useMemo(() => {
         if (provider !== undefined && from !== undefined) {
             const address = toUnionAddress(`ETHEREUM:${from}`)
-            const ethereum = new Web3Ethereum({ web3: new Web3(provider), from })
-            return new EthereumWallet(ethereum);
+            return new EthereumWallet(new Web3Ethereum({ web3: new Web3(provider), from }), address)
         } else {
             return undefined
         }

@@ -11,6 +11,7 @@ import {NftMetadata} from "../common/nft_metadata";
 import {Delete} from "baseui/icon";
 import {useSnackbar} from "baseui/snackbar";
 import {toUnionAddress} from "@rarible/types";
+// import {MintRequest} from "@rarible/sdk/build/nft/mint/mint-request.type";
 import BigNumber from "bignumber.js";
 import {useEthereumProvider} from "../common/blockchain-provider";
 import {Maybe} from "../common/maybe";
@@ -20,10 +21,10 @@ import {MintRequest} from "@rarible/sdk/build/types/nft/mint/mint-request.type";
 
 const Create: React.FC = () => {
 
-    const {sdk, wallet} = useSdk("staging");
+    const {sdk, wallet} = useSdk("prod");
     const {status, account} = useMetaMask();
     const router = useRouter();
-    const [collectionId, setCollectionId] = React.useState('ETHEREUM:0x6ede7f3c26975aad32a475e1021d8f6f39c89d82');
+    const [collectionId, setCollectionId] = React.useState('ETHEREUM:0xf6793da657495ffeff9ee6350824910abc21356c');
     const [address, setAddress] = React.useState<Maybe<string>>(undefined)
     const [lazy, setLazy] = React.useState<boolean>(true);
     const [supply, setSupply] = React.useState<string>("1");
@@ -36,9 +37,6 @@ const Create: React.FC = () => {
         if (!wallet)
             return;
 
-        wallet?.ethereum.getFrom()
-            .then((address) => setAddress(address))
-            .catch(() => setAddress(undefined))
 
     }, [wallet, account]);
 
@@ -48,7 +46,7 @@ const Create: React.FC = () => {
             /*const metadataResp = await uploadMetadata(metadata);
             console.log(metadataResp);
             setLoading(false);*/
-            const cid = "ipfs://bafyreid427bp5kfh2vgywst6nr6kixose4kqhfg2v3xnftqjfho7ncdkju/metadata.json";
+            const cid = "ipfs/bafyreid427bp5kfh2vgywst6nr6kixose4kqhfg2v3xnftqjfho7ncdkju/metadata.json";
             const collId = toUnionAddress(collectionId);
             const collection = await sdk.apis.collection.getCollectionById({ collection: collId });
             console.log(collection)
@@ -85,7 +83,7 @@ const Create: React.FC = () => {
 
 
     return(
-        <MainLayout path='/create' address={address}>
+        <MainLayout path='/create' address={wallet?.address}>
             {loading ? <PreLoad /> : <ToNftCanvas
                 accountAddress={account}
                 onPublish={(metadata: NftMetadata) => {
