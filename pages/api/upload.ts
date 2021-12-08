@@ -1,11 +1,12 @@
 import type {NextApiRequest, NextApiResponse} from 'next'
 import nc from "next-connect"
-import {Imgbb} from "../../common/helper";
+import {decodeBase64Image, Imgbb} from "../../common/helper";
+import { NFTStorage, File } from 'nft.storage'
+import {NftMetadata} from "../../common/nft_metadata";
 
 
 const handler = nc<NextApiRequest, NextApiResponse>()
 
-const url = 'https://api.imgbb.com/1/upload?key=f6f0d3c28a69038767718245c855f0aa'
 
 
 handler.post<NextApiRequest, NextApiResponse>(async (req, res) => {
@@ -13,20 +14,36 @@ handler.post<NextApiRequest, NextApiResponse>(async (req, res) => {
     const {type} = req.query
 
     if (type === 'base64') {
-        const {image} = req.body
-        if (!image) res.status(422).send({status: 422, message: "Parameter not complete"})
+        let reqMetadata: NftMetadata = req.body
+        if (!reqMetadata) res.status(422).send({status: 422, message: "Parameter not complete"})
         else {
             try {
-                const cleanImage = image.split(',')[1]
-                const imgbb = new Imgbb({
-                    key: "f6f0d3c28a69038767718245c855f0aa",
-                })
-                const resp = await imgbb.upload(cleanImage)
-                if(resp.status === false){
-                    res.status(503).send({status: 501, message: "Server temporary busy or down, please try again later"})
-                } else {
-                    res.status(200).send({url: resp.data.display_url})
-                }
+
+                const imageBuffer = decodeBase64Image(reqMetadata.image);
+
+                const apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGUwNmE0RTlFZmViODBFNDI0YjczNDgwMTMyNjE5NDcyOGEzRGM3QTIiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTYzODg2ODgwNTUzOSwibmFtZSI6Im1hcmt5b3VyLmlkIG1haW4ifQ.jwv7vSBQcIEvovQkXRtp8Sla69XeryTgTpaojAUr_fE'
+                const client = new NFTStorage({ token: apiKey });
+
+
+                const metadata = await client.store({
+                    name: reqMetadata.name,
+                    description: reqMetadata.description,
+                    attributes: reqMetadata.attributes,
+                    // @ts-ignore
+                    image: new File([imageBuffer.data], new Date().getTime().toString()+'.jpg', { type: 'image/jpg' })
+                });
+
+                /*console.log('IPFS URL for the metadata:', metadata.url)
+                console.log('metadata.json contents:\n', metadata.data)
+                console.log(
+                    'metadata.json contents with IPFS gateway URLs:\n',
+                    metadata.embed()
+                )*/
+
+                console.log(metadata.url)
+
+                res.status(200).send({url: metadata.url})
+
             }catch (e) {
                 console.log("err" ,e)
                 res.status(503).send({status: 501, message: "Server temporary busy or down, please try again later"})

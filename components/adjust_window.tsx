@@ -21,6 +21,7 @@ const AdjustWindow: React.FC<{
     const [currImage, setCurrImage] = React.useState<any>(null);
 
 
+
     let img: any = null;
 
     const itemProps: BlockProps = {
@@ -50,12 +51,13 @@ const AdjustWindow: React.FC<{
         img = new Image();
 
         img.src = imageSrc;
-
-        canvas.width = img.width;
-        canvas.height = img.height;
-        context.drawImage(img, 0, 0, img.width, img.height);
-        if (currImage === null)
-            setCurrImage(img);
+        img.onload = function () {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            context.drawImage(img, 0, 0, img.width, img.height);
+            if (currImage === null)
+                setCurrImage(img);
+        }
     }
 
     if (typeof window !== "undefined") {

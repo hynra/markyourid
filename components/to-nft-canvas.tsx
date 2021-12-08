@@ -2,7 +2,7 @@ import React from "react";
 import {useStyletron} from "baseui";
 import {Label1, Label2, Paragraph2, Paragraph4} from "baseui/typography";
 import {SIZE, Textarea} from "baseui/textarea";
-import {StyledBody} from "baseui/card";
+import {Card, StyledBody} from "baseui/card";
 import {Input} from "baseui/input";
 import {Button, KIND} from "baseui/button";
 import AvatarPopUp from "./avatar_popup";
@@ -13,11 +13,23 @@ import CropWindow from "./crop_window";
 import {Checkbox, LABEL_PLACEMENT, STYLE_TYPE} from "baseui/checkbox";
 import {ModalBody} from "baseui/modal";
 import WmModel from "../common/wm_model";
-import {ChevronRight, Upload} from "baseui/icon";
+import {ChevronRight, Delete, Upload} from "baseui/icon";
 import CommonImagePopUp from "./common_image_popup";
 import {downloadCanvasToImage, saveImageAsUrl} from "../common/filters";
 import CommonPopUp from "./common_popup";
 import {AvatarMethod, BlockChainType} from "../common/common_enum";
+import ComponentPopUp from "./component_popup";
+import {ethBackground} from "../common/card_background";
+import AdjustWindow from "./adjust_window";
+import {NftMetadata, Trait} from "../common/nft_metadata";
+import {FlexGrid, FlexGridItem} from "baseui/flex-grid";
+import MainLayout from "./main_layout";
+import {
+    Table,
+    SIZE as TableSize,
+    DIVIDER
+} from "baseui/table-semantic";
+import {useSnackbar} from "baseui/snackbar";
 
 
 interface CurrentAvatar {
@@ -25,33 +37,61 @@ interface CurrentAvatar {
     Method: AvatarMethod,
 }
 
-const NON_EKTP_IMAGE = "/mock0.png";
-const EKTP_IMAGE = "/mock1.png";
+const buttonGroupOverrides = {
+    Root: {
+        style: {
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: "1px"
+        }
+    }
+}
 
-const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currModel?: WmModel, onPublish: Function, blockChainType?: BlockChainType }> = (
+
+const ToNftCanvas: React.FC<{ accountAddress: string, onPublish: Function, blockChainType?: BlockChainType }> = (
     {
         accountAddress,
-        currText,
-        currModel,
         onPublish,
         blockChainType = BlockChainType.Ethereum
     }
 ) => {
 
+
+    const DEFAULT_ATTRIBUTES = [
+        {
+            trait_type: "powered by",
+            value: "https://markyour.id"
+        },
+        {
+            trait_type: "curator",
+            value: accountAddress
+        },
+        {
+            trait_type: "created at",
+            value: new Date().toUTCString()
+        },
+    ]
+
     const [css, theme] = useStyletron();
     const [canvas, setCanvas] = React.useState();
-    const [additionalText, setAdditionalText] = React.useState<string>('Name: YourName');
     const [selfImage, setSelfImage] = React.useState<any>(null);
     const [avatarPopUpOpened, setAvatarPopUpOpened] = React.useState<boolean>(false);
     const [initialsPopUpOpened, setInitialsPopUpOpened] = React.useState<boolean>(false);
     const [uploadPopUpOpened, setUploadPopUpOpened] = React.useState<boolean>(false);
     const [selectedAvatar, setSelectedAvatar] = React.useState<CurrentAvatar>(null);
-    const [currentText, setCurrentText] = React.useState(currText);
-    const [mainBackground, setMainBackground] = React.useState(NON_EKTP_IMAGE);
-    const [isEktp, setIsEktp] = React.useState(false);
-    const [origImgWindowOpened, setOrigImgWindowOpened] = React.useState(false);
+    const [currentText, setCurrentText] = React.useState(
+        `Name: Your Name\nDesc: Write a description\nDate: ${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear()}`
+    );
+    const [mainBackground, setMainBackground] = React.useState('/card/eth/0.png');
     const [commonWindowOpened, setCommonWindowOpened] = React.useState(false);
     const [title, setTitle] = React.useState(`Identity Card submission for <service-name>`);
+    const [selectBackgroundOpened, setSelectBackgroundOpened] = React.useState<boolean>(false);
+    const [adjustWindowOpened, setAdjustWindowOpened] = React.useState<boolean>(false);
+    const [attrWindowOpened, setAttrWindowOpened] = React.useState<boolean>(false);
+    const [attributes, setAttributes] = React.useState<Trait[]>(DEFAULT_ATTRIBUTES);
+    const [newTraitType, setNewTraitType] = React.useState<string>("");
+    const [newTraitValue, setNewTraitValue] = React.useState<string>("");
+    const {enqueue} = useSnackbar();
 
     const refHandler = (currCanvas) => {
         if (!currCanvas) return;
@@ -71,9 +111,25 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currMode
 
     const submitNft = () => {
         const url = saveImageAsUrl(canvas);
-        onPublish(title, url, additionalText);
+        const metadata: NftMetadata = {
+            attributes: attributes,
+            description: currentText,
+            image: url,
+            name: title
+
+        }
+        onPublish(metadata);
     }
 
+    const tabulateAttrData = (): any[] => {
+        let data = [];
+        attributes.map((attr) => {
+            const traits = [attr.trait_type, attr.value];
+            data.push(traits);
+        })
+
+        return data;
+    }
 
     React.useEffect(() => {
         if (canvas) {
@@ -91,18 +147,18 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currMode
 
 
                 context.fillStyle = "black";
-                context.font = `bold 25px monospace`;
+                context.font = `bold 32px monospace`;
                 context.textAlign = "left";
                 context.textBaseline = "middle";
                 const textWidth = context.measureText(`${blockChainType}:${accountAddress}`).width;
                 // @ts-ignore
-                context.fillText(`${blockChainType}:${accountAddress}`, (canvas.width / 2) - (textWidth / 2), 80);
+                context.fillText(`${blockChainType}:${accountAddress}`, (canvas.width / 2) - (textWidth / 2), 120);
 
 
-                const texts: string[] = toMultiLine(currentText + '\n' + additionalText);
-                let lineSpacing = 25;
-                let x = 50;
-                let y = 185;
+                const texts: string[] = toMultiLine(currentText);
+                let lineSpacing = 32;
+                let x = 155;
+                let y = 277;
                 // draw each line on canvas.
                 for (let i = 0; i < texts.length; i++) {
                     context.fillText(texts[i], x, y);
@@ -113,7 +169,7 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currMode
                     const avaImage = new Image();
                     avaImage.src = selectedAvatar.url;
                     avaImage.onload = function () {
-                        context.drawImage(avaImage, 570, 177, 140, 140);
+                        context.drawImage(avaImage, 925, 266, 180, 180);
                     }
 
                 }
@@ -125,8 +181,30 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currMode
 
         }
 
-    }, [canvas, currText, additionalText, selfImage, selectedAvatar, currentText, mainBackground])
+    }, [canvas, selfImage, selectedAvatar, currentText, mainBackground])
 
+
+    function appendNewTrait() {
+        if (newTraitType === "" || newTraitValue === "") {
+            enqueue({
+                message: 'Please add correct attribute.',
+                startEnhancer: ({size}) => <Delete size={size}/>,
+            });
+            return;
+        }
+
+        const newTrait: Trait = {
+            trait_type: newTraitType,
+            value: newTraitValue
+        }
+
+        setNewTraitType("");
+        setNewTraitValue("");
+
+        const tmpAttributes: Trait[] = [...attributes, newTrait];
+        setAttributes(tmpAttributes);
+
+    }
 
     return (
         <>
@@ -150,6 +228,75 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currMode
                     })
                 }}
             />
+            <AdjustWindow
+                imageSrc={mainBackground}
+                isOpen={adjustWindowOpened}
+                setIsOpen={setAdjustWindowOpened}
+                onAdjust={(uri) => {
+                    setMainBackground(uri);
+                }}/>
+            <ComponentPopUp
+                isOpen={selectBackgroundOpened}
+                setIsOpen={setSelectBackgroundOpened}
+                onAccepted={null}
+                showActionButton={false}
+                modalInfo="Select Background"
+            >
+                {
+                    ethBackground.map((bg, index) => {
+                        return (
+                            <div className={css({marginBottom: '14px'})}
+                                 key={index}
+                            >
+                                <img src={bg.thumb} width="100%" className={css({borderRadius: '15px'})}/>
+                                <Button
+                                    kind={KIND.minimal}
+                                    overrides={{BaseButton: {style: {width: '100%'}}}}
+                                    onClick={() => {
+                                        setMainBackground(bg.full);
+                                        setSelectBackgroundOpened(false);
+                                    }}
+                                >
+                                    Select</Button>
+                            </div>
+                        )
+                    })
+                }
+            </ComponentPopUp>
+            <ComponentPopUp
+                isOpen={attrWindowOpened}
+                setIsOpen={setAttrWindowOpened}
+                onAccepted={() => {
+                    appendNewTrait();
+                }}
+                showActionButton={true}
+                modalInfo="Add attribute"
+            >
+                <FlexGrid
+                    flexGridColumnCount={2}
+                    marginBottom="scale200"
+                    flexGridColumnGap="scale200"
+                >
+                    <FlexGridItem>
+                        <Input
+                            value={newTraitType}
+                            placeholder="Trait Type"
+                            clearOnEscape
+                            // @ts-ignore
+                            onChange={e => setNewTraitType(e.target.value.toLowerCase())}
+                        />
+                    </FlexGridItem>
+                    <FlexGridItem>
+                        <Input
+                            // @ts-ignore
+                            onChange={e => setNewTraitValue(e.target.value)}
+                            value={newTraitValue}
+                            placeholder="Value"
+                            clearOnEscape
+                        />
+                    </FlexGridItem>
+                </FlexGrid>
+            </ComponentPopUp>
             <CropWindow
                 isOpen={uploadPopUpOpened}
                 setIsOpen={setUploadPopUpOpened}
@@ -161,11 +308,6 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currMode
                         url: newImage
                     })
                 })}/>
-            {currModel && <CommonImagePopUp
-                isOpen={origImgWindowOpened}
-                setIsOpen={setOrigImgWindowOpened}
-                imageSrc={currModel.image}
-            />}
             <CommonPopUp
                 isOpen={commonWindowOpened}
                 setIsOpen={setCommonWindowOpened}
@@ -179,17 +321,19 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currMode
             })}>
                 {
                     <>
-                        <Label1 marginBottom="scale800">Create NFT Version</Label1>
+                        <Label1 marginBottom="scale800">Create NFT</Label1>
                         <canvas
                             className={css({
                                 position: 'relative',
                                 width: '100%',
-                                marginBottom: "14px"
+                                marginBottom: "14px",
+                                borderRadius: '15px'
                             })}
+
                             ref={refHandler}
                             id="to-nft-canvas"
                         />
-                        <Label2 marginBottom="scale100">NFT title</Label2>
+                        <Label2 marginBottom="scale100">NFT Title</Label2>
                         <Paragraph2 marginTop="scale100">It will be used to name your NFT on the
                             marketplace</Paragraph2>
                         <Input
@@ -198,9 +342,8 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currMode
                             onChange={e => setTitle(e.target.value)}
                         />
 
-                        <Label2 marginBottom="scale100" marginTop="scale500">Main Text</Label2>
-                        <Paragraph2 marginTop="scale100">Please keep the Main Text similar to the original
-                            text</Paragraph2>
+                        <Label2 marginBottom="scale100" marginTop="scale500">Content</Label2>
+                        <Paragraph2 marginTop="scale100">Describe your purpose to create this NFT</Paragraph2>
 
                         <Textarea
                             value={currentText}
@@ -208,107 +351,64 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currMode
                             // disabled
                             // @ts-ignore
                             onChange={e => setCurrentText(e.target.value)}
-                            onKeyPress={(e) => {
-                                const re = /[ \\n]+/g;
-                                if (!re.test(e.key)) {
-                                    e.preventDefault();
-                                }
-                            }}
-                            onKeyDown={(evt => {
-                                const t = evt.target;
-                                if (evt.keyCode === 8) {
-                                    // @ts-ignore
-                                    const deletedChar = t.value[t.selectionStart - 1];
-                                    if (deletedChar !== "\n" && deletedChar !== " ") {
-                                        evt.preventDefault()
-                                    }
-                                } else if (evt.keyCode === 46) {
-                                    // @ts-ignore
-                                    const deletedChar = t.value[t.selectionStart];
-                                    if (deletedChar !== "\n" && deletedChar !== " ") {
-                                        evt.preventDefault()
-                                    }
-                                }
-                            })}
-                            placeholder="Controlled Input"
-                            clearOnEscape
-                        />
-                        <Label2 marginBottom="14px" marginTop="14px">Additional Text</Label2>
-                        <Input
-                            value={additionalText}
-                            // @ts-ignore
-                            onChange={e => setAdditionalText(e.target.value)}
-                            placeholder="Additional Text"
+                            placeholder="Content"
                             clearOnEscape
                         />
 
+
                         <Accordion
-                            onChange={({expanded}) => console.log(expanded)}
                             accordion
                         >
-                            <Panel title="Avatar">
-                                <Label2 marginBottom="14px">Select Avatar from:</Label2>
-                                <ButtonGroup
-                                    overrides={{
-                                        Root: {
-                                            style: {
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                marginBottom: "1px"
-                                            }
-                                        }
-                                    }}
-                                >
+                            <Panel title="Attributes">
+                                <Table
+                                    columns={["Trait Type", "Value"]}
+                                    data={tabulateAttrData()}
+                                    divider={DIVIDER.grid}
+                                    size={TableSize.spacious}
+                                />
+
+                                <ButtonGroup overrides={buttonGroupOverrides}>
+
+                                    <Button
+                                        kind={KIND.minimal}
+                                        overrides={{BaseButton: {style: {width: '100%'}}}}
+                                        onClick={() => {
+                                            setAttrWindowOpened(true)
+                                        }}
+                                    >
+                                        Add more attributes
+                                    </Button>
+                                    <Button
+                                        kind={KIND.minimal}
+                                        overrides={{BaseButton: {style: {width: '100%'}}}}
+                                        onClick={() => {
+                                            setAttributes(DEFAULT_ATTRIBUTES)
+                                        }}
+                                    >
+                                        Reset attributes
+                                    </Button>
+                                </ButtonGroup>
+                            </Panel>
+                            <Panel title="Customize">
+                                <Label2 marginBottom="14px">Background</Label2>
+                                <ButtonGroup overrides={buttonGroupOverrides}>
+                                    <Button onClick={() => setSelectBackgroundOpened(true)}>Select Background</Button>
+                                </ButtonGroup>
+                                <Label2 marginBottom="14px">Select Avatar</Label2>
+                                <ButtonGroup overrides={buttonGroupOverrides}>
                                     <Button onClick={() => setAvatarPopUpOpened(true)}>Avatar Generation</Button>
                                     <Button onClick={() => setInitialsPopUpOpened(true)}>Initials</Button>
                                     <Button onClick={() => setUploadPopUpOpened(true)}>Upload Avatar</Button>
                                 </ButtonGroup>
                             </Panel>
                             <Panel title="Misc.">
-                                <Checkbox
-                                    checked={isEktp}
-                                    checkmarkType={STYLE_TYPE.toggle_round}
-                                    onChange={e => {
-                                        // @ts-ignore
-                                        const isEnable = e.target.checked;
-                                        setIsEktp(isEnable)
-                                        if (isEnable === true) {
-                                            setMainBackground(EKTP_IMAGE);
-                                        } else setMainBackground(NON_EKTP_IMAGE);
-                                    }}
-                                    labelPlacement={LABEL_PLACEMENT.left}
-                                    overrides={{
-                                        Root: {
-                                            style: {
-                                                width: '100%',
-                                                marginTop: "2px",
-                                                marginBottom: "2px",
-                                                alignItems: 'center',
-                                                justifyContent: 'center'
-                                            }
-                                        }
-                                    }}
-                                >
-                                    Is E-KTP (Indonesia E-ID Card)?
-                                </Checkbox>
-                                <ButtonGroup
-                                    overrides={{
-                                        Root: {
-                                            style: {
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                marginTop: "14px"
-                                            }
-                                        }
-                                    }}
-                                >
+                                <ButtonGroup overrides={buttonGroupOverrides}>
                                     <Button
+                                        onClick={() => setAdjustWindowOpened(true)}
                                         startEnhancer={() => <ChevronRight size={24}/>}
                                         kind={KIND.primary}
-                                        onClick={() => setOrigImgWindowOpened(true)}
                                     >
-                                        View Original Image
-                                    </Button>
+                                        Adjust Color</Button>
                                     {
                                         selectedAvatar &&
                                         <Button
@@ -320,7 +420,6 @@ const ToNftCanvas: React.FC<{ accountAddress: string, currText: string, currMode
                                             Avatar Image
                                         </Button>
                                     }
-
                                 </ButtonGroup>
                             </Panel>
                         </Accordion>

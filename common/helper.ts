@@ -1,4 +1,5 @@
 import axios from "axios";
+import {NftMetadata} from "./nft_metadata";
 
 const FormData = require('form-data');
 // const fs = require('fs');
@@ -11,6 +12,33 @@ export async function uploadBase64Image(file: string) {
     } catch (e) {
         throw e;
     }
+}
+
+export async function uploadMetadata(metadata: NftMetadata) {
+    const url = '/api/upload?type=base64'
+    try {
+        const resp = await axios.post(url, metadata, {})
+        return resp.data.url
+    } catch (e) {
+        throw e;
+    }
+}
+
+
+export function decodeBase64Image(dataString) {
+    const matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
+        response = {};
+
+    if (matches.length !== 3) {
+        return new Error('Invalid input string');
+    }
+
+    // @ts-ignore
+    response.type = matches[1];
+    // @ts-ignore
+    response.data = new Buffer(matches[2], 'base64');
+
+    return response;
 }
 
 
