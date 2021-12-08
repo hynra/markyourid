@@ -16,7 +16,7 @@ import BigNumber from "bignumber.js";
 import {useEthereumProvider} from "../common/blockchain-provider";
 import {Maybe} from "../common/maybe";
 import {MintRequest} from "@rarible/sdk/build/types/nft/mint/mint-request.type";
-
+import axios from "axios";
 
 
 const Create: React.FC = () => {
@@ -43,27 +43,47 @@ const Create: React.FC = () => {
     const publish = async (metadata: NftMetadata) => {
         setLoading(true);
         try {
-            /*const metadataResp = await uploadMetadata(metadata);
-            console.log(metadataResp);
-            setLoading(false);*/
-            const cid = "ipfs/bafyreid427bp5kfh2vgywst6nr6kixose4kqhfg2v3xnftqjfho7ncdkju/metadata.json";
-            const collId = toUnionAddress(collectionId);
-            const collection = await sdk.apis.collection.getCollectionById({ collection: collId });
-            console.log(collection)
-            const {submit, supportsLazyMint} = await sdk.nft.mint({ collection });
+            // const metadataResp = await uploadMetadata(metadata);
+            // console.log(metadataResp);
 
-            console.log("support ", supportsLazyMint)
-            const mintReq: MintRequest = {
 
-                lazyMint: supportsLazyMint,
-                supply: 1,
-                uri: cid
+            let token = await rarepress.token.build({
+                type: "ERC721",
+                uri: "/ipfs/bafyreihozad6wvayum5jbxv6pduuwkvpbuqbfdmphq5jkkaonj25yfjshe/metadata.json",
+                tokenURI: "/ipfs/bafyreihozad6wvayum5jbxv6pduuwkvpbuqbfdmphq5jkkaonj25yfjshe/metadata.json",
+                metadata: {
+                    "name": "MarkYourID Testing Out 0",
+                    "description": "Name: Hendra Permana\nDesc: MarkYourID Testing Out 0\nDate: 9/12/2021",
+                    "attributes": [{
+                        "trait_type": "powered by",
+                        "value": "https://markyour.id"
+                    }, {
+                        "trait_type": "curator",
+                        "value": "0xbdb384a764605c41b04754702be8ef4b5a0f3865"
+                    }, {
+                        "trait_type": "created at",
+                        "value": "Wed, 08 Dec 2021 17:01:12 GMT"
+                    }, {
+                        "trait_type": "purpose",
+                        "value": "MarkYourID Testing Out 0"
+                    }],
+                    "image": "/ipfs/bafybeieuypwcnpklbenucsn2gqdurqi3n2axad2akpw2n33per3pzgpkf4/1638983399341.jpg"
+                }
+            });
 
-            }
-            await submit(mintReq);
+
+            let signed = await rarepress.token.sign(token)
+
+
+            delete signed.metadata
+            delete signed.tokenURI
+
+            let res = await axios.post("https://api.rarible.com/protocol/v0.1/ethereum/nft/mints", signed);
+            console.log(res.data)
+
             setLoading(false);
 
-        }catch (e) {
+        } catch (e) {
             console.log(e)
             setLoading(false);
             enqueue({
@@ -74,7 +94,6 @@ const Create: React.FC = () => {
     }
 
 
-
     if (status === MetamaskConnectionState.NotConnected || status === MetamaskConnectionState.Unavailable) {
         router.push('/').then();
     } else if (status as MetamaskConnectionState !== MetamaskConnectionState.Connected) {
@@ -82,9 +101,9 @@ const Create: React.FC = () => {
     }
 
 
-    return(
+    return (
         <MainLayout path='/create' address={wallet?.address}>
-            {loading ? <PreLoad /> : <ToNftCanvas
+            {loading ? <PreLoad/> : <ToNftCanvas
                 accountAddress={account}
                 onPublish={(metadata: NftMetadata) => {
                     console.log(metadata);

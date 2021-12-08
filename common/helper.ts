@@ -18,7 +18,7 @@ export async function uploadMetadata(metadata: NftMetadata) {
     const url = '/api/upload?type=base64'
     try {
         const resp = await axios.post(url, metadata, {})
-        return resp.data.url
+        return resp.data
     } catch (e) {
         throw e;
     }

@@ -40,9 +40,9 @@ handler.post<NextApiRequest, NextApiResponse>(async (req, res) => {
                     metadata.embed()
                 )*/
 
-                console.log(metadata.url)
+                console.log(metadata)
 
-                res.status(200).send({url: metadata.url})
+                res.status(200).send({metadata})
 
             }catch (e) {
                 console.log("err" ,e)
