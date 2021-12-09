@@ -24,6 +24,20 @@ export async function uploadMetadata(metadata: NftMetadata) {
     }
 }
 
+export function getDwebLinkUrl(ipfsUrl: string): string {
+    const splits: string[] = ipfsUrl.replace("ipfs://", "").split('/');
+    const cid = splits[0];
+    if(splits.length > 1) {
+        const metaFile = splits[1];
+        return `https://${cid}.ipfs.dweb.link/${metaFile}`;
+    } else {
+        return `https://${cid}.ipfs.dweb.link`;
+    }
+}
+
+export function ipfsUriToPath(ipfsUri: string): string {
+    return ipfsUri.replace("ipfs://", '/ipfs/')
+}
 
 export function decodeBase64Image(dataString) {
     const matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),

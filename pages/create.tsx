@@ -6,7 +6,7 @@ import {MetamaskConnectionState} from "../common/common_enum";
 import PreLoad from "../components/preload";
 import {useRouter} from "next/router";
 import ToNftCanvas from "../components/to-nft-canvas";
-import {uploadBase64Image, uploadMetadata} from "../common/helper";
+import {getDwebLinkUrl, uploadBase64Image, uploadMetadata} from "../common/helper";
 import {NftMetadata} from "../common/nft_metadata";
 import {Delete} from "baseui/icon";
 import {useSnackbar} from "baseui/snackbar";
@@ -45,32 +45,20 @@ const Create: React.FC = () => {
         try {
             // const metadataResp = await uploadMetadata(metadata);
             // console.log(metadataResp);
+            // metadataResp.url
 
+
+            const url = 'ipfs://bafyreihozad6wvayum5jbxv6pduuwkvpbuqbfdmphq5jkkaonj25yfjshe/metadata.json';
+
+            let res = await axios.get(getDwebLinkUrl(url));
+            console.log(res.data);
 
             let token = await rarepress.token.build({
                 type: "ERC721",
-                uri: "/ipfs/bafyreihozad6wvayum5jbxv6pduuwkvpbuqbfdmphq5jkkaonj25yfjshe/metadata.json",
-                tokenURI: "/ipfs/bafyreihozad6wvayum5jbxv6pduuwkvpbuqbfdmphq5jkkaonj25yfjshe/metadata.json",
-                metadata: {
-                    "name": "MarkYourID Testing Out 0",
-                    "description": "Name: Hendra Permana\nDesc: MarkYourID Testing Out 0\nDate: 9/12/2021",
-                    "attributes": [{
-                        "trait_type": "powered by",
-                        "value": "https://markyour.id"
-                    }, {
-                        "trait_type": "curator",
-                        "value": "0xbdb384a764605c41b04754702be8ef4b5a0f3865"
-                    }, {
-                        "trait_type": "created at",
-                        "value": "Wed, 08 Dec 2021 17:01:12 GMT"
-                    }, {
-                        "trait_type": "purpose",
-                        "value": "MarkYourID Testing Out 0"
-                    }],
-                    "image": "/ipfs/bafybeieuypwcnpklbenucsn2gqdurqi3n2axad2akpw2n33per3pzgpkf4/1638983399341.jpg"
-                }
+                uri: url,
+                tokenURI: url,
+                metadata: res.data
             });
-
 
             let signed = await rarepress.token.sign(token)
 
@@ -78,8 +66,8 @@ const Create: React.FC = () => {
             delete signed.metadata
             delete signed.tokenURI
 
-            let res = await axios.post("https://api.rarible.com/protocol/v0.1/ethereum/nft/mints", signed);
-            console.log(res.data)
+            let resp = await axios.post("https://api.rarible.com/protocol/v0.1/ethereum/nft/mints", signed);
+            console.log(resp.data)
 
             setLoading(false);
 
