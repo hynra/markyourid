@@ -2,6 +2,7 @@ import axios from "axios";
 import {NftMetadata} from "./nft_metadata";
 
 const FormData = require('form-data');
+
 // const fs = require('fs');
 
 export async function uploadBase64Image(file: string) {
@@ -25,9 +26,14 @@ export async function uploadMetadata(metadata: NftMetadata) {
 }
 
 export function getDwebLinkUrl(ipfsUrl: string): string {
-    const splits: string[] = ipfsUrl.replace("ipfs://", "").split('/');
+    let splits: string[] = [];
+    if (ipfsUrl.startsWith("ipfs://"))
+        splits = ipfsUrl.replace("ipfs://", "").split('/');
+    else if (ipfsUrl.startsWith('/ipfs/'))
+        splits = ipfsUrl.replace("/ipfs/", "").split('/');
+    else return ipfsUrl;
     const cid = splits[0];
-    if(splits.length > 1) {
+    if (splits.length > 1) {
         const metaFile = splits[1];
         return `https://${cid}.ipfs.dweb.link/${metaFile}`;
     } else {
@@ -58,6 +64,7 @@ export function decodeBase64Image(dataString) {
 
 export class Imgbb {
     private readonly key: any;
+
     constructor({key}) {
         this.key = key;
     }
@@ -82,7 +89,7 @@ export class Imgbb {
                 'status': 200,
                 'data': data,
             };
-        }catch (e) {
+        } catch (e) {
             return {
                 'success': false,
                 'status': e.error.status_code,

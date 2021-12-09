@@ -19,5 +19,5 @@ export enum AvatarMethod {
 }
 
 export enum BlockChainType {
-    Ethereum = "ETH"
+    Ethereum = "ETHEREUM"
 }

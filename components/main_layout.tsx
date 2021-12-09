@@ -191,8 +191,7 @@ const MainLayout: React.FC<MainLayoutProps> = (props) => {
                             </FlexGridItem>
                         </FlexGrid>}
 
-
-                        <Sidebar activeItem={props.path}/>
+                        {props.address && <Sidebar activeItem={props.path}/>}
                     </SidebarWrapper>
                     <ContentWrapper
                         id="docSearch-content"

@@ -22,6 +22,7 @@ import {useStyletron} from "baseui";
 import MainLayout from "../components/main_layout";
 import {Checkbox, LABEL_PLACEMENT, STYLE_TYPE} from "baseui/checkbox";
 import {Delete} from "baseui/icon";
+import {getDwebLinkUrl} from "../common/helper";
 
 const itemProps: BlockProps = {
     alignItems: 'center',
@@ -122,8 +123,8 @@ const Dashboard: React.FC = () => {
                 {
                     nftItems &&
                     nftItems.map((it, index) => {
-                        const split: string[] = it.meta.content[0].url.split('/');
-                        const img = `https://eth.rarenet.app/ipfs/${split[split.length - 1]}`;
+
+                        const img = getDwebLinkUrl(it.meta.content[0].url);
 
                         let isGenerated = false;
                         it.meta.attributes.map((attr) => {
@@ -164,7 +165,13 @@ const Dashboard: React.FC = () => {
                                                 }
                                             }
                                         }}>
-                                            <Button>View NFT</Button>
+                                            <Button
+                                                onClick={() => {
+                                                    router.push(`/item/${it.id}`).then()
+                                                }}
+                                            >
+                                                View NFT
+                                            </Button>
 
                                         </ButtonGroup>
                                     </StyledAction>

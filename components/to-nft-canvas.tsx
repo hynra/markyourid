@@ -1,6 +1,6 @@
 import React from "react";
 import {useStyletron} from "baseui";
-import {Label1, Label2, Paragraph2, Paragraph4} from "baseui/typography";
+import {Label1, Label2, Paragraph2, Paragraph3, Paragraph4} from "baseui/typography";
 import {SIZE, Textarea} from "baseui/textarea";
 import {Card, StyledBody} from "baseui/card";
 import {Input} from "baseui/input";
@@ -13,7 +13,7 @@ import CropWindow from "./crop_window";
 import {Checkbox, LABEL_PLACEMENT, STYLE_TYPE} from "baseui/checkbox";
 import {ModalBody} from "baseui/modal";
 import WmModel from "../common/wm_model";
-import {ChevronRight, Delete, Upload} from "baseui/icon";
+import {Alert, ArrowUp, ChevronRight, Delete, Show, Upload} from "baseui/icon";
 import CommonImagePopUp from "./common_image_popup";
 import {downloadCanvasToImage, saveImageAsUrl} from "../common/filters";
 import CommonPopUp from "./common_popup";
@@ -30,6 +30,9 @@ import {
     DIVIDER
 } from "baseui/table-semantic";
 import {useSnackbar} from "baseui/snackbar";
+import {TRIGGER_TYPE} from "baseui/tooltip";
+import {Block} from "baseui/block";
+import {Popover, StatefulPopover} from "baseui/popover";
 
 
 interface CurrentAvatar {
@@ -92,6 +95,7 @@ const ToNftCanvas: React.FC<{ accountAddress: string, onPublish: Function, block
     const [newTraitType, setNewTraitType] = React.useState<string>("");
     const [newTraitValue, setNewTraitValue] = React.useState<string>("");
     const {enqueue} = useSnackbar();
+    const [isLazyMint, setIsLazyMint] = React.useState<boolean>(true);
 
     const refHandler = (currCanvas) => {
         if (!currCanvas) return;
@@ -118,7 +122,7 @@ const ToNftCanvas: React.FC<{ accountAddress: string, onPublish: Function, block
             name: title
 
         }
-        onPublish(metadata);
+        onPublish(metadata, isLazyMint);
     }
 
     const tabulateAttrData = (): any[] => {
@@ -158,7 +162,7 @@ const ToNftCanvas: React.FC<{ accountAddress: string, onPublish: Function, block
                 const texts: string[] = toMultiLine(currentText);
                 let lineSpacing = 32;
                 let x = 155;
-                let y = 277;
+                let y = 280;
                 // draw each line on canvas.
                 for (let i = 0; i < texts.length; i++) {
                     context.fillText(texts[i], x, y);
@@ -308,12 +312,34 @@ const ToNftCanvas: React.FC<{ accountAddress: string, onPublish: Function, block
                         url: newImage
                     })
                 })}/>
-            <CommonPopUp
+            <ComponentPopUp
                 isOpen={commonWindowOpened}
                 setIsOpen={setCommonWindowOpened}
-                text="The image will be uploaded (Lazy Minting) to the Rarible platform at no cost, are you sure want to continue?"
                 onAccepted={submitNft}
-            />
+                modalInfo="Upload NFT"
+            >
+
+                <Checkbox
+                    checked={isLazyMint}
+                    checkmarkType={STYLE_TYPE.toggle_round}
+                    // @ts-ignore
+                    onChange={e => setIsLazyMint(e.target.checked)}
+                    labelPlacement={LABEL_PLACEMENT.right}
+                >
+                    Free minting
+                </Checkbox>
+                <Accordion>
+                    <Panel title={<Show size={24} />}>
+                    {isLazyMint &&
+                    <Paragraph2>{"You don't have to pay gas fees, but your NFT won't be minted into the blockchain until someone buys it or you transfer it yourself."}
+                        <a href="https://rarible.medium.com/create-nfts-for-free-on-rarible-com-via-a-new-lazy-minting-feature-91cb4b7c68e6"> Lean more.</a>
+                    </Paragraph2>}
+                    {!isLazyMint &&
+                    <Paragraph2>{"You will mint your NFT directly into the blockchain, gas fees are required and may be very high."}</Paragraph2>}
+                    </Panel>
+                </Accordion>
+                <Label2 marginTop="scale500">{`The image will be minted as an NFT ${(isLazyMint) ? "without gas fees" : "with gas fees"}, are you sure want to continue?`}</Label2>
+            </ComponentPopUp>
             <div className={css({
                 position: 'relative',
                 width: '100%',
@@ -436,7 +462,7 @@ const ToNftCanvas: React.FC<{ accountAddress: string, onPublish: Function, block
                             endEnhancer={() => <Upload size={24}/>}
                             onClick={() => setCommonWindowOpened(true)}
                         >
-                            Submit NFT Version
+                            Submit NFT
                         </Button>
                     </>
                 }
