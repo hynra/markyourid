@@ -7,25 +7,25 @@ import {useStyletron} from "baseui";
 import {Item, MetaAttribute} from "@rarible/api-client";
 import {useRouter} from "next/router";
 import {getItemByIdNoSDK} from "../../sdk/query";
-import {Display2, Display3, Display4, H1, H2, H3, Label1, Paragraph1, Paragraph3, Paragraph4} from "baseui/typography";
-import {getDwebLinkUrl} from "../../common/helper";
+import {Display3, Display4, H3, Label1, Label2, Paragraph1, Paragraph3} from "baseui/typography";
+import {checkIfItemGenerated, getDwebLinkUrl} from "../../common/helper";
 import {Tabs, Tab, FILL} from "baseui/tabs-motion";
 import {DIVIDER, SIZE as TableSize, Table} from "baseui/table-semantic";
 import {ButtonGroup} from "baseui/button-group";
 import {Button} from "baseui/button";
-import {FlexGrid, FlexGridItem} from "baseui/flex-grid";
+import ComponentPopUp from "../../components/component_popup";
 
 const ItemID: React.FC = () => {
 
     const router = useRouter();
     const {id: itemId} = router.query;
 
-    const {sdk, wallet} = useSdk("prod");
     const {status, account} = useMetaMask();
     const [isLoading, setLoading] = React.useState<boolean>(true);
     const [css, theme] = useStyletron();
     const [item, setItem] = React.useState<Item>(null);
     const [activeKey, setActiveKey] = React.useState<string | number>("0");
+    const [isValid, setValid] = React.useState<boolean>(true);
 
 
     React.useEffect(() => {
@@ -41,8 +41,8 @@ const ItemID: React.FC = () => {
     const fetchItem = async () => {
         try {
             const nftItem: Item = await getItemByIdNoSDK(itemId as string);
+            setValid(checkIfItemGenerated(nftItem));
             setItem(nftItem);
-            console.log(nftItem)
             setLoading(false);
         } catch (e) {
 
@@ -59,13 +59,52 @@ const ItemID: React.FC = () => {
         return data;
     }
 
+    const getOwner = (): string => {
+        return item.owners.length === 0 ?
+            item.creators[0].account : item.owners[0]
+    }
+
+    const getCreator = (): string => {
+        return item.creators[0].account
+    }
+
+
+    const showStampButton = (): boolean => {
+        if(!account) return false;
+        const fixedAccount = account.toLowerCase();
+        const fixedCreator = getCreator().replace("ETHEREUM:", "").toLowerCase();
+        const fixedOwner = getCreator().replace("ETHEREUM:", "").toLowerCase();
+        return fixedAccount === fixedCreator || fixedAccount === fixedOwner;
+    }
+
+    console.log(isValid)
+
+    function openRarible() {
+        const url = `https://rarible.com/token/${item.id.replace('ETHEREUM:', '')}`
+        router.push(url).then()
+    }
 
     return (
-        <MainLayout path='/item' address={wallet?.address}>
-
+        <MainLayout path='/item' address={account}>
             {isLoading && <PreLoad/>}
-
-            {item && <div
+            { isValid === false &&
+                <ComponentPopUp
+                    isOpen={!isValid}
+                    setIsOpen={null}
+                    onAccepted={() => {
+                        router.push("/").then();
+                    }}
+                    modalInfo="Info"
+                    isClosable={false}
+                    showActionButton={false}
+                >
+                 <Label2 marginBottom="scale400">
+                     The NFT you are trying to view is not the NFT that MarkYourID generated. Only generated NFTs are allowed to be viewed.
+                 </Label2>
+                    <Button onClick={openRarible}>View on Rarible</Button>
+                </ComponentPopUp>
+            }
+            {item && isValid && <div
                 className={css({
                     display: (isLoading) ? 'none' : 'block'
                 })}
@@ -91,12 +130,11 @@ const ItemID: React.FC = () => {
                         }
                     }
                 >
-                    <Button>Stamp on an image</Button>
+                    { showStampButton() &&
+                        <Button>Stamp to image</Button>
+                    }
                     <Button
-                        onClick={() => {
-                            const url = `https://rarible.com/token/${item.id.replace('ETHEREUM:', '')}`
-                            router.push(url).then()
-                        }}
+                        onClick={openRarible}
                     >
                         View on Rarible</Button>
                 </ButtonGroup>
@@ -111,7 +149,12 @@ const ItemID: React.FC = () => {
                 >
                     <Tab title="Details">
                         <Label1>Description</Label1>
-                        <Paragraph1 marginBottom="scale500">
+                        <Paragraph1
+                            marginBottom="scale500"
+                            $style={{
+                                wordBreak: "break-all"
+                            }}
+                        >
                             {
                                 item.meta.description.split("\n").map((text, index) => {
                                     return <span key={index}>{text}<br/></span>
@@ -123,7 +166,12 @@ const ItemID: React.FC = () => {
                             {item.id.split(':')[0]}
                         </Paragraph1>
                         <Label1>Collection</Label1>
-                        <Paragraph1 marginBottom="scale500">
+                        <Paragraph1
+                            $style={{
+                                wordBreak: "break-all"
+                            }}
+                            marginBottom="scale500"
+                        >
                             {item.collection}
                         </Paragraph1>
                     </Tab>
@@ -137,14 +185,20 @@ const ItemID: React.FC = () => {
                     </Tab>
                     <Tab title="Ownership">
                         <Label1 marginTop="scale500">Owner: </Label1>
-                        <Paragraph3>
-                            <b>{item.owners.length === 0 ?
-                                item.creators[0].account : item.owners[0]
-                            }</b>
+                        <Paragraph3
+                            $style={{
+                                wordBreak: "break-all"
+                            }}
+                        >
+                            <b>{getOwner()}</b>
                         </Paragraph3>
                         <Label1 marginTop="scale500">Creator: </Label1>
-                        <Paragraph3>
-                            <b>{item.creators[0].account}</b>
+                        <Paragraph3
+                            $style={{
+                                wordBreak: "break-all"
+                            }}
+                        >
+                            <b>{getCreator()}</b>
                         </Paragraph3>
                     </Tab>
                 </Tabs>

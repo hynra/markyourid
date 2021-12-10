@@ -1,5 +1,6 @@
 import axios from "axios";
 import {NftMetadata} from "./nft_metadata";
+import {Item} from "@rarible/api-client";
 
 const FormData = require('form-data');
 
@@ -23,6 +24,17 @@ export async function uploadMetadata(metadata: NftMetadata) {
     } catch (e) {
         throw e;
     }
+}
+
+export function checkIfItemGenerated(item: Item): boolean{
+    let isValid = false;
+    item.meta.attributes.map((attr) => {
+        if(attr.key === "powered by" && attr.value === "https://markyour.id"){
+            isValid = true;
+        }
+    });
+
+    return isValid;
 }
 
 export function getDwebLinkUrl(ipfsUrl: string): string {

@@ -8,7 +8,7 @@ import {useRouter} from "next/router";
 import ToNftCanvas from "../components/to-nft-canvas";
 import {NftMetadata} from "../common/nft_metadata";
 import {Check, Delete} from "baseui/icon";
-import {useSnackbar} from "baseui/snackbar";
+import {useSnackbar, DURATION,} from "baseui/snackbar";
 import {useEthereumProvider} from "../common/blockchain-provider";
 import {mintNft} from "../sdk/mint";
 import {useStyletron} from "baseui";
@@ -21,7 +21,7 @@ const Create: React.FC = () => {
 
     const router = useRouter();
     const [loading, setLoading] = React.useState<boolean>(false);
-    const {enqueue} = useSnackbar();
+    const {enqueue, dequeue} = useSnackbar();
     const rarepress = useEthereumProvider();
     const [css, theme] = useStyletron();
 
@@ -34,12 +34,23 @@ const Create: React.FC = () => {
 
     const publish = async (metadata: NftMetadata, lazy: boolean) => {
         setLoading(true);
+
+        enqueue(
+            {
+                message: "Uploading your NFT, please don't close this page",
+                progress: true,
+            },
+            DURATION.infinite,
+        );
+
         const isMinted = await mintNft(
             metadata,
             lazy,
             rarepress,
             sdk
         )
+
+        dequeue();
 
         if(!isMinted){
             enqueue({
