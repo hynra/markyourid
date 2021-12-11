@@ -22,23 +22,6 @@ const routes = [
         ],
     },
     {
-        title: 'Guides',
-        subNav: [
-            {
-                title: 'How it works',
-                itemId: '/hiw',
-            },
-            {
-                title: 'FAQ',
-                itemId: '/faq',
-            },
-            {
-                title: 'About',
-                itemId: '/about',
-            },
-        ],
-    },
-    {
         title: 'Feedback',
         itemId: '/feedback',
     },

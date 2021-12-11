@@ -4,7 +4,9 @@ import {Button, KIND, SHAPE, SIZE} from "baseui/button";
 import * as React from "react";
 import {useStyletron} from "baseui";
 import {Label2} from "baseui/typography";
-import {Delete, Menu} from "baseui/icon";
+import {Delete, Menu, Overflow} from "baseui/icon";
+import {StyledLink as Link} from 'baseui/link';
+import {Drawer} from "baseui/drawer";
 
 const HeaderNav: React.FC<{
     toggleSidebar?: Function,
@@ -20,14 +22,81 @@ const HeaderNav: React.FC<{
 
     const [css, theme] = useStyletron();
 
+    const [secondMenuOpened, setSecondMenuOpened] = React.useState<boolean>(false);
+
+    const linkStyle = css({
+        display: 'none',
+        [theme.mediaQuery.medium]: {
+            display: 'block',
+        },
+    });
+
     return (
         <div>
+            <Drawer
+                isOpen={secondMenuOpened}
+                autoFocus={false}
+                onClose={() => setSecondMenuOpened(false)}
+            >
+                <img src="/logo-narrow.png" width="180px"/>
+                <Label2 marginBottom="scale400" marginTop="scale800">
+                    <Link href="#basic-link1">How it works</Link>
+                </Label2>
+                <Label2 marginBottom="scale400">
+                    <Link href="#basic-link1">FAQ</Link>
+                </Label2>
+                <Label2 marginBottom="scale400">
+                    <Link href="#basic-link1">About</Link>
+                </Label2>
+            </Drawer>
             <HeaderNavigation>
-                <StyledNavigationList $align={ALIGN.left}>
-                    <StyledNavigationItem><Label2>MarkYourID</Label2></StyledNavigationItem>
+                <StyledNavigationList $align={ALIGN.center}>
+                    <StyledNavigationItem>
+                        <img src="/logo-narrow.png" width="180px"/>
+                    </StyledNavigationItem>
                 </StyledNavigationList>
-                <StyledNavigationList $align={ALIGN.center}/>
+                <StyledNavigationList $align={ALIGN.center}></StyledNavigationList>
                 <StyledNavigationList $align={ALIGN.right}>
+                    <StyledNavigationItem>
+                        <div className={linkStyle}>
+                            <Link href="#basic-link1">How it works</Link>
+                        </div>
+                    </StyledNavigationItem>
+                    <StyledNavigationItem>
+                        <div className={linkStyle}>
+                            <Link href="#basic-link1">FAQ</Link>
+                        </div>
+                    </StyledNavigationItem>
+                    <StyledNavigationItem>
+                        <div className={linkStyle}>
+                            <Link href="#basic-link1">About</Link>
+                        </div>
+                    </StyledNavigationItem>
+                    <StyledNavigationItem>
+                        <Button
+                            onClick={() => setSecondMenuOpened(!secondMenuOpened)}
+                            size={SIZE.compact}
+                            kind={KIND.tertiary}
+                            shape={SHAPE.square}
+                            overrides={{
+                                BaseButton: {
+                                    style: {
+                                        display: 'flex',
+                                        [theme.mediaQuery.medium]: {
+                                            display: 'none',
+                                        },
+                                    },
+                                },
+                            }}
+                        >
+                            {
+                                secondMenuOpened ?
+                                    <Delete size={24} color={theme.colors.contentPrimary}/> :
+                                    <Overflow size={24} color={theme.colors.contentPrimary}/>
+                            }
+
+                        </Button>
+                    </StyledNavigationItem>
                     <StyledNavigationItem>
                         {isLogged && <Button
                             onClick={() => toggleSidebar()}
