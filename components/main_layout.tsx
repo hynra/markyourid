@@ -134,6 +134,7 @@ const MainLayout: React.FC<MainLayoutProps> = (props) => {
                     setSidebarOpen(!sidebarOpen)
                 }}
                 isOpen={sidebarOpen}
+                isLogged={props.address !== null}
             />
             <Block {...blockProps}>
                 <Block

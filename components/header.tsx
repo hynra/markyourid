@@ -6,7 +6,17 @@ import {useStyletron} from "baseui";
 import {Label2} from "baseui/typography";
 import {Delete, Menu} from "baseui/icon";
 
-const HeaderNav: React.FC<{ toggleSidebar?: Function, isOpen?: boolean }> = ({toggleSidebar, isOpen = false}) => {
+const HeaderNav: React.FC<{
+    toggleSidebar?: Function,
+    isOpen?: boolean,
+    isLogged: boolean
+}> = (
+    {
+        toggleSidebar,
+        isOpen = false,
+        isLogged
+    }
+) => {
 
     const [css, theme] = useStyletron();
 
@@ -19,7 +29,7 @@ const HeaderNav: React.FC<{ toggleSidebar?: Function, isOpen?: boolean }> = ({to
                 <StyledNavigationList $align={ALIGN.center}/>
                 <StyledNavigationList $align={ALIGN.right}>
                     <StyledNavigationItem>
-                        <Button
+                        {isLogged && <Button
                             onClick={() => toggleSidebar()}
                             size={SIZE.compact}
                             kind={KIND.tertiary}
@@ -41,7 +51,7 @@ const HeaderNav: React.FC<{ toggleSidebar?: Function, isOpen?: boolean }> = ({to
                                     <Menu size={24} color={theme.colors.contentPrimary}/>
                             }
 
-                        </Button>
+                        </Button>}
                     </StyledNavigationItem>
                 </StyledNavigationList>
             </HeaderNavigation>
