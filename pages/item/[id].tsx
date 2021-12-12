@@ -77,7 +77,6 @@ const ItemID: React.FC = () => {
         return fixedAccount === fixedCreator || fixedAccount === fixedOwner;
     }
 
-    console.log(isValid)
 
     function openRarible() {
         const url = `https://rarible.com/token/${item.id.replace('ETHEREUM:', '')}`
@@ -85,7 +84,7 @@ const ItemID: React.FC = () => {
     }
 
     return (
-        <MainLayout path='/item' address={account}>
+        <MainLayout path={`/item/${itemId}`} address={account}>
             {isLoading && <PreLoad/>}
             { isValid === false &&
                 <ComponentPopUp
@@ -131,7 +130,12 @@ const ItemID: React.FC = () => {
                     }
                 >
                     { showStampButton() &&
-                        <Button>Stamp to image</Button>
+                        <Button
+                            onClick={() => {
+                                router.push(`/stamp/${item.id}`).then()
+                            }}
+                        >
+                            Stamp to image</Button>
                     }
                     <Button
                         onClick={openRarible}

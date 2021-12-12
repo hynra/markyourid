@@ -23,7 +23,7 @@ const Contextual: React.FC = () => {
 
     return (
         <div>
-            <HeaderNav/>
+            <HeaderNav isLogged={false}/>
             <Layout>
                 <Tabs
                     activeKey={activeKey}

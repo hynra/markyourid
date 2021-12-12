@@ -14,7 +14,7 @@ const Index: React.FC = () => {
 
     return (
         <div>
-            <HeaderNav/>
+            <HeaderNav isLogged={false}/>
             <Layout>
                 <WalletStatus
                     walletStatus={status as MetamaskConnectionState}

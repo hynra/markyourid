@@ -108,6 +108,25 @@ const CustomNavLink = props => {
 
 
 const Sidebar: React.FC<{activeItem: string}> = ({activeItem}) => {
+
+
+
+    React.useEffect(() => {
+        const customRoutes = routes;
+        if(activeItem.startsWith("/stamp")){
+            customRoutes[0].subNav = [...customRoutes[0].subNav, {
+                title: 'Stamp Image',
+                itemId: activeItem,
+            }]
+        }
+        if(activeItem.startsWith("/item")){
+            customRoutes[0].subNav = [...customRoutes[0].subNav, {
+                title: 'View Item',
+                itemId: activeItem,
+            }]
+        }
+    }, [])
+
     return (
         <Navigation
             items={routes}
