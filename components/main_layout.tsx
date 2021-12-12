@@ -1,7 +1,7 @@
 import React from "react";
 import {Block, BlockProps} from "baseui/block";
 import {createThemedStyled, useStyletron, withStyle} from "baseui";
-import type {BreakpointsT, ThemeT} from 'baseui/styles/types';
+import type {ThemeT} from 'baseui/styles/types';
 import {Navigation, StyledNavItem, StyledNavLink} from 'baseui/side-navigation';
 import HeaderNav from "../components/header";
 import Link from 'next/link';
@@ -37,7 +37,7 @@ const themedStyled = createThemedStyled<ThemeT>();
 
 
 // @ts-ignore
-const SidebarWrapper = themedStyled<{$isOpen: boolean}>('nav', ({$theme, $isOpen}) => ({
+const SidebarWrapper = themedStyled<{ $isOpen: boolean }>('nav', ({$theme, $isOpen}) => ({
     display: $isOpen ? 'block' : 'none',
     paddingTop: $theme.sizing.scale700,
     marginLeft: $theme.sizing.scale800,
@@ -50,7 +50,7 @@ const SidebarWrapper = themedStyled<{$isOpen: boolean}>('nav', ({$theme, $isOpen
 
 
 // @ts-ignore
-const ContentWrapper = themedStyled<{$isSidebarOpen: boolean,}>('main', ({$theme, $isSidebarOpen}) => ({
+const ContentWrapper = themedStyled<{ $isSidebarOpen: boolean, }>('main', ({$theme, $isSidebarOpen}) => ({
     position: 'relative',
     boxSizing: 'border-box',
     display: $isSidebarOpen ? 'none' : 'block',
@@ -64,7 +64,6 @@ const ContentWrapper = themedStyled<{$isSidebarOpen: boolean,}>('main', ({$theme
         maxWidth: '60em',
     },
 }));
-
 
 
 const CustomStyledNavItem = withStyle(
@@ -106,30 +105,47 @@ const CustomNavLink = props => {
 };
 
 
+const Sidebar: React.FC<{ activeItem: string }> = ({activeItem}) => {
 
-const Sidebar: React.FC<{activeItem: string}> = ({activeItem}) => {
 
+    const [myRoutes, setMyRoutes] = React.useState(routes);
 
 
     React.useEffect(() => {
         const customRoutes = routes;
-        if(activeItem.startsWith("/stamp")){
+        if (activeItem.startsWith("/stamp")) {
             customRoutes[0].subNav = [...customRoutes[0].subNav, {
                 title: 'Stamp Image',
                 itemId: activeItem,
             }]
         }
-        if(activeItem.startsWith("/item")){
+        if (activeItem.startsWith("/item")) {
             customRoutes[0].subNav = [...customRoutes[0].subNav, {
                 title: 'View Item',
                 itemId: activeItem,
             }]
         }
+
+        const isValid = (iid: string): boolean => {
+            if (activeItem.startsWith("/stamp")) {
+                return !iid.startsWith("/item");
+            } else if (activeItem.startsWith("/item")) {
+                return !iid.startsWith("/stamp");
+            }else {
+                return !(iid.startsWith("/item") || iid.startsWith("/stamp"));
+            }
+        }
+
+        customRoutes[0].subNav = customRoutes[0].subNav.filter(function ({itemId}) {
+            return !this[itemId] && (this[itemId] = itemId) && isValid(itemId)
+        }, {});
+
+        setMyRoutes(customRoutes)
     }, [])
 
     return (
         <Navigation
-            items={routes}
+            items={myRoutes}
             overrides={{
                 NavItem: CustomNavItem,
                 NavLink: CustomNavLink,
