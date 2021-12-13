@@ -110,7 +110,7 @@ const StampCanvas: React.FC<{
                     qrImage.onload = function () {
                         // @ts-ignore
                         context.globalAlpha = textProps.opacity;
-                        const qrXpos = (textProps.qrHorizontal - qrImage.width < 0) ? textProps.qrHorizontal : textProps.qrHorizontal - qrImage.width;
+                        const qrXpos = textProps.qrHorizontal ;
                         const qrYpos = textProps.qrVertical - qrImage.height;
                         context.drawImage(qrImage, qrXpos, qrYpos, qrImage.width, qrImage.height
                         );

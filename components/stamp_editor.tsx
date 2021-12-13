@@ -27,6 +27,9 @@ import StampCanvas from "./stamp_canvas";
 import QRCode from 'qrcode'
 import {Accordion, Panel} from "baseui/accordion";
 import {Slider} from "baseui/slider";
+import {generateShortLink} from "../common/helper";
+import {Delete} from "baseui/icon";
+import {DURATION, useSnackbar} from "baseui/snackbar";
 
 
 const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
@@ -59,16 +62,24 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
     const [qrCodeImage, setQrCodeImage] = React.useState<string>(null);
     const [showQr, setShowQr] = React.useState<boolean>(true);
 
-    const [horizontalQrPosition, setHorizontalQrPosition] = React.useState(0);
-    const [verticalQrPosition, setVerticalQrPosition] = React.useState(0);
+    const [horizontalQrPosition, setHorizontalQrPosition] = React.useState<number>(0);
+    const [verticalQrPosition, setVerticalQrPosition] = React.useState<number>(0);
 
-    const [horizontalQrPlaceHolderPosition, setHorizontalQrPlaceHolderPosition] = React.useState(0);
-    const [verticalQrPlaceHolderPosition, setVerticalQrPlaceHolderPosition] = React.useState(0);
+    const [horizontalQrPlaceHolderPosition, setHorizontalQrPlaceHolderPosition] = React.useState<number>(0);
+    const [verticalQrPlaceHolderPosition, setVerticalQrPlaceHolderPosition] = React.useState<number>(0);
 
-    const [maxVerticalPos, setMaxVerticalPos] = React.useState(0);
-    const [maxHorizontalPos, setMaxHorizontalPos] = React.useState(0);
+    const [maxVerticalPos, setMaxVerticalPos] = React.useState<number>(0);
+    const [maxHorizontalPos, setMaxHorizontalPos] = React.useState<number>(0);
 
-    const [useRaribleUrl, setUseRaribleUrl] = React.useState(false);
+    const [useRaribleUrl, setUseRaribleUrl] = React.useState<boolean>(false);
+    const [useShortLink, setUseShortLink] = React.useState<boolean>(false);
+
+    const [shortLinkMyid, setShortLinkMyid] = React.useState<string>(null)
+    const [shortLinkRarible, setShortLinkRarible] = React.useState<string>(null);
+
+    const {enqueue, dequeue} = useSnackbar();
+
+
 
 
     useEffect(() => {
@@ -103,7 +114,7 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
                 })
         }
 
-    }, [imageFile]);
+    }, [imageFile, nftUrl]);
 
     const itemProps: BlockProps = {
         display: 'flex',
@@ -117,6 +128,67 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
             setNftUrl(`https://rarible.com/token/${item.id.replace("ETHEREUM:", "")}`);
         } else {
             setNftUrl(`https://markyour.id/${item.id}`)
+        }
+        if(useShortLink){
+            setUseShortLink(false);
+        }
+    }
+
+    const errorWhileGetShort = () => {
+        enqueue({
+            message: 'Oops! Something went wrong, try again later.',
+            startEnhancer: ({size}) => <Delete size={size}/>,
+        });
+        setUseShortLink(false);
+    }
+
+    const enQueueLoadingSnackBar = (message: string) => {
+        enqueue(
+            {
+                message: message,
+                progress: true,
+            },
+            DURATION.infinite,
+        );
+    }
+
+    const dequeueLoadingSnackBar = () => {
+        dequeue();
+    }
+
+    const decideShortLinkMode = (useShortLink: boolean) => {
+        if(!useShortLink){
+            chooseUrlMode(useRaribleUrl);
+        } else {
+            if(nftUrl.startsWith("https://markyour.id/")){
+                if(shortLinkMyid === null){
+                    enQueueLoadingSnackBar("generating short url")
+                    generateShortLink(nftUrl).then((data) => {
+                        setShortLinkMyid(data.url.shortLink);
+                        setNftUrl(data.url.shortLink);
+                        dequeueLoadingSnackBar()
+                    }).catch((err) => {
+                        console.log(err);
+                        dequeueLoadingSnackBar();
+                        errorWhileGetShort();
+
+                    })
+                } else setNftUrl(shortLinkMyid);
+            } else {
+                if(shortLinkRarible === null){
+                    enQueueLoadingSnackBar("generating short url")
+                    generateShortLink(nftUrl).then((data) => {
+                        setShortLinkRarible(data.url.shortLink);
+                        setNftUrl(data.url.shortLink);
+                        dequeueLoadingSnackBar()
+                    }).catch((err) => {
+                        console.log(err)
+                        dequeueLoadingSnackBar();
+                        errorWhileGetShort();
+                    })
+                } else setNftUrl(shortLinkRarible);
+            }
+
         }
     }
 
@@ -331,6 +403,31 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
                                         }}
                                     >
                                         Use Rarible URL
+                                    </Checkbox>
+                                    <Checkbox
+                                        checked={useShortLink}
+                                        checkmarkType={STYLE_TYPE.toggle_round}
+
+                                        onChange={e => {
+                                            // @ts-ignore
+                                            const isShortLink = e.target.checked;
+                                            setUseShortLink(isShortLink);
+                                            decideShortLinkMode(isShortLink);
+                                        }}
+                                        labelPlacement={LABEL_PLACEMENT.right}
+                                        overrides={{
+                                            Root: {
+                                                style: {
+                                                    width: '100%',
+                                                    marginTop: "14px",
+                                                    marginBottom: "18px",
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center'
+                                                }
+                                            }
+                                        }}
+                                    >
+                                        Use shorted link
                                     </Checkbox>
                                     <Label2>Horizontal Position</Label2>
                                     <Slider

@@ -26,6 +26,19 @@ export async function uploadMetadata(metadata: NftMetadata) {
     }
 }
 
+
+export async function generateShortLink(urlToShort: string) {
+    const url =  '/api/short'
+    try {
+        const resp = await axios.post(url, {url: urlToShort}, {})
+        return resp.data
+    } catch (e) {
+        throw e;
+    }
+
+}
+
+
 export function checkIfItemGenerated(item: Item): boolean{
     let isValid = false;
     item.meta.attributes.map((attr) => {
