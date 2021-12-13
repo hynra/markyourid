@@ -12,6 +12,8 @@ import StampEditor from "../../components/stamp_editor";
 import ComponentPopUp from "../../components/component_popup";
 import {Label2} from "baseui/typography";
 import {Button} from "baseui/button";
+import {useSnackbar} from "baseui/snackbar";
+import {Delete} from "baseui/icon";
 
 const StampID: React.FC = () => {
 
@@ -19,10 +21,20 @@ const StampID: React.FC = () => {
     const {id: itemId} = router.query;
 
     const {status, account} = useMetaMask();
+    const {enqueue, dequeue} = useSnackbar();
     const [isLoading, setLoading] = React.useState<boolean>(true);
     const [css, theme] = useStyletron();
     const [item, setItem] = React.useState<Item>(null);
     const [isValid, setValid] = React.useState<boolean>(true);
+
+    const getOwner = (_item: Item): string => {
+        return _item.owners.length === 0 ?
+            _item.creators[0].account.replace("ETHEREUM:", "") : _item.owners[0].replace("ETHEREUM:", "");
+    }
+
+    const getCreator = (_item: Item): string => {
+        return _item.creators[0].account.replace("ETHEREUM:", "");
+    }
 
     const fetchItem = async () => {
         try {
@@ -30,7 +42,18 @@ const StampID: React.FC = () => {
             setValid(checkIfItemGenerated(nftItem));
             setItem(nftItem);
             setLoading(false);
+            if(getOwner(nftItem) !== account || getCreator(nftItem) !== account){
+                setValid(false);
+                return;
+            }
         } catch (e) {
+
+            console.log(e)
+
+            enqueue({
+                message: 'Oops! Something went wrong, try again later.',
+                startEnhancer: ({size}) => <Delete size={size}/>,
+            });
 
         }
     }
@@ -45,11 +68,11 @@ const StampID: React.FC = () => {
 
         if (!itemId) return;
 
-        if (item === null)
+        if (item === null && account)
             fetchItem().then();
 
 
-    }, [itemId])
+    }, [itemId, account])
 
     if (status === MetamaskConnectionState.NotConnected || status === MetamaskConnectionState.Unavailable) {
         router.push('/').then();
@@ -73,17 +96,19 @@ const StampID: React.FC = () => {
                 showActionButton={false}
             >
                 <Label2 marginBottom="scale400">
-                    The NFT you are trying to view is not the NFT that MarkYourID generated. Only generated NFTs are
-                    allowed to be viewed.
+                    The NFT you are trying to view is not the NFT that MarkYourID generated or you are not owner of this NFT.
                 </Label2>
                 <Button onClick={openRarible}>View on Rarible</Button>
             </ComponentPopUp>
             }
             {
                 item && isValid &&
-                <StampEditor onImageSavedToLocal={(url: string) => {
+                <StampEditor
+                    onImageSavedToLocal={(url: string) => {
 
-                }}/>
+                }}
+                    item={item}
+                />
 
             }
         </MainLayout>

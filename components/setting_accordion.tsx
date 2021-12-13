@@ -37,7 +37,7 @@ export const positionOption = [
 const SettingAccordion: React.FC<{
     onFontSizeChanged: Function, onWmColoChanged: Function, onPositionChanged: Function,
     onOpacityChanged: Function, imageSrc: string, onHorizontalPosChanged: Function, onVerticalPosChanged: Function,
-    onRectColorChanged: Function, onEnableRectChanged
+    onRectColorChanged: Function, onEnableRectChanged: Function, title?: string
 }> = ({
           onFontSizeChanged,
           onWmColoChanged,
@@ -47,7 +47,8 @@ const SettingAccordion: React.FC<{
           onHorizontalPosChanged,
           onVerticalPosChanged,
           onEnableRectChanged,
-          onRectColorChanged
+          onRectColorChanged,
+          title = "Customize",
       }
 ) => {
 
@@ -61,6 +62,7 @@ const SettingAccordion: React.FC<{
     const [reactColor, setRectColor] = React.useState('#000');
     const [enableRect, setEnableRect] = React.useState(true);
 
+
     React.useEffect(() => {
         const img = new Image();
         img.src = imageSrc;
@@ -73,13 +75,14 @@ const SettingAccordion: React.FC<{
             onVerticalPosChanged(height / 2);
             setHorizontalPosition(width / 2);
             setVerticalPosition(height / 2);
+
         }
     }, [imageSrc]);
 
 
     return (
         <Accordion>
-            <Panel title="Customize">
+            <Panel title={title}>
                 <Label2>Font Size</Label2>
                 <Slider
                     value={[fontSize]}
@@ -157,7 +160,7 @@ const SettingAccordion: React.FC<{
                 <Checkbox
                     checked={enableRect}
                     checkmarkType={STYLE_TYPE.toggle_round}
-                    onChange={e =>{
+                    onChange={e => {
                         // @ts-ignore
                         setEnableRect(e.target.checked)
                         // @ts-ignore

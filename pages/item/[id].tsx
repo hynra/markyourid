@@ -14,11 +14,14 @@ import {DIVIDER, SIZE as TableSize, Table} from "baseui/table-semantic";
 import {ButtonGroup} from "baseui/button-group";
 import {Button} from "baseui/button";
 import ComponentPopUp from "../../components/component_popup";
+import {Delete} from "baseui/icon";
+import {useSnackbar} from "baseui/snackbar";
 
 const ItemID: React.FC = () => {
 
     const router = useRouter();
     const {id: itemId} = router.query;
+    const {enqueue, dequeue} = useSnackbar();
 
     const {status, account} = useMetaMask();
     const [isLoading, setLoading] = React.useState<boolean>(true);
@@ -45,7 +48,10 @@ const ItemID: React.FC = () => {
             setItem(nftItem);
             setLoading(false);
         } catch (e) {
-
+            enqueue({
+                message: 'Oops! Something went wrong, try again later.',
+                startEnhancer: ({size}) => <Delete size={size}/>,
+            });
         }
     }
 

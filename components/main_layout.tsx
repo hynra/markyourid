@@ -201,7 +201,7 @@ const MainLayout: React.FC<MainLayoutProps> = (props) => {
                                     <Avatar
                                         name={`user`}
                                         size="64px"
-                                        src={`https://avatars.dicebear.com/api/gridy/${props.address.toUpperCase().replace("ETHEREUM:", "")}.svg`}
+                                        src={`https://avatars.dicebear.com/api/jdenticon/${props.address.toUpperCase().replace("ETHEREUM:", "")}.svg`}
                                         overrides={{
                                             Root: {
                                                 style: ({$theme}) => ({
