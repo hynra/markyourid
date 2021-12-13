@@ -124,14 +124,16 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
 
 
     const chooseUrlMode = (isRarible: boolean) => {
+        if(useShortLink){
+            setUseShortLink(false);
+            // return;
+        }
         if(isRarible){
             setNftUrl(`https://rarible.com/token/${item.id.replace("ETHEREUM:", "")}`);
         } else {
             setNftUrl(`https://markyour.id/${item.id}`)
         }
-        if(useShortLink){
-            setUseShortLink(false);
-        }
+
     }
 
     const errorWhileGetShort = () => {
