@@ -47,13 +47,23 @@ const StampCanvas: React.FC<{
         return Math.round(height);
     }
 
+    const loadQrImage = (): Promise<HTMLImageElement> => {
+        return new Promise((resolve, reject) => {
+            const qrImage = new Image();
+            qrImage.src = textProps.qrcodeImage;
+            qrImage.onload = function () {
+                resolve(qrImage);
+            }
+        })
+    }
+
     React.useEffect(() => {
         if (canvas) {
             // @ts-ignore
             let context = canvas.getContext("2d");
             const img = new Image();
             img.src = imageSrc;
-            img.onload = function () {
+            img.onload = async function () {
 
                 if (img.width > MAX_IMAGE_WIDTH) {
 
@@ -84,6 +94,9 @@ const StampCanvas: React.FC<{
                     canvas.width = desiredWidth;
                     // @ts-ignore
                     canvas.height = desiredHeight;
+
+
+
                     context.drawImage(img, 0, 0, desiredWidth, desiredHeight);
                     const uri = saveImageAsUrl(canvas);
                     onImageResized(uri);
@@ -104,17 +117,12 @@ const StampCanvas: React.FC<{
                 const currText: string[] = toMultiLine(textProps.text);
 
                 if (textProps.qrcodeImage && textProps.showQr) {
-                    context.globalAlpha = textProps.opacity;
-                    const qrImage = new Image();
-                    qrImage.src = textProps.qrcodeImage;
-                    qrImage.onload = function () {
-                        // @ts-ignore
-                        context.globalAlpha = textProps.opacity;
-                        const qrXpos = textProps.qrHorizontal ;
-                        const qrYpos = textProps.qrVertical - qrImage.height;
-                        context.drawImage(qrImage, qrXpos, qrYpos, qrImage.width, qrImage.height
-                        );
-                    }
+                    // context.globalAlpha = textProps.opacity;
+                    const qrImage = await loadQrImage();
+                    const qrXpos = textProps.qrHorizontal;
+                    const qrYpos = textProps.qrVertical - qrImage.height;
+                    context.clearRect(qrImage, qrXpos, qrYpos, qrImage.width, qrImage.height);
+                    context.drawImage(qrImage, qrXpos, qrYpos, qrImage.width, qrImage.height);
                 }
 
                 let rectWidth = 0;

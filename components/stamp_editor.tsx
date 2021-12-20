@@ -15,7 +15,6 @@ import {H6, Label2, Paragraph2, Paragraph3} from "baseui/typography";
 import {SIZE, Textarea} from "baseui/textarea";
 import SettingAccordion, {PositionEnum, positionOption} from "../components/setting_accordion";
 import AdvancedAccordion from "../components/advanced_accordion";
-import MainCanvas from "../components/main_canvas";
 import ExportWindow from "../components/export_window";
 import {Item} from "@rarible/api-client";
 import {
@@ -27,7 +26,6 @@ import StampCanvas from "./stamp_canvas";
 import QRCode from 'qrcode'
 import {Accordion, Panel} from "baseui/accordion";
 import {Slider} from "baseui/slider";
-import {generateShortLink} from "../common/helper";
 import {Delete} from "baseui/icon";
 import {DURATION, useSnackbar} from "baseui/snackbar";
 
@@ -72,10 +70,7 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
     const [maxHorizontalPos, setMaxHorizontalPos] = React.useState<number>(0);
 
     const [useRaribleUrl, setUseRaribleUrl] = React.useState<boolean>(false);
-    const [useShortLink, setUseShortLink] = React.useState<boolean>(false);
 
-    const [shortLinkMyid, setShortLinkMyid] = React.useState<string>(null)
-    const [shortLinkRarible, setShortLinkRarible] = React.useState<string>(null);
 
     const {enqueue, dequeue} = useSnackbar();
 
@@ -124,75 +119,16 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
 
 
     const chooseUrlMode = (isRarible: boolean) => {
-        if(useShortLink){
-            setUseShortLink(false);
-            // return;
-        }
         if(isRarible){
             setNftUrl(`https://rarible.com/token/${item.id.replace("ETHEREUM:", "")}`);
         } else {
             setNftUrl(`https://markyour.id/${item.id}`)
         }
 
+
+
     }
 
-    const errorWhileGetShort = () => {
-        enqueue({
-            message: 'Oops! Something went wrong, try again later.',
-            startEnhancer: ({size}) => <Delete size={size}/>,
-        });
-        setUseShortLink(false);
-    }
-
-    const enQueueLoadingSnackBar = (message: string) => {
-        enqueue(
-            {
-                message: message,
-                progress: true,
-            },
-            DURATION.infinite,
-        );
-    }
-
-    const dequeueLoadingSnackBar = () => {
-        dequeue();
-    }
-
-    const decideShortLinkMode = (useShortLink: boolean) => {
-        if(!useShortLink){
-            chooseUrlMode(useRaribleUrl);
-        } else {
-            if(nftUrl.startsWith("https://markyour.id/")){
-                if(shortLinkMyid === null){
-                    enQueueLoadingSnackBar("generating short url")
-                    generateShortLink(nftUrl).then((data) => {
-                        setShortLinkMyid(data.url.shortLink);
-                        setNftUrl(data.url.shortLink);
-                        dequeueLoadingSnackBar()
-                    }).catch((err) => {
-                        console.log(err);
-                        dequeueLoadingSnackBar();
-                        errorWhileGetShort();
-
-                    })
-                } else setNftUrl(shortLinkMyid);
-            } else {
-                if(shortLinkRarible === null){
-                    enQueueLoadingSnackBar("generating short url")
-                    generateShortLink(nftUrl).then((data) => {
-                        setShortLinkRarible(data.url.shortLink);
-                        setNftUrl(data.url.shortLink);
-                        dequeueLoadingSnackBar()
-                    }).catch((err) => {
-                        console.log(err)
-                        dequeueLoadingSnackBar();
-                        errorWhileGetShort();
-                    })
-                } else setNftUrl(shortLinkRarible);
-            }
-
-        }
-    }
 
     const applyWaterMark = async (tempImage?: any) => {
         setImageSrc(tempImage);
@@ -405,31 +341,6 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
                                         }}
                                     >
                                         Use Rarible URL
-                                    </Checkbox>
-                                    <Checkbox
-                                        checked={useShortLink}
-                                        checkmarkType={STYLE_TYPE.toggle_round}
-
-                                        onChange={e => {
-                                            // @ts-ignore
-                                            const isShortLink = e.target.checked;
-                                            setUseShortLink(isShortLink);
-                                            decideShortLinkMode(isShortLink);
-                                        }}
-                                        labelPlacement={LABEL_PLACEMENT.right}
-                                        overrides={{
-                                            Root: {
-                                                style: {
-                                                    width: '100%',
-                                                    marginTop: "14px",
-                                                    marginBottom: "18px",
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center'
-                                                }
-                                            }
-                                        }}
-                                    >
-                                        Use shorted link
                                     </Checkbox>
                                     <Label2>Horizontal Position</Label2>
                                     <Slider
