@@ -32,6 +32,9 @@ const CustomStage: React.FC<{ imgSrc: string, predefinedText: string, getImage: 
 
     React.useEffect(() => {
         getImage(() => handleExport);
+        window.addEventListener('resize', () => {
+            console.log('resized')
+        })
     }, [])
 
     const handleExport = (): string => {
@@ -54,12 +57,19 @@ const CustomStage: React.FC<{ imgSrc: string, predefinedText: string, getImage: 
         const img = new window.Image();
 
         img.src = imgSrc;
+        img.onload = async function () {
+            _canvas.width = img.width;
+            _canvas.height = img.height;
+            // context.drawImage(img, 0, 0, img.width, img.height);
+            console.log(_canvas.width, _canvas.height)
+            console.log(_canvas.offsetWidth, _canvas.offsetHeight)
+            console.log(_canvas.offsetWidth, _canvas.offsetHeight)
 
-        _canvas.width = img.width;
-        _canvas.height = img.height;
-        // context.drawImage(img, 0, 0, img.width, img.height);
-        if (!canvas)
-            setCanvas(_canvas)
+            if (!canvas)
+                setCanvas(_canvas)
+        }
+
+
     }
 
 
@@ -95,7 +105,6 @@ const CustomStage: React.FC<{ imgSrc: string, predefinedText: string, getImage: 
                     className={css({
                         position: 'absolute',
                         width: '100%',
-                        marginBottom: "14px",
                         zIndex: -1
                     })}
                     ref={refHandler}
@@ -110,8 +119,8 @@ const CustomStage: React.FC<{ imgSrc: string, predefinedText: string, getImage: 
                     height={canvas.offsetHeight}
                     onMouseDown={checkDeselect}
                     onTouchStart={checkDeselect}
-                    // scaleX={canvas.offsetWidth / canvas.width}
-                    // scaleY={canvas.offsetHeight / canvas.height}
+                    scaleX={1}
+                    scaleY={1}
                 >
                     <Layer>
                         <Image
@@ -123,7 +132,7 @@ const CustomStage: React.FC<{ imgSrc: string, predefinedText: string, getImage: 
                             onClick={() => setTextSelected(false)}
                             onTap={() => setTextSelected(false)}
                             ref={node => {
-
+                                console.log(stageRef.current)
                             }}
                         />
                         <ConvaCustomText

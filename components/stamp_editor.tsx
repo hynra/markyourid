@@ -28,6 +28,8 @@ import {Accordion, Panel} from "baseui/accordion";
 import {Slider} from "baseui/slider";
 import {Delete} from "baseui/icon";
 import {DURATION, useSnackbar} from "baseui/snackbar";
+import dynamic from "next/dynamic";
+const CustomStage = dynamic(() => import('./custom_stage'), {ssr: false});
 
 
 const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
@@ -54,6 +56,7 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
     const [currText, setCurrText] = React.useState(item.meta.description);
     const [nftUrl, setNftUrl] = React.useState(`https://markyour.id/item/${item.id}`);
     const [opacity, setOpacity] = React.useState(0.5);
+    const [qrOpacity, setQrOpacity] = React.useState(0.8);
     const [horizontalPosition, setHorizontalPosition] = React.useState(undefined);
     const [verticalPosition, setVerticalPosition] = React.useState(undefined);
     const [showDesc, setShowDesc] = React.useState<boolean>(false);
@@ -63,21 +66,21 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
     const [horizontalQrPosition, setHorizontalQrPosition] = React.useState<number>(0);
     const [verticalQrPosition, setVerticalQrPosition] = React.useState<number>(0);
 
-    const [horizontalQrPlaceHolderPosition, setHorizontalQrPlaceHolderPosition] = React.useState<number>(0);
-    const [verticalQrPlaceHolderPosition, setVerticalQrPlaceHolderPosition] = React.useState<number>(0);
 
     const [maxVerticalPos, setMaxVerticalPos] = React.useState<number>(0);
     const [maxHorizontalPos, setMaxHorizontalPos] = React.useState<number>(0);
 
     const [useRaribleUrl, setUseRaribleUrl] = React.useState<boolean>(false);
 
+    const [qrSize, setQrSize] = React.useState<number>(1);
+
 
     const {enqueue, dequeue} = useSnackbar();
 
 
-
-
     useEffect(() => {
+
+
         if (imageFile !== null) {
             let reader = new FileReader();
             reader.readAsDataURL(imageFile);
@@ -92,9 +95,7 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
 
 
                     setHorizontalQrPosition(0);
-                    setHorizontalQrPlaceHolderPosition(0)
                     setVerticalQrPosition(img.height);
-                    setVerticalQrPlaceHolderPosition(img.height);
                 }
             }
         }
@@ -119,12 +120,11 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
 
 
     const chooseUrlMode = (isRarible: boolean) => {
-        if(isRarible){
+        if (isRarible) {
             setNftUrl(`https://rarible.com/token/${item.id.replace("ETHEREUM:", "")}`);
         } else {
             setNftUrl(`https://markyour.id/${item.id}`)
         }
-
 
 
     }
@@ -141,9 +141,7 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
         img.src = image;
         img.onload = () => {
             setHorizontalQrPosition(0);
-            setHorizontalQrPlaceHolderPosition(0)
             setVerticalQrPosition(img.height);
-            setVerticalQrPlaceHolderPosition(img.height);
         }
     }
 
@@ -212,12 +210,13 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
                         {
                             imageSrc !== "" && <StampCanvas
                                 imageSrc={imageSrc}
-                                textProps={
+                                canvasProps={
                                     {
                                         fontSize: fontSize,
                                         color: wmColor,
                                         nftUrl: nftUrl,
                                         showQr: showQr,
+                                        qrSize: qrSize,
                                         qrcodeImage: qrCodeImage,
                                         qrHorizontal: horizontalQrPosition,
                                         qrVertical: verticalQrPosition,
@@ -229,12 +228,24 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
                                         vertical: verticalPosition,
                                         rectColor: rectColor,
                                         rectEnable: enableRect,
-                                        showText: showDesc
+                                        showText: showDesc,
+                                        qrOpacity: qrOpacity,
                                     }
                                 } onImageResized={(uri) => {
                                 setImageSrc(uri);
                                 setPrevImageSrc(uri);
                             }}/>
+
+                            /*imageSrc !== "" &&
+                            <CustomStage
+                                imgSrc={imageSrc}
+                                predefinedText="Test 01"
+                                getImage={(image) => {
+
+                                }}
+                            />*/
+
+
                         }
 
                         <StyledBody>
@@ -344,29 +355,50 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
                                     </Checkbox>
                                     <Label2>Horizontal Position</Label2>
                                     <Slider
-                                        value={[horizontalQrPlaceHolderPosition]}
-                                        onChange={({value}) => value && setHorizontalQrPlaceHolderPosition(value[0])}
+                                        value={[horizontalQrPosition]}
+                                        onChange={({value}) => value && setHorizontalQrPosition(value[0])}
                                         onFinalChange={({value}) => {
                                             setHorizontalQrPosition(value[0])
                                             // onHorizontalPosChanged(value[0])
                                         }}
-                                        step={maxHorizontalPos/50}
-                                        marks
+
                                         min={0}
                                         max={maxHorizontalPos}
                                     />
                                     <Label2>Vertical Position</Label2>
                                     <Slider
-                                        value={[verticalQrPlaceHolderPosition]}
-                                        onChange={({value}) => value && setVerticalQrPlaceHolderPosition(value[0])}
+                                        value={[verticalQrPosition]}
+                                        onChange={({value}) => value && setVerticalQrPosition(value[0])}
                                         onFinalChange={({value}) => {
                                             setVerticalQrPosition(value[0])
                                             // onHorizontalPosChanged(value[0])
                                         }}
-                                        step={maxVerticalPos/50}
-                                        marks
+
                                         min={0}
                                         max={maxVerticalPos}
+                                    />
+                                    <Label2>QR Code size</Label2>
+                                    <Slider
+                                        value={[qrSize * 10]}
+                                        onChange={({value}) => value && setQrSize(value[0] / 10)}
+                                        onFinalChange={({value}) => {
+                                            setQrSize(value[0] / 10)
+                                            // onHorizontalPosChanged(value[0])
+                                        }}
+
+                                        min={0}
+                                        max={20}
+                                    />
+                                    <Label2>QR Code Opacity</Label2>
+                                    <Slider
+                                        value={[qrOpacity * 100]}
+                                        onChange={({value}) => value && setQrOpacity(value[0] / 100)}
+                                        onFinalChange={({value}) => {
+                                            setQrOpacity(value[0] / 100)
+                                        }}
+
+                                        min={0}
+                                        max={100}
                                     />
                                 </Panel>
                             </Accordion>
