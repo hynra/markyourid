@@ -95,7 +95,7 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
 
 
                     setHorizontalQrPosition(0);
-                    setVerticalQrPosition(img.height);
+                    setVerticalQrPosition(0);
                 }
             }
         }
