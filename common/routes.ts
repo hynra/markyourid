@@ -1,6 +1,6 @@
 const routes = [
     {
-        title: 'NFT',
+        title: 'Dashboard',
         subNav: [
             {
                 title: 'Home',

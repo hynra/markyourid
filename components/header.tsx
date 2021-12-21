@@ -7,16 +7,21 @@ import {Label2} from "baseui/typography";
 import {Delete, Menu, Overflow} from "baseui/icon";
 import {StyledLink as Link} from 'baseui/link';
 import {Drawer} from "baseui/drawer";
+import {SideWrapperContent} from "./main_layout";
 
 const HeaderNav: React.FC<{
     toggleSidebar?: Function,
     isOpen?: boolean,
-    isLogged: boolean
+    isLogged: boolean,
+    address?: string,
+    path?: string,
 }> = (
     {
         toggleSidebar,
         isOpen = false,
-        isLogged
+        isLogged,
+        address,
+        path,
     }
 ) => {
 
@@ -38,7 +43,15 @@ const HeaderNav: React.FC<{
                 autoFocus={false}
                 onClose={() => setSecondMenuOpened(false)}
             >
-                <img src="/logo-narrow.png" width="180px"/>
+                <Link href="/">
+                    <img src="/logo-narrow.png" width="180px" className={css({marginTop: '14px'})}/>
+                </Link>
+
+                {address && <SideWrapperContent
+                    path={path}
+                    address={address}
+                />}
+
                 <Label2 marginBottom="scale400" marginTop="scale800">
                     <Link href="#basic-link1">How it works</Link>
                 </Label2>
@@ -48,11 +61,14 @@ const HeaderNav: React.FC<{
                 <Label2 marginBottom="scale400">
                     <Link href="#basic-link1">About</Link>
                 </Label2>
+
             </Drawer>
             <HeaderNavigation>
                 <StyledNavigationList $align={ALIGN.center}>
                     <StyledNavigationItem>
-                        <img src="/logo-narrow.png" width="180px"/>
+                        <Link href="/">
+                            <img src="/logo-narrow.png" width="180px"/>
+                        </Link>
                     </StyledNavigationItem>
                 </StyledNavigationList>
                 <StyledNavigationList $align={ALIGN.center}></StyledNavigationList>
@@ -92,12 +108,12 @@ const HeaderNav: React.FC<{
                             {
                                 secondMenuOpened ?
                                     <Delete size={24} color={theme.colors.contentPrimary}/> :
-                                    <Overflow size={24} color={theme.colors.contentPrimary}/>
+                                    <Menu size={24} color={theme.colors.contentPrimary}/>
                             }
 
                         </Button>
                     </StyledNavigationItem>
-                    <StyledNavigationItem>
+                    {/*<StyledNavigationItem>
                         {isLogged && <Button
                             onClick={() => toggleSidebar()}
                             size={SIZE.compact}
@@ -121,7 +137,7 @@ const HeaderNav: React.FC<{
                             }
 
                         </Button>}
-                    </StyledNavigationItem>
+                    </StyledNavigationItem>*/}
                 </StyledNavigationList>
             </HeaderNavigation>
         </div>

@@ -105,7 +105,7 @@ const CustomNavLink = props => {
 };
 
 
-const Sidebar: React.FC<{ activeItem: string }> = ({activeItem}) => {
+export const Sidebar: React.FC<{ activeItem: string, address?: string }> = ({activeItem, address}) => {
 
 
     const [myRoutes, setMyRoutes] = React.useState(routes);
@@ -126,12 +126,26 @@ const Sidebar: React.FC<{ activeItem: string }> = ({activeItem}) => {
             }]
         }
 
+        // rarible link
+        customRoutes[0].subNav = customRoutes[0].subNav.map((nav, index) => {
+            if(nav.itemId.startsWith("/rari")){
+                let customNav = {
+                    title: 'View on Rarible',
+                    itemId: '/',
+                };
+                if(address){
+                    customNav.itemId =  `https://rarible.com/user/${address}/owned`
+                }
+                return customNav;
+            } else return nav;
+        })
+
         const isValid = (iid: string): boolean => {
             if (activeItem.startsWith("/stamp")) {
                 return !iid.startsWith("/item");
             } else if (activeItem.startsWith("/item")) {
                 return !iid.startsWith("/stamp");
-            }else {
+            } else {
                 return !(iid.startsWith("/item") || iid.startsWith("/stamp"));
             }
         }
@@ -155,6 +169,64 @@ const Sidebar: React.FC<{ activeItem: string }> = ({activeItem}) => {
     );
 }
 
+export const SideWrapperContent: React.FC<{ address?: string, path: string }> = (
+    {
+        address,
+        path
+    }
+) => {
+
+    const [css] = useStyletron();
+
+    return (
+        <>
+            {address && <FlexGrid
+                flexGridColumnCount={1}
+                flexGridColumnGap="scale800"
+                flexGridRowGap="scale800"
+            >
+                <FlexGridItem {...itemProps} >
+                    <div
+                        className={css({
+                            margin: 'auto',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        })}
+                    >
+                        <Avatar
+                            name={`user`}
+                            size="64px"
+                            src={`https://avatars.dicebear.com/api/jdenticon/${address.toUpperCase().replace("ETHEREUM:", "")}.svg`}
+                            overrides={{
+                                Root: {
+                                    style: ({$theme}) => ({
+                                        ...expandBorderStyles($theme.borders.border600),
+                                        padding: '8px',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }),
+                                },
+                            }}
+                        />
+                    </div>
+                </FlexGridItem>
+                <FlexGridItem {...itemProps}>
+                    <Label2
+                        overflow="hidden"
+                        // @ts-ignore
+                        textOverflow="ellipsis"
+                        marginBottom="14px"
+                    >
+                        {address.toUpperCase().replace("ETHEREUM:", "")}
+                    </Label2>
+                </FlexGridItem>
+            </FlexGrid>}
+
+            {address && <Sidebar activeItem={path} address={address}/>}
+        </>
+    );
+}
+
 
 const MainLayout: React.FC<MainLayoutProps> = (props) => {
 
@@ -170,6 +242,8 @@ const MainLayout: React.FC<MainLayoutProps> = (props) => {
                 }}
                 isOpen={sidebarOpen}
                 isLogged={props.address !== null}
+                address={props.address}
+                path={props.path}
             />
             <Block {...blockProps}>
                 <Block
@@ -185,49 +259,11 @@ const MainLayout: React.FC<MainLayoutProps> = (props) => {
                         $isOpen={sidebarOpen}
                     >
 
-                        {props.address && <FlexGrid
-                            flexGridColumnCount={1}
-                            flexGridColumnGap="scale800"
-                            flexGridRowGap="scale800"
-                        >
-                            <FlexGridItem {...itemProps} >
-                                <div
-                                    className={css({
-                                        margin: 'auto',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                    })}
-                                >
-                                    <Avatar
-                                        name={`user`}
-                                        size="64px"
-                                        src={`https://avatars.dicebear.com/api/jdenticon/${props.address.toUpperCase().replace("ETHEREUM:", "")}.svg`}
-                                        overrides={{
-                                            Root: {
-                                                style: ({$theme}) => ({
-                                                    ...expandBorderStyles($theme.borders.border600),
-                                                    padding: '8px',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                }),
-                                            },
-                                        }}
-                                    />
-                                </div>
-                            </FlexGridItem>
-                            <FlexGridItem {...itemProps}>
-                                <Label2
-                                    overflow="hidden"
-                                    // @ts-ignore
-                                    textOverflow="ellipsis"
-                                    marginBottom="14px"
-                                >
-                                    {props.address.toUpperCase().replace("ETHEREUM:", "")}
-                                </Label2>
-                            </FlexGridItem>
-                        </FlexGrid>}
+                        <SideWrapperContent
+                            address={props.address}
+                            path={props.path}
+                        />
 
-                        {props.address && <Sidebar activeItem={props.path}/>}
                     </SidebarWrapper>
                     <ContentWrapper
                         id="docSearch-content"

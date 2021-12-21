@@ -29,7 +29,7 @@ import {Slider} from "baseui/slider";
 import {Delete} from "baseui/icon";
 import {DURATION, useSnackbar} from "baseui/snackbar";
 import dynamic from "next/dynamic";
-const CustomStage = dynamic(() => import('../canvas/custom_stage'), {ssr: false});
+import QrSettingsAccordion from "../accordions/qr_settings_accordion";
 
 
 const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
@@ -142,11 +142,14 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
         img.onload = () => {
             setHorizontalQrPosition(0);
             setVerticalQrPosition(img.height);
+
+            setMaxHorizontalPos(img.width);
+            setMaxVerticalPos(img.height);
+
         }
     }
 
 
-    // @ts-ignore
     return (
         <div>
             <CropWindow
@@ -314,80 +317,23 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
                                 placeholder="NFT URL"
                                 clearOnEscape
                             />
-
-                            <Accordion>
-                                <Panel title="Customize QR Code">
-                                    <Checkbox
-                                        checked={useRaribleUrl}
-                                        checkmarkType={STYLE_TYPE.toggle_round}
-
-                                        onChange={e => {
-                                            // @ts-ignore
-                                            const isRarible = e.target.checked;
-                                            setUseRaribleUrl(isRarible);
-                                            chooseUrlMode(isRarible);
-                                        }}
-                                        labelPlacement={LABEL_PLACEMENT.right}
-                                        overrides={{
-                                            Root: {
-                                                style: {
-                                                    width: '100%',
-                                                    marginTop: "14px",
-                                                    marginBottom: "18px",
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center'
-                                                }
-                                            }
-                                        }}
-                                    >
-                                        Use Rarible URL
-                                    </Checkbox>
-                                    <Label2>Horizontal Position</Label2>
-                                    <Slider
-                                        value={[horizontalQrPosition]}
-                                        onChange={({value}) => value && setHorizontalQrPosition(value[0])}
-                                        onFinalChange={({value}) => {
-                                            setHorizontalQrPosition(value[0])
-                                        }}
-
-                                        min={0}
-                                        max={maxHorizontalPos}
-                                    />
-                                    <Label2>Vertical Position</Label2>
-                                    <Slider
-                                        value={[verticalQrPosition]}
-                                        onChange={({value}) => value && setVerticalQrPosition(value[0])}
-                                        onFinalChange={({value}) => {
-                                            setVerticalQrPosition(value[0])
-                                        }}
-
-                                        min={0}
-                                        max={maxVerticalPos}
-                                    />
-                                    <Label2>QR Code size</Label2>
-                                    <Slider
-                                        value={[qrSize * 10]}
-                                        onChange={({value}) => value && setQrSize(value[0] / 10)}
-                                        onFinalChange={({value}) => {
-                                            setQrSize(value[0] / 10)
-                                        }}
-
-                                        min={0}
-                                        max={20}
-                                    />
-                                    <Label2>QR Code Opacity</Label2>
-                                    <Slider
-                                        value={[qrOpacity * 100]}
-                                        onChange={({value}) => value && setQrOpacity(value[0] / 100)}
-                                        onFinalChange={({value}) => {
-                                            setQrOpacity(value[0] / 100)
-                                        }}
-
-                                        min={0}
-                                        max={100}
-                                    />
-                                </Panel>
-                            </Accordion>
+                            <QrSettingsAccordion
+                                useRaribleUrl={useRaribleUrl}
+                                setUseRaribleUrl={setUseRaribleUrl}
+                                horizontalQrPosition={horizontalQrPosition}
+                                setHorizontalQrPosition={setHorizontalQrPosition}
+                                maxHorizontalPos={maxHorizontalPos}
+                                verticalQrPosition={verticalQrPosition}
+                                setVerticalQrPosition={setVerticalQrPosition}
+                                maxVerticalPos={maxVerticalPos}
+                                qrSize={qrSize}
+                                setQrSize={setQrSize}
+                                qrOpacity={qrOpacity}
+                                setQrOpacity={setQrOpacity}
+                                onUrlTypeChanged={(isRarible => {
+                                    chooseUrlMode(isRarible)
+                                })}
+                                />
 
                             <AdvancedAccordion
                                 onOpenCropWindow={setIsCropOpen}
