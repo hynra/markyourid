@@ -1,6 +1,6 @@
 import React from "react";
 import {useStyletron} from "baseui";
-import {saveImageAsUrl} from "../common/filters";
+import {saveImageAsUrl} from "../../common/filters";
 
 export interface StampCanvasProps {
     fontSize: number;

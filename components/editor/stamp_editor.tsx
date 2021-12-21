@@ -1,35 +1,35 @@
 import * as React from 'react';
 import {useEffect} from 'react';
 import {useStyletron} from 'baseui';
-import HeaderNav from "../components/header";
-import ImageUploader from "../components/image_uploader";
+import HeaderNav from "../header";
+import ImageUploader from "../image_uploader";
 import {Card, StyledAction, StyledBody} from "baseui/card";
 import {Button} from "baseui/button";
 import {FlexGrid, FlexGridItem} from "baseui/flex-grid";
 import {BlockProps} from "baseui/block";
-import CropWindow from "../components/crop_window";
-import AdjustWindow from "../components/adjust_window";
-import FilterWindow from "../components/filter_window";
-import WatermarkWindow from "../components/watermark_window";
+import CropWindow from "../modals/crop_window";
+import AdjustWindow from "../modals/adjust_window";
+import FilterWindow from "../modals/filter_window";
+import WatermarkWindow from "../modals/watermark_window";
 import {H6, Label2, Paragraph2, Paragraph3} from "baseui/typography";
 import {SIZE, Textarea} from "baseui/textarea";
-import SettingAccordion, {PositionEnum, positionOption} from "../components/setting_accordion";
-import AdvancedAccordion from "../components/advanced_accordion";
-import ExportWindow from "../components/export_window";
+import SettingAccordion, {PositionEnum, positionOption} from "../accordions/setting_accordion";
+import AdvancedAccordion from "../accordions/advanced_accordion";
+import ExportWindow from "../modals/export_window";
 import {Item} from "@rarible/api-client";
 import {
     Checkbox,
     STYLE_TYPE,
     LABEL_PLACEMENT
 } from "baseui/checkbox";
-import StampCanvas from "./stamp_canvas";
+import StampCanvas from "../canvas/stamp_canvas";
 import QRCode from 'qrcode'
 import {Accordion, Panel} from "baseui/accordion";
 import {Slider} from "baseui/slider";
 import {Delete} from "baseui/icon";
 import {DURATION, useSnackbar} from "baseui/snackbar";
 import dynamic from "next/dynamic";
-const CustomStage = dynamic(() => import('./custom_stage'), {ssr: false});
+const CustomStage = dynamic(() => import('../canvas/custom_stage'), {ssr: false});
 
 
 const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
@@ -123,7 +123,7 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
         if (isRarible) {
             setNftUrl(`https://rarible.com/token/${item.id.replace("ETHEREUM:", "")}`);
         } else {
-            setNftUrl(`https://markyour.id/${item.id}`)
+            setNftUrl(`https://markyour.id/item/${item.id}`)
         }
 
 
@@ -235,17 +235,6 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
                                 setImageSrc(uri);
                                 setPrevImageSrc(uri);
                             }}/>
-
-                            /*imageSrc !== "" &&
-                            <CustomStage
-                                imgSrc={imageSrc}
-                                predefinedText="Test 01"
-                                getImage={(image) => {
-
-                                }}
-                            />*/
-
-
                         }
 
                         <StyledBody>
@@ -359,7 +348,6 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
                                         onChange={({value}) => value && setHorizontalQrPosition(value[0])}
                                         onFinalChange={({value}) => {
                                             setHorizontalQrPosition(value[0])
-                                            // onHorizontalPosChanged(value[0])
                                         }}
 
                                         min={0}
@@ -371,7 +359,6 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
                                         onChange={({value}) => value && setVerticalQrPosition(value[0])}
                                         onFinalChange={({value}) => {
                                             setVerticalQrPosition(value[0])
-                                            // onHorizontalPosChanged(value[0])
                                         }}
 
                                         min={0}
@@ -383,7 +370,6 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
                                         onChange={({value}) => value && setQrSize(value[0] / 10)}
                                         onFinalChange={({value}) => {
                                             setQrSize(value[0] / 10)
-                                            // onHorizontalPosChanged(value[0])
                                         }}
 
                                         min={0}

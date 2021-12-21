@@ -1,26 +1,26 @@
 import * as React from 'react';
 import {useEffect} from 'react';
 import {useStyletron} from 'baseui';
-import HeaderNav from "../components/header";
-import ImageUploader from "../components/image_uploader";
+import HeaderNav from "../header";
+import ImageUploader from "../image_uploader";
 import {Card, StyledAction, StyledBody} from "baseui/card";
 import {Button} from "baseui/button";
 import {FlexGrid, FlexGridItem} from "baseui/flex-grid";
 import {BlockProps} from "baseui/block";
 import {Input} from "baseui/input";
 import {ButtonGroup} from "baseui/button-group";
-import CropWindow from "../components/crop_window";
-import AdjustWindow from "../components/adjust_window";
-import FilterWindow from "../components/filter_window";
-import WatermarkWindow from "../components/watermark_window";
-import getWatermark from "../components/custom_wm";
+import CropWindow from "../modals/crop_window";
+import AdjustWindow from "../modals/adjust_window";
+import FilterWindow from "../modals/filter_window";
+import WatermarkWindow from "../modals/watermark_window";
+import getWatermark from "../custom_wm";
 import {H6, Label2, Paragraph3} from "baseui/typography";
 import {SIZE, Textarea} from "baseui/textarea";
-import SettingAccordion, {PositionEnum, positionOption} from "../components/setting_accordion";
-import AdvancedAccordion from "../components/advanced_accordion";
-import MainCanvas from "../components/main_canvas";
-import CanvasResizer from "../components/canvas_resizer";
-import ExportWindow from "../components/export_window";
+import SettingAccordion, {PositionEnum, positionOption} from "../accordions/setting_accordion";
+import AdvancedAccordion from "../accordions/advanced_accordion";
+import MainCanvas from "../canvas/main_canvas";
+import CanvasResizer from "../canvas/canvas_resizer";
+import ExportWindow from "../modals/export_window";
 
 
 const MainEditor: React.FC<{onImageSavedToLocal: Function}> = ({onImageSavedToLocal}) => {

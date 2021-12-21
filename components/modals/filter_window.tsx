@@ -3,7 +3,7 @@ import {useStyletron} from "baseui";
 import {Modal, ModalBody, ModalButton, ModalFooter, ModalHeader} from "baseui/modal";
 import {FlexGrid, FlexGridItem} from "baseui/flex-grid";
 import {Button, KIND, SHAPE} from "baseui/button";
-import {addFilters, FilterMode, saveImageAsUrl} from "../common/filters";
+import {addFilters, FilterMode, saveImageAsUrl} from "../../common/filters";
 import {BlockProps} from "baseui/block";
 import {Spinner} from "baseui/spinner";
 import {Layer} from "baseui/layer";

@@ -13,7 +13,7 @@ import {Tabs, Tab, FILL} from "baseui/tabs-motion";
 import {DIVIDER, SIZE as TableSize, Table} from "baseui/table-semantic";
 import {ButtonGroup} from "baseui/button-group";
 import {Button} from "baseui/button";
-import ComponentPopUp from "../../components/component_popup";
+import ComponentPopUp from "../../components/modals/component_popup";
 import {Delete} from "baseui/icon";
 import {useSnackbar} from "baseui/snackbar";
 

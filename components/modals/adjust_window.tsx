@@ -6,7 +6,7 @@ import {BlockProps} from "baseui/block";
 import {Button, SHAPE} from "baseui/button";
 import Plus from 'baseui/icon/plus'
 import CheckIndeterminate from 'baseui/icon/check-indeterminate'
-import {addFilters, FilterMode, saveImageAsUrl} from "../common/filters";
+import {addFilters, FilterMode, saveImageAsUrl} from "../../common/filters";
 
 const AdjustWindow: React.FC<{
     imageSrc: string, isOpen: boolean, setIsOpen: Function, onAdjust: Function

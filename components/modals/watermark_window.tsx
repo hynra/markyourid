@@ -3,7 +3,7 @@ import {useStyletron} from "baseui";
 import {Modal, ModalBody, ModalButton, ModalFooter, ModalHeader} from "baseui/modal";
 import dynamic from "next/dynamic";
 
-const CustomStage = dynamic(() => import('./custom_stage'), {ssr: false});
+const CustomStage = dynamic(() => import('../canvas/custom_stage'), {ssr: false});
 
 
 const WatermarkWindow: React.FC<{

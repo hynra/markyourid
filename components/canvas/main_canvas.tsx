@@ -1,7 +1,7 @@
 import React from "react";
 import {useStyletron} from "baseui";
-import {PositionEnum} from "./setting_accordion";
-import {saveImageAsUrl} from "../common/filters";
+import {PositionEnum} from "../accordions/setting_accordion";
+import {saveImageAsUrl} from "../../common/filters";
 
 export interface MainCanvasTextProps {
     fontSize: number;

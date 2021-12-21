@@ -5,25 +5,25 @@ import {SIZE, Textarea} from "baseui/textarea";
 import {Card, StyledBody} from "baseui/card";
 import {Input} from "baseui/input";
 import {Button, KIND} from "baseui/button";
-import AvatarPopUp from "./avatar_popup";
+import AvatarPopUp from "../modals/avatar_popup";
 import {Accordion, Panel} from "baseui/accordion";
 import {ButtonGroup} from "baseui/button-group";
-import InitialPopUp from "./initials_popup";
-import CropWindow from "./crop_window";
+import InitialPopUp from "../modals/initials_popup";
+import CropWindow from "../modals/crop_window";
 import {Checkbox, LABEL_PLACEMENT, STYLE_TYPE} from "baseui/checkbox";
 import {ModalBody} from "baseui/modal";
-import WmModel from "../common/wm_model";
+import WmModel from "../../common/wm_model";
 import {Alert, ArrowUp, ChevronRight, Delete, Show, Upload} from "baseui/icon";
-import CommonImagePopUp from "./common_image_popup";
-import {downloadCanvasToImage, saveImageAsUrl} from "../common/filters";
-import CommonPopUp from "./common_popup";
-import {AvatarMethod, BlockChainType} from "../common/common_enum";
-import ComponentPopUp from "./component_popup";
-import {ethBackground} from "../common/card_background";
-import AdjustWindow from "./adjust_window";
-import {NftMetadata, Trait} from "../common/nft_metadata";
+import CommonImagePopUp from "../modals/common_image_popup";
+import {downloadCanvasToImage, saveImageAsUrl} from "../../common/filters";
+import CommonPopUp from "../modals/common_popup";
+import {AvatarMethod, BlockChainType} from "../../common/common_enum";
+import ComponentPopUp from "../modals/component_popup";
+import {ethBackground} from "../../common/card_background";
+import AdjustWindow from "../modals/adjust_window";
+import {NftMetadata, Trait} from "../../common/nft_metadata";
 import {FlexGrid, FlexGridItem} from "baseui/flex-grid";
-import MainLayout from "./main_layout";
+import MainLayout from "../main_layout";
 import {
     Table,
     SIZE as TableSize,

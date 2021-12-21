@@ -4,8 +4,8 @@ import {useStyletron} from "baseui";
 import {Slider} from "baseui/slider";
 import {Display4, H6, Label2} from "baseui/typography";
 import {Modal, ModalBody, ModalButton, ModalFooter, ModalHeader} from "baseui/modal";
-import getCroppedImg from "../common/crop_image";
-import ImageUploader from "./image_uploader";
+import getCroppedImg from "../../common/crop_image";
+import ImageUploader from "../image_uploader";
 
 const CropWindow: React.FC<{ imageSrc?: string, isOpen: boolean, setIsOpen: Function, onCropped: Function, ratio?: number, title?: string }> =
     ({

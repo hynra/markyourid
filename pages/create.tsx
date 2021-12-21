@@ -5,7 +5,7 @@ import {useMetaMask} from "metamask-react";
 import {MetamaskConnectionState} from "../common/common_enum";
 import PreLoad from "../components/preload";
 import {useRouter} from "next/router";
-import ToNftCanvas from "../components/to-nft-canvas";
+import ToNftCanvas from "../components/canvas/to-nft-canvas";
 import {NftMetadata} from "../common/nft_metadata";
 import {Check, Delete} from "baseui/icon";
 import {useSnackbar, DURATION,} from "baseui/snackbar";

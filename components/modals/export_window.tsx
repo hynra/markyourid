@@ -8,8 +8,8 @@ import {ArrowDown, Overflow, Upload} from "baseui/icon";
 import {StatefulPopover} from "baseui/popover";
 import {Checkbox, LABEL_PLACEMENT, STYLE_TYPE} from "baseui/checkbox";
 import {Panel} from "baseui/accordion";
-import {downloadCanvasToImage, saveImageAsUrl} from "../common/filters";
-import WmModel, {saveWm} from "../common/wm_model";
+import {downloadCanvasToImage, saveImageAsUrl} from "../../common/filters";
+import WmModel, {saveWm} from "../../common/wm_model";
 import Router from "next/router";
 
 const ExportWindow: React.FC<{ imageSrc: string, desc: string, isOpen: boolean, setIsOpen: Function, onImageSaved: Function }> = (

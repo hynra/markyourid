@@ -8,7 +8,7 @@ import {Select} from "baseui/select";
 import {Button} from "baseui/button";
 import {ButtonGroup} from "baseui/button-group";
 import {Panel} from "baseui/accordion";
-import {saveImageAsUrl} from "../common/filters";
+import {saveImageAsUrl} from "../../common/filters";
 import {Input} from "baseui/input";
 
 

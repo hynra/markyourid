@@ -2,7 +2,7 @@ import * as React from 'react';
 import {useEffect} from 'react';
 import {useStyletron} from 'baseui';
 import HeaderNav from "../components/header";
-import MainEditor from "../components/main_editor";
+import MainEditor from "../components/editor/main_editor";
 import WmModel from "../common/wm_model";
 import {Tabs, Tab, FILL} from "baseui/tabs-motion";
 import SavedWm from "../components/saved_wm";
