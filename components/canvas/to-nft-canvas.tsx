@@ -30,9 +30,7 @@ import {
     DIVIDER
 } from "baseui/table-semantic";
 import {useSnackbar} from "baseui/snackbar";
-import {TRIGGER_TYPE} from "baseui/tooltip";
-import {Block} from "baseui/block";
-import {Popover, StatefulPopover} from "baseui/popover";
+import ReCAPTCHA from "react-google-recaptcha";
 
 
 interface CurrentAvatar {
@@ -97,6 +95,7 @@ const ToNftCanvas: React.FC<{ accountAddress: string, onPublish: Function, block
     const [newTraitValue, setNewTraitValue] = React.useState<string>("");
     const {enqueue} = useSnackbar();
     const [isLazyMint, setIsLazyMint] = React.useState<boolean>(true);
+    const [captchaCode, setCaptchaCode] = React.useState<string>(null)
 
     const refHandler = (currCanvas) => {
         if (!currCanvas) return;
@@ -115,6 +114,7 @@ const ToNftCanvas: React.FC<{ accountAddress: string, onPublish: Function, block
     }
 
     const submitNft = () => {
+
         const url = saveImageAsUrl(canvas);
         const metadata: NftMetadata = {
             attributes: attributes,
@@ -125,6 +125,24 @@ const ToNftCanvas: React.FC<{ accountAddress: string, onPublish: Function, block
         }
         onPublish(metadata, isLazyMint);
     }
+
+
+
+
+    const onReCAPTCHAChange = (captchaCode) => {
+
+        if(!captchaCode) {
+            enqueue({
+                message: 'Something went wrong, please try again or reload the page',
+                startEnhancer: ({size}) => <Delete size={size}/>,
+            });
+            return;
+        }
+
+        // console.log(captchaCode);
+        setCaptchaCode(captchaCode);
+    }
+
 
     const validateSubmitButton = () : boolean => {
         return selectedAvatar === null || title === DEFAULT_TITLE || currentText.includes("Your Name")
@@ -322,6 +340,7 @@ const ToNftCanvas: React.FC<{ accountAddress: string, onPublish: Function, block
                 setIsOpen={setCommonWindowOpened}
                 onAccepted={submitNft}
                 modalInfo="Upload NFT"
+                disableActionButton={captchaCode === null}
             >
 
                 <Checkbox
@@ -343,7 +362,15 @@ const ToNftCanvas: React.FC<{ accountAddress: string, onPublish: Function, block
                     <Paragraph2>{"You will mint your NFT directly into the blockchain, gas fees are required and may be very high."}</Paragraph2>}
                     </Panel>
                 </Accordion>
-                <Label2 marginTop="scale500">{`The image will be minted as an NFT ${(isLazyMint) ? "without gas fees" : "with gas fees"}, are you sure want to continue?`}</Label2>
+                <Label2 marginTop="scale500" marginBottom="scale800">{`The image will be minted as an NFT ${(isLazyMint) ? "without gas fees" : "with gas fees"}, are you sure want to continue?`}</Label2>
+                {!captchaCode && <ReCAPTCHA
+                    // size="invisible"
+                    onExpired={() => {
+                        setCaptchaCode(null);
+                    }}
+                    sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+                    onChange={onReCAPTCHAChange}
+                />}
             </ComponentPopUp>
             <div className={css({
                 position: 'relative',

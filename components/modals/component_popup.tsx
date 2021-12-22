@@ -11,7 +11,8 @@ export interface ComponentPopUpProps
     onAccepted: Function,
     modalInfo?: string,
     isClosable?: boolean
-    showActionButton?: boolean
+    showActionButton?: boolean,
+    disableActionButton?: boolean,
 }
 
 
@@ -24,6 +25,7 @@ const ComponentPopUp: React.FC<ComponentPopUpProps> = (
         modalInfo = "Info",
         isClosable = true,
         showActionButton = true,
+        disableActionButton = false,
     }
 ) => {
 
@@ -48,7 +50,9 @@ const ComponentPopUp: React.FC<ComponentPopUpProps> = (
                 }}>
                     Cancel
                 </ModalButton>
-                <ModalButton onClick={() => {
+                <ModalButton
+                    disabled={disableActionButton}
+                    onClick={() => {
                     onAccepted();
                     if (setIsOpen)
                         setIsOpen(false)

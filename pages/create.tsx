@@ -90,7 +90,7 @@ const Create: React.FC = () => {
                     <ToNftCanvas
                         accountAddress={account}
                         onPublish={(metadata: NftMetadata, isLazy: boolean) => {
-                            publish(metadata, isLazy).then()
+                            // publish(metadata, isLazy).then()
                         }}
                     />
                 </div>
