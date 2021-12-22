@@ -87,7 +87,8 @@ const ToNftCanvas: React.FC<{ accountAddress: string, onPublish: Function, block
     );
     const [mainBackground, setMainBackground] = React.useState('/card/eth/0.png');
     const [commonWindowOpened, setCommonWindowOpened] = React.useState(false);
-    const [title, setTitle] = React.useState(`Identity Card submission for <service-name>`);
+    const DEFAULT_TITLE: string = `Identity Card submission for <service-name>`;
+    const [title, setTitle] = React.useState(DEFAULT_TITLE);
     const [selectBackgroundOpened, setSelectBackgroundOpened] = React.useState<boolean>(false);
     const [adjustWindowOpened, setAdjustWindowOpened] = React.useState<boolean>(false);
     const [attrWindowOpened, setAttrWindowOpened] = React.useState<boolean>(false);
@@ -123,6 +124,10 @@ const ToNftCanvas: React.FC<{ accountAddress: string, onPublish: Function, block
 
         }
         onPublish(metadata, isLazyMint);
+    }
+
+    const validateSubmitButton = () : boolean => {
+        return selectedAvatar === null || title === DEFAULT_TITLE || currentText.includes("Your Name")
     }
 
     const tabulateAttrData = (): any[] => {
@@ -461,6 +466,7 @@ const ToNftCanvas: React.FC<{ accountAddress: string, onPublish: Function, block
                             }}
                             endEnhancer={() => <Upload size={24}/>}
                             onClick={() => setCommonWindowOpened(true)}
+                            disabled={validateSubmitButton()}
                         >
                             Submit NFT
                         </Button>
