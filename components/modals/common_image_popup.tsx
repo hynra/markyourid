@@ -25,7 +25,7 @@ const CommonImagePopUp: React.FC<{isOpen: boolean, setIsOpen: Function, imageSrc
                     marginBottom: "14px"
                 })}>
                 </div>
-                <img src={imageSrc} width="100%"/>
+                <img className={css({borderRadius: '5px'})} src={imageSrc} width="100%"/>
             </ModalBody>
             <ModalFooter>
                 <ModalButton kind="tertiary" onClick={() => setIsOpen(false)}>

@@ -12,13 +12,14 @@ import {downloadCanvasToImage, saveImageAsUrl} from "../../common/filters";
 import WmModel, {saveWm} from "../../common/wm_model";
 import Router from "next/router";
 
-const ExportWindow: React.FC<{ imageSrc: string, desc: string, isOpen: boolean, setIsOpen: Function, onImageSaved: Function }> = (
+const ExportWindow: React.FC<{ imageSrc: string, desc: string, isOpen: boolean, setIsOpen: Function, onImageSaved: Function, enableLocalSave?: boolean }> = (
     {
         imageSrc,
         isOpen,
         setIsOpen,
         desc,
-        onImageSaved
+        onImageSaved,
+        enableLocalSave = true,
     }
 ) => {
 
@@ -37,8 +38,14 @@ const ExportWindow: React.FC<{ imageSrc: string, desc: string, isOpen: boolean, 
             text: desc
         }
         setExportedWm(wmToSave.id)
-        saveWm(wmToSave);
         onImageSaved(wmToSave);
+        if (enableLocalSave && enableSave) {
+
+            saveWm(wmToSave);
+        } else {
+            setIsOpen(false)
+        }
+
     }
 
     const toNft = () => {
@@ -50,7 +57,7 @@ const ExportWindow: React.FC<{ imageSrc: string, desc: string, isOpen: boolean, 
             <Modal onClose={() => setIsOpen(false)} isOpen={isOpen}>
                 <ModalHeader>Export Image</ModalHeader>
                 <ModalBody>
-                    <Checkbox
+                    {enableLocalSave && <Checkbox
                         checked={enableSave}
                         checkmarkType={STYLE_TYPE.toggle_round}
                         onChange={e => {
@@ -71,7 +78,7 @@ const ExportWindow: React.FC<{ imageSrc: string, desc: string, isOpen: boolean, 
                         }}
                     >
                         Save result to local
-                    </Checkbox>
+                    </Checkbox>}
                     <Button
                         overrides={{
                             BaseButton: {
@@ -91,7 +98,7 @@ const ExportWindow: React.FC<{ imageSrc: string, desc: string, isOpen: boolean, 
                         Download Image
                     </Button>
                     {
-                        downloaded && enableSave &&
+                        downloaded && enableSave && enableLocalSave &&
                         <Button
                             overrides={{
                                 BaseButton: {

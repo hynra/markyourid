@@ -30,6 +30,9 @@ import {Delete} from "baseui/icon";
 import {DURATION, useSnackbar} from "baseui/snackbar";
 import dynamic from "next/dynamic";
 import QrSettingsAccordion from "../accordions/qr_settings_accordion";
+import StampMiscAccordion from "../accordions/stamp_misc_accordion";
+import {getDwebLinkUrl} from "../../common/helper";
+import {downloadCanvasToImage} from "../../common/filters";
 
 
 const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
@@ -195,6 +198,7 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
                 predefinedText={currText}
             />
             <ExportWindow
+                enableLocalSave={false}
                 imageSrc={imageSrc}
                 isOpen={isExportOpen}
                 setIsOpen={setIsExportOpen}
@@ -341,6 +345,13 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
                                 onOpenFilterOption={setIsFilterOpen}
                                 onOpenWmWindow={setIsWMOpen}
                             />
+                            <StampMiscAccordion
+                                qrCodeImageUrl={qrCodeImage}
+                                nftImageUrl={getDwebLinkUrl(item.meta.content[0].url)}
+                                onQrDownloaded={(qrCodeImageUrl => {
+                                    downloadCanvasToImage(qrCodeImageUrl)
+                                })}
+                                />
                         </StyledBody>
                         <StyledAction>
                             <Button
