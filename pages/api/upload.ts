@@ -33,15 +33,6 @@ handler.post<NextApiRequest, NextApiResponse>(async (req, res) => {
                     image: new File([imageBuffer.data], new Date().getTime().toString()+'.jpg', { type: 'image/jpg' })
                 });
 
-                /*console.log('IPFS URL for the metadata:', metadata.url)
-                console.log('metadata.json contents:\n', metadata.data)
-                console.log(
-                    'metadata.json contents with IPFS gateway URLs:\n',
-                    metadata.embed()
-                )*/
-
-                console.log(metadata)
-
                 res.status(200).send({metadata})
 
             }catch (e) {
