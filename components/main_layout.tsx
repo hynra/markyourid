@@ -134,7 +134,7 @@ export const Sidebar: React.FC<{ activeItem: string, address?: string }> = ({act
                     itemId: '/',
                 };
                 if(address){
-                    customNav.itemId =  `https://rarible.com/user/${address}/owned`
+                    customNav.itemId =  `https://rarible.com/user/${address.replace("ETHEREUM:", "")}/owned`
                 }
                 return customNav;
             } else return nav;
