@@ -45,6 +45,7 @@ const ItemID: React.FC = () => {
         try {
             const nftItem: Item = await getItemByIdNoSDK(itemId as string);
             setValid(checkIfItemGenerated(nftItem));
+
             setItem(nftItem);
             setLoading(false);
         } catch (e) {

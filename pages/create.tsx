@@ -32,7 +32,7 @@ const Create: React.FC = () => {
 
     }, [wallet, account]);
 
-    const publish = async (metadata: NftMetadata, lazy: boolean) => {
+    const publish = async (metadata: NftMetadata, lazy: boolean, captcha: string) => {
         setLoading(true);
 
         enqueue(
@@ -47,8 +47,9 @@ const Create: React.FC = () => {
             metadata,
             lazy,
             rarepress,
-            sdk
-        )
+            sdk,
+            captcha
+        );
 
         dequeue();
 
@@ -89,8 +90,8 @@ const Create: React.FC = () => {
                 >
                     <ToNftCanvas
                         accountAddress={account}
-                        onPublish={(metadata: NftMetadata, isLazy: boolean) => {
-                            // publish(metadata, isLazy).then()
+                        onPublish={(metadata: NftMetadata, isLazy: boolean, captcha: string) => {
+                            publish(metadata, isLazy, captcha).then()
                         }}
                     />
                 </div>

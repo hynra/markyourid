@@ -5,9 +5,9 @@ import {IRaribleSdk} from "@rarible/sdk/build/domain";
 import {MintRequest} from "@rarible/sdk/build/types/nft/mint/mint-request.type";
 import {toUnionAddress} from "@rarible/types";
 
-export const mintNft = async (metadata: NftMetadata, lazy: boolean, rarepress: any, sdk: IRaribleSdk): Promise<boolean> => {
+export const mintNft = async (metadata: NftMetadata, lazy: boolean, rarepress: any, sdk: IRaribleSdk, captcha: string): Promise<boolean> => {
     try {
-        const metadataResp = await uploadMetadata(metadata);
+        const metadataResp = await uploadMetadata(metadata, captcha);
         if(lazy){
             const url = metadataResp.metadata.url;
             let res = await axios.get(getDwebLinkUrl(url));

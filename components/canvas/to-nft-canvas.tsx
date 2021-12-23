@@ -49,7 +49,11 @@ const buttonGroupOverrides = {
 }
 
 
-const ToNftCanvas: React.FC<{ accountAddress: string, onPublish: Function, blockChainType?: BlockChainType }> = (
+const ToNftCanvas: React.FC<{
+    accountAddress: string,
+    onPublish: (metadata: NftMetadata, isLazy: boolean, captcha: string) => void,
+    blockChainType?: BlockChainType
+}> = (
     {
         accountAddress,
         onPublish,
@@ -123,15 +127,13 @@ const ToNftCanvas: React.FC<{ accountAddress: string, onPublish: Function, block
             name: title
 
         }
-        onPublish(metadata, isLazyMint);
+        onPublish(metadata, isLazyMint, captchaCode);
     }
-
-
 
 
     const onReCAPTCHAChange = (captchaCode) => {
 
-        if(!captchaCode) {
+        if (!captchaCode) {
             enqueue({
                 message: 'Something went wrong, please try again or reload the page',
                 startEnhancer: ({size}) => <Delete size={size}/>,
@@ -139,12 +141,11 @@ const ToNftCanvas: React.FC<{ accountAddress: string, onPublish: Function, block
             return;
         }
 
-        // console.log(captchaCode);
         setCaptchaCode(captchaCode);
     }
 
 
-    const validateSubmitButton = () : boolean => {
+    const validateSubmitButton = (): boolean => {
         return selectedAvatar === null || title === DEFAULT_TITLE || currentText.includes("Your Name")
     }
 
@@ -353,16 +354,18 @@ const ToNftCanvas: React.FC<{ accountAddress: string, onPublish: Function, block
                     Free minting
                 </Checkbox>
                 <Accordion>
-                    <Panel title={<Show size={24} />}>
-                    {isLazyMint &&
-                    <Paragraph2>{"You don't have to pay gas fees, but your NFT won't be minted into the blockchain until someone buys it or you transfer it yourself."}
-                        <a href="https://rarible.medium.com/create-nfts-for-free-on-rarible-com-via-a-new-lazy-minting-feature-91cb4b7c68e6"> Lean more.</a>
-                    </Paragraph2>}
-                    {!isLazyMint &&
-                    <Paragraph2>{"You will mint your NFT directly into the blockchain, gas fees are required and may be very high."}</Paragraph2>}
+                    <Panel title={<Show size={24}/>}>
+                        {isLazyMint &&
+                        <Paragraph2>{"You don't have to pay gas fees, but your NFT won't be minted into the blockchain until someone buys it or you transfer it yourself."}
+                            <a href="https://rarible.medium.com/create-nfts-for-free-on-rarible-com-via-a-new-lazy-minting-feature-91cb4b7c68e6"> Lean
+                                more.</a>
+                        </Paragraph2>}
+                        {!isLazyMint &&
+                        <Paragraph2>{"You will mint your NFT directly into the blockchain, gas fees are required and may be very high."}</Paragraph2>}
                     </Panel>
                 </Accordion>
-                <Label2 marginTop="scale500" marginBottom="scale800">{`The image will be minted as an NFT ${(isLazyMint) ? "without gas fees" : "with gas fees"}, are you sure want to continue?`}</Label2>
+                <Label2 marginTop="scale500"
+                        marginBottom="scale800">{`The image will be minted as an NFT ${(isLazyMint) ? "without gas fees" : "with gas fees"}, are you sure want to continue?`}</Label2>
                 {!captchaCode && <ReCAPTCHA
                     // size="invisible"
                     onExpired={() => {

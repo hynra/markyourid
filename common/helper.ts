@@ -16,10 +16,11 @@ export async function uploadBase64Image(file: string) {
     }
 }
 
-export async function uploadMetadata(metadata: NftMetadata) {
+export async function uploadMetadata(metadata: NftMetadata, captcha: string) {
     const url = '/api/upload?type=base64'
     try {
-        const resp = await axios.post(url, metadata, {})
+        const data = {...metadata, ...{captcha: captcha}};
+        const resp = await axios.post(url, data, {})
         return resp.data
     } catch (e) {
         throw e;
@@ -35,7 +36,20 @@ export async function generateShortLink(urlToShort: string) {
     } catch (e) {
         throw e;
     }
+}
 
+export async function validateCaptcha(captcha: string): Promise<boolean> {
+    try {
+        const urlToPost = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${captcha}`;
+        const headers = {
+            "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
+        };
+        const resp = await axios.post(urlToPost, {}, {headers: headers});
+        const dataResp = resp.data;
+        return dataResp.success === true;
+    } catch (e) {
+        throw e;
+    }
 }
 
 
