@@ -6,7 +6,6 @@ import PreLoad from "../../components/preload";
 import {useStyletron} from "baseui";
 import {Item, MetaAttribute} from "@rarible/api-client";
 import {useRouter} from "next/router";
-import {getItemByIdNoSDK} from "../../sdk/query";
 import {Display3, Display4, H3, Label1, Label2, Paragraph1, Paragraph3} from "baseui/typography";
 import {checkIfItemGenerated, getDwebLinkUrl} from "../../common/helper";
 import {Tabs, Tab, FILL} from "baseui/tabs-motion";
@@ -16,6 +15,8 @@ import {Button} from "baseui/button";
 import ComponentPopUp from "../../components/modals/component_popup";
 import {Delete} from "baseui/icon";
 import {useSnackbar} from "baseui/snackbar";
+import {getItemByIdNoSdkEth} from "../../sdk/query-eth";
+import {NftItem} from "@rarible/ethereum-api-client";
 
 const ItemID: React.FC = () => {
 
@@ -26,7 +27,7 @@ const ItemID: React.FC = () => {
     const {status, account} = useMetaMask();
     const [isLoading, setLoading] = React.useState<boolean>(true);
     const [css, theme] = useStyletron();
-    const [item, setItem] = React.useState<Item>(null);
+    const [item, setItem] = React.useState<NftItem>(null);
     const [activeKey, setActiveKey] = React.useState<string | number>("0");
     const [isValid, setValid] = React.useState<boolean>(true);
 
@@ -43,7 +44,7 @@ const ItemID: React.FC = () => {
 
     const fetchItem = async () => {
         try {
-            const nftItem: Item = await getItemByIdNoSDK(itemId as string);
+            const nftItem: NftItem = await getItemByIdNoSdkEth(itemId as string);
             setValid(checkIfItemGenerated(nftItem));
 
             setItem(nftItem);
@@ -120,7 +121,7 @@ const ItemID: React.FC = () => {
                     width: "100%",
                     marginBottom: '14px'
                 })}>
-                    <img src={getDwebLinkUrl(item.meta.content[0].url)} width="100%"
+                    <img src={getDwebLinkUrl(item.meta.image.url['ORIGINAL'])} width="100%"
                          className={css({borderRadius: '15px'})}/>
                 </div>
                 <ButtonGroup
@@ -174,7 +175,7 @@ const ItemID: React.FC = () => {
                         </Paragraph1>
                         <Label1>Blockchain</Label1>
                         <Paragraph1 marginBottom="scale500">
-                            {item.id.split(':')[0]}
+                            ETHEREUM
                         </Paragraph1>
                         <Label1>Collection</Label1>
                         <Paragraph1
@@ -183,7 +184,7 @@ const ItemID: React.FC = () => {
                             }}
                             marginBottom="scale500"
                         >
-                            {item.collection}
+                            {item.contract}
                         </Paragraph1>
                     </Tab>
                     <Tab title="Attributes">

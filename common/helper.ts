@@ -1,6 +1,7 @@
 import axios from "axios";
 import {NftMetadata} from "./nft_metadata";
 import {Item} from "@rarible/api-client";
+import {NftItem} from "@rarible/ethereum-api-client";
 
 const FormData = require('form-data');
 
@@ -57,7 +58,7 @@ export async function validateCaptcha(captcha: string): Promise<boolean> {
 }
 
 
-export function checkIfItemGenerated(item: Item): boolean{
+export function checkIfItemGenerated(item: Item | NftItem): boolean{
     let isValid = false;
     item.meta.attributes.map((attr) => {
         if(attr.key === "powered by" && attr.value === "https://markyour.id"){
