@@ -8,11 +8,6 @@ import {MetamaskConnectionState} from "../common/common_enum";
 import PreLoad from "../components/preload";
 import {DURATION, useSnackbar} from "baseui/snackbar";
 import {Button} from "baseui/button";
-
-import {useSdk} from "../sdk/use-sdk"
-import {IRaribleSdk} from "@rarible/sdk/build/domain"
-import {Item, Items} from "@rarible/api-client";
-import {fetchUserItems} from "../sdk/query";
 import {Card, StyledAction, StyledBody} from "baseui/card";
 import {BlockProps} from "baseui/block";
 import {FlexGrid, FlexGridItem} from "baseui/flex-grid";
@@ -23,6 +18,9 @@ import MainLayout from "../components/main_layout";
 import {Checkbox, LABEL_PLACEMENT, STYLE_TYPE} from "baseui/checkbox";
 import {Delete} from "baseui/icon";
 import {getDwebLinkUrl} from "../common/helper";
+import {useEthSdk} from "../sdk/use-eth-sdk";
+import {fetchUserItemsEth} from "../sdk/query-eth";
+import {NftItem, NftItems} from "@rarible/ethereum-api-client";
 
 const itemProps: BlockProps = {
     alignItems: 'center',
@@ -37,9 +35,9 @@ const Dashboard: React.FC = () => {
     const PRIMARY_TITLE = 'Generated NFTs'
     const SECONDARY_TITLE = 'My NFTs'
     const router = useRouter();
-    const {sdk, wallet} = useSdk("prod");
+    const {sdk, wallet} = useEthSdk("mainnet");
     const {status, account} = useMetaMask();
-    const [nftItems, setNftItems] = React.useState<Item[]>(null);
+    const [nftItems, setNftItems] = React.useState<NftItem[]>(null);
     const [continuation, setContinuation] = React.useState(null);
     const [showAll, setShowAll] = React.useState<boolean>(false);
     const [title, setTitle] = React.useState<string>(PRIMARY_TITLE)
@@ -71,7 +69,7 @@ const Dashboard: React.FC = () => {
 
     const fetchItem = async () => {
         try {
-            const its = await fetchUserItems(sdk, wallet.address, continuation);
+            const its = await fetchUserItemsEth(sdk, wallet.address, continuation);
             setContinuation(undefined)
             if (nftItems === null) {
                 setNftItems(its.items);
@@ -134,7 +132,7 @@ const Dashboard: React.FC = () => {
                     nftItems &&
                     nftItems.map((it, index) => {
 
-                        const img = getDwebLinkUrl(it.meta.content[0].url);
+                        const img = getDwebLinkUrl(it.meta.image.url['ORIGINAL']);
 
                         let isGenerated = false;
                         it.meta.attributes.map((attr) => {

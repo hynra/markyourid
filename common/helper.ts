@@ -27,6 +27,10 @@ export async function uploadMetadata(metadata: NftMetadata, captcha: string) {
     }
 }
 
+export function sanitizedUnionAddress(unionAddress: string): string {
+    return unionAddress.replace("ETHEREUM:", "");
+}
+
 
 export async function generateShortLink(urlToShort: string) {
     const url =  '/api/short'
