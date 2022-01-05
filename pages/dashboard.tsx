@@ -43,6 +43,8 @@ const Dashboard: React.FC = () => {
     const [continuation, setContinuation] = React.useState(null);
     const [showAll, setShowAll] = React.useState<boolean>(false);
     const [title, setTitle] = React.useState<string>(PRIMARY_TITLE)
+    const [retryCount, setRetryCount] = React.useState<number>(0);
+    const MAX_RETRY: number = 3;
 
 
     React.useEffect(() => {
@@ -79,11 +81,20 @@ const Dashboard: React.FC = () => {
             }
             if (its?.continuation) setContinuation(its.continuation);
         } catch (e) {
-            enqueue({
-                message: 'Oops! Something went wrong, try again later.',
-                startEnhancer: ({size}) => <Delete size={size}/>,
-            });
-            throw e;
+            if(retryCount < MAX_RETRY){
+                let currCount = retryCount;
+                setRetryCount(currCount++);
+                enqueue({
+                    message: `We're little busy here, please wait...`,
+                    startEnhancer: ({size}) => <Delete size={size}/>,
+                });
+            } else {
+                enqueue({
+                    message: 'Oops! Something went wrong, try again later or reload.',
+                    startEnhancer: ({size}) => <Delete size={size}/>,
+                });
+                throw e;
+            }
         }
 
     }
