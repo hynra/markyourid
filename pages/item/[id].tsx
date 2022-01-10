@@ -17,6 +17,7 @@ import {Delete} from "baseui/icon";
 import {useSnackbar} from "baseui/snackbar";
 import {getItemByIdNoSdkEth} from "../../sdk/query-eth";
 import {NftItem} from "@rarible/ethereum-api-client";
+import {StyledLink as Link} from 'baseui/link';
 
 const ItemID: React.FC = () => {
 
@@ -184,7 +185,7 @@ const ItemID: React.FC = () => {
                             }}
                             marginBottom="scale500"
                         >
-                            {item.contract}
+                            <Link href={`https://rarible.com/collection/${item.contract}`}>{item.contract}</Link>
                         </Paragraph1>
                     </Tab>
                     <Tab title="Attributes">

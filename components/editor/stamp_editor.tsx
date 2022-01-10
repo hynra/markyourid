@@ -33,9 +33,10 @@ import QrSettingsAccordion from "../accordions/qr_settings_accordion";
 import StampMiscAccordion from "../accordions/stamp_misc_accordion";
 import {getDwebLinkUrl} from "../../common/helper";
 import {downloadCanvasToImage} from "../../common/filters";
+import {NftItem} from "@rarible/ethereum-api-client";
 
 
-const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
+const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: NftItem }> = (
     {
         onImageSavedToLocal,
         item
@@ -347,7 +348,7 @@ const StampEditor: React.FC<{ onImageSavedToLocal: Function, item: Item }> = (
                             />
                             <StampMiscAccordion
                                 qrCodeImageUrl={qrCodeImage}
-                                nftImageUrl={getDwebLinkUrl(item.meta.content[0].url)}
+                                nftImageUrl={getDwebLinkUrl(item.meta.image.url['ORIGINAL'])}
                                 onQrDownloaded={(qrCodeImageUrl => {
                                     downloadCanvasToImage(qrCodeImageUrl)
                                 })}
