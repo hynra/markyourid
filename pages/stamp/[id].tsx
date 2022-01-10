@@ -14,6 +14,8 @@ import {Label2} from "baseui/typography";
 import {Button} from "baseui/button";
 import {useSnackbar} from "baseui/snackbar";
 import {Delete} from "baseui/icon";
+import {getItemByIdNoSdkEth} from "../../sdk/query-eth";
+import {NftItem} from "@rarible/ethereum-api-client";
 
 const StampID: React.FC = () => {
 
@@ -24,21 +26,22 @@ const StampID: React.FC = () => {
     const {enqueue, dequeue} = useSnackbar();
     const [isLoading, setLoading] = React.useState<boolean>(true);
     const [css, theme] = useStyletron();
-    const [item, setItem] = React.useState<Item>(null);
+    const [item, setItem] = React.useState<NftItem>(null);
     const [isValid, setValid] = React.useState<boolean>(true);
 
-    const getOwner = (_item: Item): string => {
+    const getOwner = (_item: NftItem): string => {
         return _item.owners.length === 0 ?
             _item.creators[0].account.replace("ETHEREUM:", "") : _item.owners[0].replace("ETHEREUM:", "");
     }
 
-    const getCreator = (_item: Item): string => {
+
+    const getCreator = (_item: NftItem): string => {
         return _item.creators[0].account.replace("ETHEREUM:", "");
     }
 
     const fetchItem = async () => {
         try {
-            const nftItem: Item = await getItemByIdNoSDK(itemId as string);
+            const nftItem: NftItem = await getItemByIdNoSdkEth(itemId as string);
             setValid(checkIfItemGenerated(nftItem));
             setItem(nftItem);
             setLoading(false);

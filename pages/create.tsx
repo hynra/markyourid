@@ -12,11 +12,14 @@ import {useSnackbar, DURATION,} from "baseui/snackbar";
 import {useEthereumProvider} from "../common/blockchain-provider";
 import {mintNft} from "../sdk/mint";
 import {useStyletron} from "baseui";
+import {useEthSdk} from "../sdk/use-eth-sdk";
+import {mintNftEth} from "../sdk/mint-eth";
 
 
 const Create: React.FC = () => {
 
-    const {sdk, wallet} = useSdk("prod");
+    const {sdk, wallet} = useEthSdk("mainnet");
+
     const {status, account} = useMetaMask();
 
     const router = useRouter();
@@ -43,7 +46,7 @@ const Create: React.FC = () => {
             DURATION.infinite,
         );
 
-        const isMinted = await mintNft(
+        const isMinted = await mintNftEth(
             metadata,
             lazy,
             rarepress,

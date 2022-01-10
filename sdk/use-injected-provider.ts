@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from "react"
-import { Maybe } from "../common/maybe"
+import {useCallback, useEffect, useState} from "react"
+import {Maybe} from "../common/maybe"
+import Web3 from "web3";
 
 type UseProviderResponse = {
     provider: Maybe<any>
@@ -42,12 +43,12 @@ export function useInjectedProvider(): UseProviderResponse {
         }
     }, [provider])
 
-    return { provider, connect, account }
+    return {provider, connect, account}
 }
 
 async function getAccounts(provider: any): Promise<string[]> {
     if ("request" in provider) {
-        return provider.request({ method: 'eth_accounts' })
+        return provider.request({method: 'eth_accounts'})
     } else {
         return []
     }
@@ -71,7 +72,7 @@ async function getInjectedProvider(): Promise<any> {
     } else {
         return new Promise<any>((resolve, reject) => {
             const handleInit = () => {
-                const { ethereum } = window as any
+                const {ethereum} = window as any
                 if (ethereum) {
                     resolve(ethereum)
                 } else {
@@ -84,4 +85,19 @@ async function getInjectedProvider(): Promise<any> {
             setTimeout(handleInit, 3000)
         })
     }
+}
+
+let web3instance = null
+
+export function getWeb3() {
+    if (web3instance != null)
+        return web3instance
+    // @ts-ignore
+    window.ethereum.request({
+        method: "eth_requestAccounts"
+    })
+
+    // @ts-ignore
+    web3instance = new Web3(window.ethereum);
+    return web3instance
 }
