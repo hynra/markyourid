@@ -132,6 +132,10 @@ const Dashboard: React.FC = () => {
                     nftItems &&
                     nftItems.map((it, index) => {
 
+                        if(!it.meta?.image){
+                            return null
+                        }
+
                         const img = getDwebLinkUrl(it.meta.image.url['ORIGINAL']);
 
                         let isGenerated = false;

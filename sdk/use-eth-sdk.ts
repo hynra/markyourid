@@ -6,6 +6,7 @@ import Web3 from "web3"
 import { toUnionAddress } from "@rarible/types"
 import {createRaribleSdk, RaribleSdk} from "@rarible/protocol-ethereum-sdk"
 import {Web3Ethereum} from "@rarible/web3-ethereum";
+import {mix} from "polished";
 
 type UseSdkResult = {
     wallet: Maybe<BlockchainWallet>
@@ -26,10 +27,12 @@ export function useEthSdk(env: string): UseSdkResult {
             return undefined
         }
     }, [provider, from])
-    const sdk = useMemo(() => {
+    const sdk = useMemo( () => {
         if (wallet !== undefined) {
             const web3eth = new Web3Ethereum({ web3: getWeb3(), from});
-
+            // @ts-ignore
+            web3eth.getChainId = getWeb3().eth.getChainId;
+            // @ts-ignore
             return createRaribleSdk(web3eth, env as any)
         } else {
             return undefined

@@ -19,6 +19,7 @@ import {mintNftEth} from "../sdk/mint-eth";
 const Create: React.FC = () => {
 
     const {sdk, wallet} = useEthSdk("mainnet");
+
     const {status, account} = useMetaMask();
 
     const router = useRouter();
