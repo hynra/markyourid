@@ -46,9 +46,9 @@ const Index: React.FC = () => {
                         <div
                             className={css({
                                 position: 'absolute',
-                                left: '40%',
+                                left: '50%',
                                 top: '-85px',
-
+                                transform: 'translate(-50%)'
                             })}
                         >
                             {image}

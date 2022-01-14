@@ -13,7 +13,7 @@ import CropWindow from "../modals/crop_window";
 import {Checkbox, LABEL_PLACEMENT, STYLE_TYPE} from "baseui/checkbox";
 import {ModalBody} from "baseui/modal";
 import WmModel from "../../common/wm_model";
-import {Alert, ArrowUp, ChevronRight, Delete, Show, Upload} from "baseui/icon";
+import {Alert, ArrowUp, ChevronRight, Delete, Overflow, Show, Upload} from "baseui/icon";
 import CommonImagePopUp from "../modals/common_image_popup";
 import {downloadCanvasToImage, saveImageAsUrl} from "../../common/filters";
 import CommonPopUp from "../modals/common_popup";
@@ -31,6 +31,10 @@ import {
 } from "baseui/table-semantic";
 import {useSnackbar} from "baseui/snackbar";
 import ReCAPTCHA from "react-google-recaptcha";
+import {StatefulPopover} from "baseui/popover";
+import {colorSwatches} from "../accordions/setting_accordion";
+import {TwitterPicker} from 'react-color'
+import CenteredComponent from "../centered-component";
 
 
 interface CurrentAvatar {
@@ -99,7 +103,8 @@ const ToNftCanvas: React.FC<{
     const [newTraitValue, setNewTraitValue] = React.useState<string>("");
     const {enqueue} = useSnackbar();
     const [isLazyMint, setIsLazyMint] = React.useState<boolean>(true);
-    const [captchaCode, setCaptchaCode] = React.useState<string>(null)
+    const [captchaCode, setCaptchaCode] = React.useState<string>(null);
+    const [textColor, setTextColor] = React.useState<string>('#000000')
 
     const refHandler = (currCanvas) => {
         if (!currCanvas) return;
@@ -174,7 +179,7 @@ const ToNftCanvas: React.FC<{
                 context.drawImage(img, 0, 0, img.width, img.height);
 
 
-                context.fillStyle = "black";
+                context.fillStyle = textColor;
                 context.font = `bold 32px monospace`;
                 context.textAlign = "left";
                 context.textBaseline = "middle";
@@ -209,7 +214,7 @@ const ToNftCanvas: React.FC<{
 
         }
 
-    }, [canvas, selfImage, selectedAvatar, currentText, mainBackground])
+    }, [canvas, selfImage, selectedAvatar, currentText, mainBackground, textColor])
 
 
     function appendNewTrait() {
@@ -451,6 +456,29 @@ const ToNftCanvas: React.FC<{
                                 </ButtonGroup>
                             </Panel>
                             <Panel title="Customize">
+                                <CenteredComponent>
+                                    <StatefulPopover
+                                        content={
+                                            <TwitterPicker
+                                                disableAlpha
+                                                color={textColor}
+                                                triangle={"hide"}
+                                                onChangeComplete={(color) => {
+                                                    setTextColor(color.hex);
+                                                }}
+                                                colors={colorSwatches}
+                                            />
+                                        }
+                                        accessibilityType={'tooltip'}
+                                    >
+
+                                        <Button kind={KIND.secondary} endEnhancer={() => <Overflow size={24}/>}>
+                                            Select text color
+                                        </Button>
+
+
+                                    </StatefulPopover>
+                                </CenteredComponent>
                                 <Label2 marginBottom="14px">Background</Label2>
                                 <ButtonGroup overrides={buttonGroupOverrides}>
                                     <Button onClick={() => setSelectBackgroundOpened(true)}>Select Background</Button>
