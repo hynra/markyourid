@@ -21,6 +21,7 @@ import {getDwebLinkUrl} from "../common/helper";
 import {useEthSdk} from "../sdk/use-eth-sdk";
 import {fetchUserItemsEth} from "../sdk/query-eth";
 import {NftItem, NftItems} from "@rarible/ethereum-api-client";
+import {NextSeo} from "next-seo";
 
 const itemProps: BlockProps = {
     alignItems: 'center',
@@ -54,7 +55,7 @@ const Dashboard: React.FC = () => {
             fetchItem().then();
         }
 
-        if(showAll) setTitle(SECONDARY_TITLE)
+        if (showAll) setTitle(SECONDARY_TITLE)
         else setTitle(PRIMARY_TITLE);
 
     }, [account, wallet, showAll])
@@ -79,7 +80,7 @@ const Dashboard: React.FC = () => {
             }
             if (its?.continuation) setContinuation(its.continuation);
         } catch (e) {
-            if(retryCount < MAX_RETRY){
+            if (retryCount < MAX_RETRY) {
                 let currCount = retryCount;
                 setRetryCount(currCount++);
                 enqueue({
@@ -99,113 +100,119 @@ const Dashboard: React.FC = () => {
 
 
     return (
-        <MainLayout path='/dashboard' address={wallet?.address}>
-            <FlexGrid
-                flexGridColumnCount={2}
-                marginBottom="scale700"
-            >
-                <FlexGridItem>
-                    <Label1>{title}</Label1>
-                </FlexGridItem>
-                <FlexGridItem
-                    alignItems='end'
-                    justifyContent='end'
-                    display="flex"
-                >
-                    <Checkbox
-                        checked={showAll}
-                        checkmarkType={STYLE_TYPE.toggle_round}
-                        // @ts-ignore
-                        onChange={e => setShowAll(e.target.checked)}
-                        labelPlacement={LABEL_PLACEMENT.right}
-                    >
-                        Show All
-                    </Checkbox>
-                </FlexGridItem>
-            </FlexGrid>
-            <FlexGrid
-                flexGridColumnCount={[1, 1, 2, 2]}
-                flexGridColumnGap="scale800"
-                flexGridRowGap="scale800"
-            >
-                {
-                    nftItems &&
-                    nftItems.map((it, index) => {
-
-                        if(!it.meta?.image){
-                            return null
-                        }
-
-                        const img = getDwebLinkUrl(it.meta.image.url['ORIGINAL']);
-
-                        let isGenerated = false;
-                        it.meta.attributes.map((attr) => {
-                            if(attr.key === "powered by" && attr.value === "https://markyour.id"){
-                                isGenerated = true;
-                            }
-                        });
-
-                        if(!isGenerated && !showAll){
-                            return null;
-                        }
-
-                        return (
-                            <FlexGridItem {...itemProps} key={index}>
-                                <Card
-                                    headerImage={
-                                        img
-                                    }
-                                    overrides={
-                                        {
-                                            Root: {
-                                                style:
-                                                    {width: '100%', marginBottom: '14px'}
-                                            }
-                                        }
-                                    }
-                                >
-                                    <StyledBody>
-                                        <Label3>{it.meta.name}</Label3>
-                                    </StyledBody>
-                                    <StyledAction>
-                                        <ButtonGroup overrides={{
-                                            Root: {
-                                                style: {
-                                                    width: "100%",
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                }
-                                            }
-                                        }}>
-                                            <Button
-                                                onClick={() => {
-                                                    router.push(`/item/${it.id}`).then()
-                                                }}
-                                            >
-                                                View NFT
-                                            </Button>
-
-                                        </ButtonGroup>
-                                    </StyledAction>
-                                </Card>
-                            </FlexGridItem>
-                        );
-                    })
-                }
-            </FlexGrid>
-            {
-                continuation &&
+        <div>
+            <NextSeo
+                title="MarkYourID - Dashboard"
+                description="MarkYourID protects online identity card submissions by making a copy of the submission as an NFT and minting it on the Blockchain"
+            />
+            <MainLayout path='/dashboard' address={wallet?.address}>
                 <FlexGrid
-                    flexGridColumnCount={[1]}
+                    flexGridColumnCount={2}
+                    marginBottom="scale700"
+                >
+                    <FlexGridItem>
+                        <Label1>{title}</Label1>
+                    </FlexGridItem>
+                    <FlexGridItem
+                        alignItems='end'
+                        justifyContent='end'
+                        display="flex"
+                    >
+                        <Checkbox
+                            checked={showAll}
+                            checkmarkType={STYLE_TYPE.toggle_round}
+                            // @ts-ignore
+                            onChange={e => setShowAll(e.target.checked)}
+                            labelPlacement={LABEL_PLACEMENT.right}
+                        >
+                            Show All
+                        </Checkbox>
+                    </FlexGridItem>
+                </FlexGrid>
+                <FlexGrid
+                    flexGridColumnCount={[1, 1, 2, 2]}
                     flexGridColumnGap="scale800"
                     flexGridRowGap="scale800"
                 >
-                    <FlexGridItem {...itemProps} width="100%">
-                        <Button onClick={fetchItem}>Load More</Button>
-                    </FlexGridItem>
+                    {
+                        nftItems &&
+                        nftItems.map((it, index) => {
+
+                            if (!it.meta?.image) {
+                                return null
+                            }
+
+                            const img = getDwebLinkUrl(it.meta.image.url['ORIGINAL']);
+
+                            let isGenerated = false;
+                            it.meta.attributes.map((attr) => {
+                                if (attr.key === "powered by" && attr.value === "https://markyour.id") {
+                                    isGenerated = true;
+                                }
+                            });
+
+                            if (!isGenerated && !showAll) {
+                                return null;
+                            }
+
+                            return (
+                                <FlexGridItem {...itemProps} key={index}>
+                                    <Card
+                                        headerImage={
+                                            img
+                                        }
+                                        overrides={
+                                            {
+                                                Root: {
+                                                    style:
+                                                        {width: '100%', marginBottom: '14px'}
+                                                }
+                                            }
+                                        }
+                                    >
+                                        <StyledBody>
+                                            <Label3>{it.meta.name}</Label3>
+                                        </StyledBody>
+                                        <StyledAction>
+                                            <ButtonGroup overrides={{
+                                                Root: {
+                                                    style: {
+                                                        width: "100%",
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                    }
+                                                }
+                                            }}>
+                                                <Button
+                                                    onClick={() => {
+                                                        router.push(`/item/${it.id}`).then()
+                                                    }}
+                                                >
+                                                    View NFT
+                                                </Button>
+
+                                            </ButtonGroup>
+                                        </StyledAction>
+                                    </Card>
+                                </FlexGridItem>
+                            );
+                        })
+                    }
                 </FlexGrid>
-            }
-        </MainLayout>
+                {
+                    continuation &&
+                    <FlexGrid
+                        flexGridColumnCount={[1]}
+                        flexGridColumnGap="scale800"
+                        flexGridRowGap="scale800"
+                    >
+                        <FlexGridItem {...itemProps} width="100%">
+                            <Button onClick={fetchItem}>Load More</Button>
+                        </FlexGridItem>
+                    </FlexGrid>
+                }
+            </MainLayout>
+        </div>
     )
 }
 

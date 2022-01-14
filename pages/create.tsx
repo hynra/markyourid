@@ -14,6 +14,7 @@ import {mintNft} from "../sdk/mint";
 import {useStyletron} from "baseui";
 import {useEthSdk} from "../sdk/use-eth-sdk";
 import {mintNftEth} from "../sdk/mint-eth";
+import {NextSeo} from "next-seo";
 
 
 const Create: React.FC = () => {
@@ -56,7 +57,7 @@ const Create: React.FC = () => {
 
         dequeue();
 
-        if(!isMinted){
+        if (!isMinted) {
             enqueue({
                 message: 'Oops! Something went wrong, try again later.',
                 startEnhancer: ({size}) => <Delete size={size}/>,
@@ -82,24 +83,30 @@ const Create: React.FC = () => {
 
 
     return (
-        <MainLayout path='/create' address={wallet?.address}>
-            {loading && <PreLoad/>}
-            {
-                account &&
-                <div
-                    className={css({
-                        display: (loading) ? 'none' : 'block'
-                    })}
-                >
-                    <ToNftCanvas
-                        accountAddress={account}
-                        onPublish={(metadata: NftMetadata, isLazy: boolean, captcha: string) => {
-                            publish(metadata, isLazy, captcha).then()
-                        }}
-                    />
-                </div>
-            }
-        </MainLayout>
+        <div>
+            <NextSeo
+                title="MarkYourID - Create NFT"
+                description="MarkYourID protects online identity card submissions by making a copy of the submission as an NFT and minting it on the Blockchain"
+            />
+            <MainLayout path='/create' address={wallet?.address}>
+                {loading && <PreLoad/>}
+                {
+                    account &&
+                    <div
+                        className={css({
+                            display: (loading) ? 'none' : 'block'
+                        })}
+                    >
+                        <ToNftCanvas
+                            accountAddress={account}
+                            onPublish={(metadata: NftMetadata, isLazy: boolean, captcha: string) => {
+                                publish(metadata, isLazy, captcha).then()
+                            }}
+                        />
+                    </div>
+                }
+            </MainLayout>
+        </div>
     )
 
 }

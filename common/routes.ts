@@ -1,6 +1,6 @@
 const routes = [
     {
-        title: 'Dashboard',
+        title: 'MarkYourID',
         subNav: [
             {
                 title: 'Home',

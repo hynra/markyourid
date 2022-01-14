@@ -18,6 +18,7 @@ import {useSnackbar} from "baseui/snackbar";
 import {getItemByIdNoSdkEth} from "../../sdk/query-eth";
 import {NftItem} from "@rarible/ethereum-api-client";
 import {StyledLink as Link} from 'baseui/link';
+import {NextSeo} from "next-seo";
 
 const ItemID: React.FC = () => {
 
@@ -79,7 +80,7 @@ const ItemID: React.FC = () => {
 
 
     const showStampButton = (): boolean => {
-        if(!account) return false;
+        if (!account) return false;
         const fixedAccount = account.toLowerCase();
         const fixedCreator = getCreator().replace("ETHEREUM:", "").toLowerCase();
         const fixedOwner = getCreator().replace("ETHEREUM:", "").toLowerCase();
@@ -93,9 +94,14 @@ const ItemID: React.FC = () => {
     }
 
     return (
-        <MainLayout path={`/item/${itemId}`} address={account}>
-            {isLoading && <PreLoad/>}
-            { isValid === false &&
+        <div>
+            <NextSeo
+                title={`${(item === null) ? 'MarkYourID - Item': item.meta.name}`}
+                description="MarkYourID protects online identity card submissions by making a copy of the submission as an NFT and minting it on the Blockchain"
+            />
+            <MainLayout path={`/item/${itemId}`} address={account}>
+                {isLoading && <PreLoad/>}
+                {isValid === false &&
                 <ComponentPopUp
                     isOpen={!isValid}
                     setIsOpen={null}
@@ -106,117 +112,120 @@ const ItemID: React.FC = () => {
                     isClosable={false}
                     showActionButton={false}
                 >
-                 <Label2 marginBottom="scale400">
-                     The NFT you are trying to view is not the NFT that MarkYourID generated. Only generated NFTs are allowed to be viewed.
-                 </Label2>
+                    <Label2 marginBottom="scale400">
+                        The NFT you are trying to view is not the NFT that MarkYourID generated. Only generated NFTs are
+                        allowed to be viewed.
+                    </Label2>
                     <Button onClick={openRarible}>View on Rarible</Button>
                 </ComponentPopUp>
-            }
-            {item && isValid && <div
-                className={css({
-                    display: (isLoading) ? 'none' : 'block'
-                })}
-            >
-                <H3>{item.meta.name}</H3>
-                <div className={css({
-                    width: "100%",
-                    marginBottom: '14px'
-                })}>
-                    <img src={getDwebLinkUrl(item.meta.image.url['ORIGINAL'])} width="100%"
-                         className={css({borderRadius: '15px'})}/>
-                </div>
-                <ButtonGroup
-                    overrides={
-                        {
-                            Root: {
-                                style: {
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    marginBottom: '14px'
+                }
+                {item && isValid && <div
+                    className={css({
+                        display: (isLoading) ? 'none' : 'block'
+                    })}
+                >
+                    <H3>{item.meta.name}</H3>
+                    <div className={css({
+                        width: "100%",
+                        marginBottom: '14px'
+                    })}>
+                        <img src={getDwebLinkUrl(item.meta.image.url['ORIGINAL'])} width="100%"
+                             className={css({borderRadius: '15px'})}/>
+                    </div>
+                    <ButtonGroup
+                        overrides={
+                            {
+                                Root: {
+                                    style: {
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        marginBottom: '14px'
+                                    }
                                 }
                             }
                         }
-                    }
-                >
-                    { showStampButton() &&
+                    >
+                        {showStampButton() &&
                         <Button
                             onClick={() => {
                                 router.push(`/stamp/${item.id}`).then()
                             }}
                         >
                             Stamp to image</Button>
-                    }
-                    <Button
-                        onClick={openRarible}
+                        }
+                        <Button
+                            onClick={openRarible}
+                        >
+                            View on Rarible</Button>
+                    </ButtonGroup>
+
+                    <Tabs
+                        activeKey={activeKey}
+                        onChange={({activeKey}) => {
+                            setActiveKey(activeKey);
+                        }}
+                        fill={FILL.fixed}
+                        activateOnFocus
                     >
-                        View on Rarible</Button>
-                </ButtonGroup>
+                        <Tab title="Details">
+                            <Label1>Description</Label1>
+                            <Paragraph1
+                                marginBottom="scale500"
+                                $style={{
+                                    wordBreak: "break-all"
+                                }}
+                            >
+                                {
+                                    item.meta.description.split("\n").map((text, index) => {
+                                        return <span key={index}>{text}<br/></span>
+                                    })
+                                }
+                            </Paragraph1>
+                            <Label1>Blockchain</Label1>
+                            <Paragraph1 marginBottom="scale500">
+                                ETHEREUM
+                            </Paragraph1>
+                            <Label1>Collection</Label1>
+                            <Paragraph1
+                                $style={{
+                                    wordBreak: "break-all"
+                                }}
+                                marginBottom="scale500"
+                            >
+                                <Link href={`https://rarible.com/collection/${item.contract}`}>{item.contract}</Link>
+                            </Paragraph1>
+                        </Tab>
+                        <Tab title="Attributes">
+                            <Table
+                                columns={["Trait Type", "Value"]}
+                                data={tabulateAttrData(item.meta.attributes)}
+                                divider={DIVIDER.grid}
+                                size={TableSize.spacious}
+                            />
+                        </Tab>
+                        <Tab title="Ownership">
+                            <Label1 marginTop="scale500">Owner: </Label1>
+                            <Paragraph3
+                                $style={{
+                                    wordBreak: "break-all"
+                                }}
+                            >
+                                <b>{getOwner()}</b>
+                            </Paragraph3>
+                            <Label1 marginTop="scale500">Creator: </Label1>
+                            <Paragraph3
+                                $style={{
+                                    wordBreak: "break-all"
+                                }}
+                            >
+                                <b>{getCreator()}</b>
+                            </Paragraph3>
+                        </Tab>
+                    </Tabs>
+                </div>}
 
-                <Tabs
-                    activeKey={activeKey}
-                    onChange={({activeKey}) => {
-                        setActiveKey(activeKey);
-                    }}
-                    fill={FILL.fixed}
-                    activateOnFocus
-                >
-                    <Tab title="Details">
-                        <Label1>Description</Label1>
-                        <Paragraph1
-                            marginBottom="scale500"
-                            $style={{
-                                wordBreak: "break-all"
-                            }}
-                        >
-                            {
-                                item.meta.description.split("\n").map((text, index) => {
-                                    return <span key={index}>{text}<br/></span>
-                                })
-                            }
-                        </Paragraph1>
-                        <Label1>Blockchain</Label1>
-                        <Paragraph1 marginBottom="scale500">
-                            ETHEREUM
-                        </Paragraph1>
-                        <Label1>Collection</Label1>
-                        <Paragraph1
-                            $style={{
-                                wordBreak: "break-all"
-                            }}
-                            marginBottom="scale500"
-                        >
-                            <Link href={`https://rarible.com/collection/${item.contract}`}>{item.contract}</Link>
-                        </Paragraph1>
-                    </Tab>
-                    <Tab title="Attributes">
-                        <Table
-                            columns={["Trait Type", "Value"]}
-                            data={tabulateAttrData(item.meta.attributes)}
-                            divider={DIVIDER.grid}
-                            size={TableSize.spacious}
-                        />
-                    </Tab>
-                    <Tab title="Ownership">
-                        <Label1 marginTop="scale500">Owner: </Label1>
-                        <Paragraph3
-                            $style={{
-                                wordBreak: "break-all"
-                            }}
-                        >
-                            <b>{getOwner()}</b>
-                        </Paragraph3>
-                        <Label1 marginTop="scale500">Creator: </Label1>
-                        <Paragraph3
-                            $style={{
-                                wordBreak: "break-all"
-                            }}
-                        >
-                            <b>{getCreator()}</b>
-                        </Paragraph3>
-                    </Tab>
-                </Tabs>
-            </div>}
-
-        </MainLayout>)
+            </MainLayout>
+        </div>
+    )
 }
 export default ItemID;

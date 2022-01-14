@@ -16,6 +16,7 @@ import {useSnackbar} from "baseui/snackbar";
 import {Delete} from "baseui/icon";
 import {getItemByIdNoSdkEth} from "../../sdk/query-eth";
 import {NftItem} from "@rarible/ethereum-api-client";
+import {NextSeo} from "next-seo";
 
 const StampID: React.FC = () => {
 
@@ -45,7 +46,7 @@ const StampID: React.FC = () => {
             setValid(checkIfItemGenerated(nftItem));
             setItem(nftItem);
             setLoading(false);
-            if(getOwner(nftItem) !== account || getCreator(nftItem) !== account){
+            if (getOwner(nftItem) !== account || getCreator(nftItem) !== account) {
                 setValid(false);
                 return;
             }
@@ -85,36 +86,43 @@ const StampID: React.FC = () => {
 
 
     return (
-        <MainLayout path={`/stamp/${itemId}`} address={account}>
-            {isLoading && <PreLoad/>}
-            {isValid === false &&
-            <ComponentPopUp
-                isOpen={!isValid}
-                setIsOpen={null}
-                onAccepted={() => {
-                    router.push("/").then();
-                }}
-                modalInfo="Info"
-                isClosable={false}
-                showActionButton={false}
-            >
-                <Label2 marginBottom="scale400">
-                    The NFT you are trying to view is not the NFT that MarkYourID generated or you are not owner of this NFT.
-                </Label2>
-                <Button onClick={openRarible}>View on Rarible</Button>
-            </ComponentPopUp>
-            }
-            {
-                item && isValid &&
-                <StampEditor
-                    onImageSavedToLocal={(url: string) => {
+        <div>
+            <NextSeo
+                title={`${(item === null) ? 'MarkYourID - Stamp': 'Stamp - '+item.meta.name}`}
+                description="MarkYourID protects online identity card submissions by making a copy of the submission as an NFT and minting it on the Blockchain"
+            />
+            <MainLayout path={`/stamp/${itemId}`} address={account}>
+                {isLoading && <PreLoad/>}
+                {isValid === false &&
+                <ComponentPopUp
+                    isOpen={!isValid}
+                    setIsOpen={null}
+                    onAccepted={() => {
+                        router.push("/").then();
+                    }}
+                    modalInfo="Info"
+                    isClosable={false}
+                    showActionButton={false}
+                >
+                    <Label2 marginBottom="scale400">
+                        The NFT you are trying to view is not the NFT that MarkYourID generated or you are not owner of
+                        this NFT.
+                    </Label2>
+                    <Button onClick={openRarible}>View on Rarible</Button>
+                </ComponentPopUp>
+                }
+                {
+                    item && isValid &&
+                    <StampEditor
+                        onImageSavedToLocal={(url: string) => {
 
-                }}
-                    item={item}
-                />
+                        }}
+                        item={item}
+                    />
 
-            }
-        </MainLayout>
+                }
+            </MainLayout>
+        </div>
     )
 
 }
