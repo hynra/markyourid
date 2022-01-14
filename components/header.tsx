@@ -53,13 +53,13 @@ const HeaderNav: React.FC<{
                 />}
 
                 <Label2 marginBottom="scale400" marginTop="scale800">
-                    <Link href="#basic-link1">How it works</Link>
+                    <Link href="#">How it works</Link>
                 </Label2>
                 <Label2 marginBottom="scale400">
-                    <Link href="#basic-link1">FAQ</Link>
+                    <Link href="#">FAQ</Link>
                 </Label2>
                 <Label2 marginBottom="scale400">
-                    <Link href="#basic-link1">About</Link>
+                    <Link href="#">About</Link>
                 </Label2>
 
             </Drawer>
@@ -75,17 +75,17 @@ const HeaderNav: React.FC<{
                 <StyledNavigationList $align={ALIGN.right}>
                     <StyledNavigationItem>
                         <div className={linkStyle}>
-                            <Link href="#basic-link1">How it works</Link>
+                            <Link href="#">How it works</Link>
                         </div>
                     </StyledNavigationItem>
                     <StyledNavigationItem>
                         <div className={linkStyle}>
-                            <Link href="#basic-link1">FAQ</Link>
+                            <Link href="#">FAQ</Link>
                         </div>
                     </StyledNavigationItem>
                     <StyledNavigationItem>
                         <div className={linkStyle}>
-                            <Link href="#basic-link1">About</Link>
+                            <Link href="#">About</Link>
                         </div>
                     </StyledNavigationItem>
                     <StyledNavigationItem>

@@ -86,7 +86,7 @@ const Index: React.FC = () => {
                 <CenteredComponent>
                     <img src='/fig01.png' width="100%"/>
                 </CenteredComponent>
-
+                
                 <CustomCardContainer
                     image={
                         <img

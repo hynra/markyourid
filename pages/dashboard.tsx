@@ -44,6 +44,7 @@ const Dashboard: React.FC = () => {
     const [title, setTitle] = React.useState<string>(PRIMARY_TITLE)
     const [retryCount, setRetryCount] = React.useState<number>(0);
     const MAX_RETRY: number = 3;
+    const [isLoading, setLoading] = React.useState<boolean>(true);
 
 
     React.useEffect(() => {
@@ -69,6 +70,7 @@ const Dashboard: React.FC = () => {
 
 
     const fetchItem = async () => {
+        setLoading(true);
         try {
             const its = await fetchUserItemsEth(sdk, wallet.address, continuation);
             setContinuation(undefined)
@@ -77,27 +79,34 @@ const Dashboard: React.FC = () => {
             } else {
                 let tmpIts = [...nftItems, ...its.items]
                 setNftItems(tmpIts);
+
             }
             if (its?.continuation) setContinuation(its.continuation);
+            setLoading(false);
         } catch (e) {
             if (retryCount < MAX_RETRY) {
                 let currCount = retryCount;
                 setRetryCount(currCount++);
                 enqueue({
                     message: `We're little busy here, please wait...`,
-                    startEnhancer: ({size}) => <Delete size={size}/>,
                 });
+                setLoading(false);
+                fetchItem().then();
             } else {
                 enqueue({
                     message: 'Oops! Something went wrong, try again later or reload.',
                     startEnhancer: ({size}) => <Delete size={size}/>,
                 });
+                setLoading(false);
                 throw e;
             }
         }
 
     }
 
+    if(isLoading){
+        return <PreLoad/>
+    }
 
     return (
         <div>
@@ -106,6 +115,7 @@ const Dashboard: React.FC = () => {
                 description="MarkYourID protects online identity card submissions by making a copy of the submission as an NFT and minting it on the Blockchain"
             />
             <MainLayout path='/dashboard' address={wallet?.address}>
+
                 <FlexGrid
                     flexGridColumnCount={2}
                     marginBottom="scale700"
