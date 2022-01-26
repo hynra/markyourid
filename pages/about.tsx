@@ -8,7 +8,7 @@ const About: React.FC<{source: any}> = ({ source }) => {
     return(
         <div>
             <NextSeo
-                title="MarkYourID - Create NFT"
+                title="MarkYourID - About"
                 description="MarkYourID protects online identity card submissions by making a copy of the submission as an NFT and minting it on the Blockchain"
             />
             <MainLayout path='/about' address={null}>
